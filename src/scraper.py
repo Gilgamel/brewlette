@@ -1,31 +1,113 @@
-# src/scraper.py
+# src/supabase_db.py - 使用存储过程版本
+import os
 import requests
-import logging
+import json
 from datetime import datetime
+import logging
+from dotenv import load_dotenv
 
-# 尝试导入 BeautifulSoup，处理可能的导入错误
-try:
-    from bs4 import BeautifulSoup
-    BS4_AVAILABLE = True
-except ImportError:
-    BS4_AVAILABLE = False
-    print("警告: beautifulsoup4 未安装，将使用模拟数据")
+# 设置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-class NespressoScraper:
+load_dotenv()
+
+class SupabaseDB:
     def __init__(self):
-        self.setup_logging()
-        self.bs4_available = BS4_AVAILABLE
-    
-    def setup_logging(self):
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger(__name__)
-    
-    def scrape_sample_data(self):
-        """返回示例数据（当爬虫不可用时使用）"""
-        self.logger.info("使用示例数据（爬虫模块未完全配置）")
+        self.url = os.getenv("SUPABASE_URL")
+        self.key = os.getenv("SUPABASE_KEY")
         
-        # 更完整的示例数据
-        sample_capsules = [
+        if not self.url or not self.key:
+            raise ValueError("请设置 SUPABASE_URL 和 SUPABASE_KEY 环境变量")
+        
+        # 确保URL格式正确
+        if not self.url.startswith('https://'):
+            self.url = f'https://{self.url}'
+        
+        self.headers = {
+            "apikey": self.key,
+            "Authorization": f"Bearer {self.key}",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+        }
+        
+        logger.info(f"Supabase客户端初始化成功: {self.url}")
+    
+    def _request(self, method, table, params=None, data=None):
+        """发送HTTP请求到Supabase"""
+        url = f"{self.url}/rest/v1/{table}"
+        
+        # 构建查询参数
+        if params:
+            param_parts = []
+            for key, value in params.items():
+                if value is not None:
+                    param_parts.append(f"{key}=eq.{value}")
+            if param_parts:
+                url = f"{url}?{'&'.join(param_parts)}"
+        
+        try:
+            logger.debug(f"发送请求: {method} {url}")
+            response = requests.request(
+                method=method,
+                url=url,
+                headers=self.headers,
+                json=data,
+                timeout=10
+            )
+            
+            if response.status_code >= 400:
+                logger.error(f"HTTP {response.status_code}: {response.text}")
+                return None
+            
+            if method.upper() == "DELETE":
+                return {"success": True}
+            
+            return response.json() if response.content else None
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"请求错误: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"未知错误: {e}")
+            return None
+    
+    def _rpc_call(self, function_name, params):
+        """调用Supabase RPC函数"""
+        url = f"{self.url}/rest/v1/rpc/{function_name}"
+        
+        try:
+            logger.info(f"调用RPC: {function_name}, 参数: {params}")
+            response = requests.post(
+                url,
+                headers=self.headers,
+                json=params,
+                timeout=10
+            )
+            
+            if response.status_code >= 400:
+                logger.error(f"RPC调用失败 {response.status_code}: {response.text}")
+                return None
+            
+            return response.json() if response.content else {"success": True}
+            
+        except Exception as e:
+            logger.error(f"RPC调用异常: {e}")
+            return None
+    
+    # ========== 胶囊管理 ==========
+    
+    def get_all_capsules(self):
+        """获取所有胶囊"""
+        result = self._request("GET", "capsules")
+        if result is None:
+            # 返回默认数据
+            return self._get_default_capsules()
+        return result
+    
+    def _get_default_capsules(self):
+        """返回默认胶囊数据（当数据库为空时）"""
+        return [
             {
                 'name': 'ristretto',
                 'display_name_en': 'Ristretto',
@@ -111,31 +193,236 @@ class NespressoScraper:
                 'image_url': ''
             }
         ]
-        return sample_capsules
     
-    def scrape_website(self):
-        """尝试从网站爬取数据（如果可用）"""
-        if not self.bs4_available:
-            self.logger.warning("BeautifulSoup未安装，返回示例数据")
-            return self.scrape_sample_data()
-        
+    def get_capsule_by_name(self, name):
+        """根据名称获取胶囊"""
+        result = self._request("GET", "capsules", {"name": name})
+        if result and len(result) > 0:
+            return result[0]
+        return None
+    
+    # ========== 库存管理 - 使用存储过程 ==========
+    
+    def get_inventory(self, user_id='default_user'):
+        """获取用户库存 - 使用RPC"""
         try:
-            # 这里放你的实际爬虫代码
-            # 例如：
-            # url = "https://www.nespresso.com/"
-            # headers = {'User-Agent': 'Mozilla/5.0'}
-            # response = requests.get(url, headers=headers, timeout=10)
-            # soup = BeautifulSoup(response.content, 'html.parser')
-            # ... 解析逻辑 ...
+            # 方法1: 使用存储过程
+            result = self._rpc_call('get_inventory', {'p_user_id': user_id})
             
-            # 暂时返回示例数据
-            return self.scrape_sample_data()
+            if result is not None:
+                inventory = {}
+                for item in result:
+                    inventory[item['capsule_name']] = item['quantity']
+                return inventory
+            
+            # 方法2: 如果RPC失败，回退到直接查询
+            result = self._request("GET", "user_inventory", {"user_id": user_id})
+            
+            inventory = {}
+            if result:
+                for item in result:
+                    inventory[item['capsule_name']] = item['quantity']
+            
+            return inventory
             
         except Exception as e:
-            self.logger.error(f"爬虫错误: {e}")
-            return self.scrape_sample_data()
+            logger.error(f"获取库存失败: {e}")
+            return {}
     
-    def should_update(self, days=30):
-        """检查是否需要更新"""
-        # 简化版，总是返回True
-        return True
+    def update_inventory(self, capsule_name, quantity, user_id='default_user'):
+        """更新库存 - 使用upsert存储过程"""
+        try:
+            # 使用存储过程
+            result = self._rpc_call('upsert_inventory', {
+                'p_user_id': user_id,
+                'p_capsule_name': capsule_name,
+                'p_quantity': quantity
+            })
+            
+            if result is not None:
+                logger.info(f"库存更新成功: {capsule_name} = {quantity}")
+                return True
+            else:
+                logger.error(f"库存更新失败: {capsule_name}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"更新库存异常: {e}")
+            return False
+    
+    def add_to_inventory(self, capsule_name, quantity_to_add, user_id='default_user'):
+        """添加胶囊到库存 - 使用存储过程"""
+        try:
+            # 使用存储过程
+            result = self._rpc_call('add_to_inventory', {
+                'p_user_id': user_id,
+                'p_capsule_name': capsule_name,
+                'p_quantity_to_add': quantity_to_add
+            })
+            
+            if result is not None:
+                logger.info(f"添加库存成功: {capsule_name} +{quantity_to_add}, 现库存: {result}")
+                return True
+            else:
+                # 如果RPC失败，回退到手动计算
+                inventory = self.get_inventory(user_id)
+                current_qty = inventory.get(capsule_name, 0)
+                new_qty = current_qty + quantity_to_add
+                return self.update_inventory(capsule_name, new_qty, user_id)
+                
+        except Exception as e:
+            logger.error(f"添加库存异常: {e}")
+            return False
+    
+    def consume_pod(self, capsule_name, user_id='default_user'):
+        """消耗一个胶囊 - 使用存储过程"""
+        try:
+            # 使用存储过程
+            result = self._rpc_call('consume_pod', {
+                'p_user_id': user_id,
+                'p_capsule_name': capsule_name
+            })
+            
+            if result is True:
+                logger.info(f"消耗胶囊成功: {capsule_name}")
+                return True
+            elif result is False:
+                logger.warning(f"胶囊库存不足: {capsule_name}")
+                return False
+            else:
+                # 如果RPC失败，回退到手动消耗
+                inventory = self.get_inventory(user_id)
+                current_qty = inventory.get(capsule_name, 0)
+                
+                if current_qty > 0:
+                    return self.update_inventory(capsule_name, current_qty - 1, user_id)
+                return False
+                
+        except Exception as e:
+            logger.error(f"消耗胶囊异常: {e}")
+            return False
+    
+    # ========== 抽取历史 ==========
+    
+    def add_pick_history(self, capsule_name, preference=None, user_id='default_user'):
+        """记录抽取历史"""
+        try:
+            data = {
+                'user_id': user_id,
+                'capsule_name': capsule_name,
+                'preference_used': json.dumps(preference) if preference else None,
+                'picked_at': datetime.now().isoformat()
+            }
+            
+            response = requests.post(
+                f"{self.url}/rest/v1/pick_history",
+                headers=self.headers,
+                json=data
+            )
+            
+            if response.status_code < 400:
+                logger.info(f"记录历史成功: {capsule_name}")
+                return True
+            else:
+                logger.error(f"记录历史失败: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"记录历史异常: {e}")
+            return False
+    
+    def get_pick_history(self, user_id='default_user', limit=10):
+        """获取最近的抽取历史"""
+        try:
+            url = f"{self.url}/rest/v1/pick_history"
+            url += f"?user_id=eq.{user_id}&order=picked_at.desc&limit={limit}"
+            
+            response = requests.get(url, headers=self.headers)
+            
+            if response.status_code < 400:
+                return response.json()
+            return []
+            
+        except Exception as e:
+            logger.error(f"获取历史失败: {e}")
+            return []
+    
+    # ========== 用户设置 ==========
+    
+    def get_user_settings(self, user_id='default_user'):
+        """获取用户设置"""
+        try:
+            result = self._request("GET", "app_settings", {"user_id": user_id})
+            
+            if result and len(result) > 0:
+                return result[0]
+            else:
+                # 创建默认设置
+                default = {
+                    'user_id': user_id,
+                    'language': 'en',
+                    'created_at': datetime.now().isoformat()
+                }
+                
+                response = requests.post(
+                    f"{self.url}/rest/v1/app_settings",
+                    headers=self.headers,
+                    json=default
+                )
+                
+                if response.status_code < 400:
+                    return default
+                else:
+                    return {'user_id': user_id, 'language': 'en'}
+                    
+        except Exception as e:
+            logger.error(f"获取设置失败: {e}")
+            return {'user_id': user_id, 'language': 'en'}
+    
+    def update_user_settings(self, settings, user_id='default_user'):
+        """更新用户设置"""
+        try:
+            settings['updated_at'] = datetime.now().isoformat()
+            
+            url = f"{self.url}/rest/v1/app_settings?user_id=eq.{user_id}"
+            
+            response = requests.patch(
+                url,
+                headers=self.headers,
+                json=settings
+            )
+            
+            return response.status_code < 400
+            
+        except Exception as e:
+            logger.error(f"更新设置失败: {e}")
+            return False
+    
+    # ========== 初始化数据 ==========
+    
+    def initialize_default_capsules(self):
+        """初始化默认胶囊数据到数据库"""
+        try:
+            default_capsules = self._get_default_capsules()
+            
+            for capsule in default_capsules:
+                # 检查是否已存在
+                existing = self.get_capsule_by_name(capsule['name'])
+                if not existing:
+                    # 插入
+                    response = requests.post(
+                        f"{self.url}/rest/v1/capsules",
+                        headers=self.headers,
+                        json=capsule
+                    )
+                    
+                    if response.status_code < 400:
+                        logger.info(f"初始化胶囊: {capsule['name']}")
+                    else:
+                        logger.error(f"初始化失败: {capsule['name']}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"初始化默认胶囊失败: {e}")
+            return False

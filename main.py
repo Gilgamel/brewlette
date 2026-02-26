@@ -16,21 +16,14 @@ from src.translator import Translator
 
 # 页面配置
 st.set_page_config(
-    page_title="Nespresso Pod Picker",
+    page_title="Brewlette",
     page_icon="☕",
     layout="centered",
     initial_sidebar_state="auto"
 )
 
 # 初始化session state
-if 'db' not in st.session_state:
-    try:
-        st.session_state.db = SupabaseDB()
-        st.success("✅ 数据库连接成功")
-    except Exception as e:
-        st.error(f"❌ 数据库连接失败: {e}")
-        st.info("请检查 .env 文件中的 SUPABASE_URL 和 SUPABASE_KEY")
-        st.stop()
+
 
 if 'translator' not in st.session_state:
     try:

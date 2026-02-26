@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nespresso 胶囊随机抽取器 | Nespresso Pod Random Picker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1>☕ Nespresso 胶囊随机抽取器</h1>
+                <div class="language-toggle">
+                    <button id="langEn" class="lang-btn">EN</button>
+                    <span class="lang-separator">|</span>
+                    <button id="langCn" class="lang-btn active">CN</button>
+                </div>
+            </div>
+            <div class="last-update">
+                <span class="zh">数据更新</span>
+                <span class="en">Last Update</span>: <span id="updateDate">加载中 Loading...</span>
+            </div>
+        </header>
+
+        <div class="preference-section">
+            <h2>
+                <span class="zh">今日偏好设置</span>
+                <span class="en">Today's Preference</span>
+            </h2>
+            <div class="preference-options">
+                <label class="preference-item">
+                    <input type="radio" name="preference" value="all" checked> 
+                    <span class="zh">✨ 所有胶囊</span>
+                    <span class="en">✨ All Pods</span>
+                </label>
+                <label class="preference-item">
+                    <input type="radio" name="preference" value="espresso"> 
+                    <span class="zh">☕ 浓缩咖啡 (40ml)</span>
+                    <span class="en">☕ Espresso (40ml)</span>
+                </label>
+                <label class="preference-item">
+                    <input type="radio" name="preference" value="double"> 
+                    <span class="zh">☕☕ 双份浓缩 (80ml)</span>
+                    <span class="en">☕☕ Double Espresso (80ml)</span>
+                </label>
+                <label class="preference-item">
+                    <input type="radio" name="preference" value="lungo"> 
+                    <span class="zh">🥤 大杯咖啡 (110ml)</span>
+                    <span class="en">🥤 Lungo (110ml)</span>
+                </label>
+                <label class="preference-item">
+                    <input type="radio" name="preference" value="mug"> 
+                    <span class="zh">🍵 马克杯 (230ml)</span>
+                    <span class="en">🍵 Mug (230ml)</span>
+                </label>
+                <label class="preference-item">
+                    <input type="radio" name="preference" value="alto"> 
+                    <span class="zh">🧋 超大杯 (414ml)</span>
+                    <span class="en">🧋 Alto (414ml)</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="inventory-section">
+            <h2>
+                <span class="zh">📦 我的胶囊库存</span>
+                <span class="en">📦 My Pod Inventory</span>
+            </h2>
+            <button id="editInventoryBtn" class="btn-secondary">
+                <span class="zh">✏️ 编辑库存</span>
+                <span class="en">✏️ Edit Inventory</span>
+            </button>
+            <div id="inventoryList" class="inventory-list">
+                <!-- 库存列表将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <div class="picker-section">
+            <button id="pickCapsuleBtn" class="btn-primary">
+                <span class="zh">🎲 随机抽取胶囊</span>
+                <span class="en">🎲 Random Pick</span>
+            </button>
+            <div id="result" class="result-card hidden">
+                <h3>
+                    <span class="zh">🎉 今日推荐</span>
+                    <span class="en">🎉 Today's Pick</span>
+                </h3>
+                <div class="capsule-info">
+                    <div class="capsule-name" id="resultName">-</div>
+                    <div class="capsule-details">
+                        <span id="resultSize">-</span> | 
+                        <span id="resultType">-</span>
+                    </div>
+                    <div class="tasting-note" id="resultTasting">-</div>
+                    <div class="remaining-count">
+                        <span class="zh">剩余</span>
+                        <span class="en">Remaining</span>: <span id="resultRemaining">-</span>
+                    </div>
+                </div>
+                <button id="confirmPickBtn" class="btn-confirm">
+                    <span class="zh">✅ 确认抽取 (数量-1)</span>
+                    <span class="en">✅ Confirm (-1)</span>
+                </button>
+                <button id="pickAgainBtn" class="btn-secondary">
+                    <span class="zh">🔄 重新抽取</span>
+                    <span class="en">🔄 Pick Again</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>
+                    <span class="zh">编辑胶囊库存</span>
+                    <span class="en">Edit Pod Inventory</span>
+                </h2>
+                <div id="inventoryEditor" class="inventory-editor">
+                    <!-- 编辑器将通过JavaScript动态生成 -->
+                </div>
+                <button id="saveInventoryBtn" class="btn-primary">
+                    <span class="zh">💾 保存库存</span>
+                    <span class="en">💾 Save Inventory</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

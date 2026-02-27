@@ -251,37 +251,43 @@ def show_user_selector(client):
     users = get_all_users(client)
     usernames = [u['username'] for u in users] if users else []
     
-    with st.expander("👤 " + get_text("select_user", lang), expanded=True):
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            if usernames:
-                selected = st.selectbox(
-                    get_text("select_user", lang),
-                    options=usernames,
-                    key="user_select"
-                )
-            else:
-                selected = None
-        with col2:
-            if st.button("+ New"):
-                st.session_state.show_create_user = True
+    # User selector area
+    st.markdown("👤 **Select User**")
+    
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        if usernames:
+            selected = st.selectbox(
+                "Select user",
+                options=usernames,
+                key="user_select",
+                label_visibility="collapsed"
+            )
+        else:
+            selected = None
+            st.info("No users yet. Create one below!")
+    with col2:
+        if st.button("+ New"):
+            st.session_state.show_create_user = True
     
     if 'show_create_user' not in st.session_state:
         st.session_state.show_create_user = False
     
     if st.session_state.show_create_user:
+        st.markdown("---")
         col1, col2 = st.columns([3, 1])
         with col1:
             new_username = st.text_input("Username", key="new_username", placeholder="Your name...")
         with col2:
-            if st.button("✓"):
+            if st.button("✓ Create", key="create_user_btn"):
                 if new_username:
                     user = create_user(client, new_username)
                     if user:
                         st.session_state.current_user = user
                         st.session_state.show_create_user = False
                         st.rerun()
-        if st.button("Cancel"):
+        
+        if st.button("✕ Cancel", key="cancel_user_btn"):
             st.session_state.show_create_user = False
             st.rerun()
     

@@ -1,428 +1,357 @@
-# src/supabase_db.py - 使用存储过程版本
-import os
+"""
+Nespresso Scraper Module
+Scrapes capsule data from Nespresso official website
+Supports both Original Line and Vertuo Line
+"""
 import requests
+from bs4 import BeautifulSoup
 import json
-from datetime import datetime
-import logging
-from dotenv import load_dotenv
+import random
+from typing import List, Dict
 
-# 设置日志
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# User agent to mimic browser
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.9"
+}
 
-load_dotenv()
+# Base URLs
+NESPRESSO_BASE_URL = "https://www.nespresso.com"
 
-class SupabaseDB:
-    def __init__(self):
-        self.url = os.getenv("SUPABASE_URL")
-        self.key = os.getenv("SUPABASE_KEY")
+
+def scrape_original_line() -> List[Dict]:
+    """
+    Scrape Original Line capsules from Nespresso website
+    """
+    capsules = []
+    
+    # Try multiple possible URLs for Original Line
+    urls_to_try = [
+        "https://www.nespresso.com/us/en/original/capsules",
+        "https://www.nespresso.com/us/en/original",
+    ]
+    
+    for url in urls_to_try:
+        try:
+            response = requests.get(url, headers=HEADERS, timeout=30)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml')
+                # Parse the page to find capsule data
+                capsules.extend(parse_original_capsules(soup))
+                if capsules:
+                    break
+        except Exception as e:
+            print(f"Error fetching {url}: {e}")
+            continue
+    
+    return capsules
+
+
+def parse_original_capsules(soup: BeautifulSoup) -> List[Dict]:
+    """
+    Parse Original Line capsules from BeautifulSoup object
+    """
+    capsules = []
+    
+    # Try to find capsule data in JSON-LD script tags
+    scripts = soup.find_all('script', type='application/ld+json')
+    for script in scripts:
+        try:
+            data = json.loads(script.string)
+            if isinstance(data, list):
+                for item in data:
+                    if item.get('@type') == 'Product':
+                        capsule = parse_product_json(item, 'Original')
+                        if capsule:
+                            capsules.append(capsule)
+            elif data.get('@type') == 'Product':
+                capsule = parse_product_json(data, 'Original')
+                if capsule:
+                    capsules.append(capsule)
+        except:
+            continue
+    
+    # If no JSON-LD found, try parsing from HTML elements
+    if not capsules:
+        # Look for product cards
+        products = soup.find_all(['div', 'li'], class_=lambda x: x and ('product' in x.lower() or 'capsule' in x.lower()))
+        for product in products:
+            capsule = parse_product_html(product, 'Original')
+            if capsule:
+                capsules.append(capsule)
+    
+    return capsules
+
+
+def parse_product_json(data: dict, line: str) -> Dict:
+    """Parse product from JSON-LD data"""
+    try:
+        name = data.get('name', '')
+        if not name:
+            return None
         
-        if not self.url or not self.key:
-            raise ValueError("请设置 SUPABASE_URL 和 SUPABASE_KEY 环境变量")
+        # Extract tasting notes from description
+        description = data.get('description', '')
         
-        # 确保URL格式正确
-        if not self.url.startswith('https://'):
-            self.url = f'https://{self.url}'
+        # Extract size/type from offers
+        offers = data.get('offers', {})
+        if isinstance(offers, list):
+            offers = offers[0] if offers else {}
         
-        self.headers = {
-            "apikey": self.key,
-            "Authorization": f"Bearer {self.key}",
-            "Content-Type": "application/json",
-            "Prefer": "return=representation"
+        # Try to extract size from offers
+        size_ml = None
+        if offers:
+            # Look for volume in offer
+            offer_desc = str(offers.get('description', ''))
+            if 'ml' in offer_desc.lower():
+                import re
+                ml_match = re.search(r'(\d+)\s*ml', offer_desc, re.IGNORECASE)
+                if ml_match:
+                    size_ml = int(ml_match.group(1))
+        
+        # Determine pod type from size
+        pod_type = determine_pod_type(size_ml)
+        
+        return {
+            "name": name,
+            "name_en": name,  # Already English
+            "tasting_note": description,
+            "tasting_note_en": description,
+            "size_ml": size_ml,
+            "pod_type": pod_type,
+            "line": line,
+            "intensity": extract_intensity(description)
         }
+    except Exception as e:
+        print(f"Error parsing JSON: {e}")
+        return None
+
+
+def parse_product_html(element, line: str) -> Dict:
+    """Parse product from HTML element"""
+    try:
+        # Try to find name
+        name_elem = element.find(['h3', 'h4', 'span', 'a'], class_=lambda x: x and 'name' in x.lower())
+        if not name_elem:
+            name_elem = element.find(['h3', 'h4', 'span', 'a'])
         
-        logger.info(f"Supabase客户端初始化成功: {self.url}")
+        if not name_elem:
+            return None
+        
+        name = name_elem.get_text(strip=True)
+        if not name:
+            return None
+        
+        # Try to find other details
+        description = element.get_text(strip=True)
+        
+        return {
+            "name": name,
+            "name_en": name,
+            "tasting_note": description,
+            "tasting_note_en": description,
+            "size_ml": None,
+            "pod_type": "espresso",
+            "line": line,
+            "intensity": None
+        }
+    except Exception as e:
+        return None
+
+
+def scrape_vertuo_line() -> List[Dict]:
+    """
+    Scrape Vertuo Line capsules from Nespresso website
+    """
+    capsules = []
     
-    def _request(self, method, table, params=None, data=None):
-        """发送HTTP请求到Supabase"""
-        url = f"{self.url}/rest/v1/{table}"
-        
-        # 构建查询参数
-        if params:
-            param_parts = []
-            for key, value in params.items():
-                if value is not None:
-                    param_parts.append(f"{key}=eq.{value}")
-            if param_parts:
-                url = f"{url}?{'&'.join(param_parts)}"
-        
+    urls_to_try = [
+        "https://www.nespresso.com/us/en/vertuo/capsules",
+        "https://www.nespresso.com/us/en/vertuo",
+    ]
+    
+    for url in urls_to_try:
         try:
-            logger.debug(f"发送请求: {method} {url}")
-            response = requests.request(
-                method=method,
-                url=url,
-                headers=self.headers,
-                json=data,
-                timeout=10
-            )
-            
-            if response.status_code >= 400:
-                logger.error(f"HTTP {response.status_code}: {response.text}")
-                return None
-            
-            if method.upper() == "DELETE":
-                return {"success": True}
-            
-            return response.json() if response.content else None
-            
-        except requests.exceptions.RequestException as e:
-            logger.error(f"请求错误: {e}")
-            return None
+            response = requests.get(url, headers=HEADERS, timeout=30)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml')
+                capsules.extend(parse_vertuo_capsules(soup))
+                if capsules:
+                    break
         except Exception as e:
-            logger.error(f"未知错误: {e}")
-            return None
+            print(f"Error fetching {url}: {e}")
+            continue
     
-    def _rpc_call(self, function_name, params):
-        """调用Supabase RPC函数"""
-        url = f"{self.url}/rest/v1/rpc/{function_name}"
-        
+    return capsules
+
+
+def parse_vertuo_capsules(soup: BeautifulSoup) -> List[Dict]:
+    """
+    Parse Vertuo Line capsules from BeautifulSoup object
+    """
+    capsules = []
+    
+    # Try JSON-LD first
+    scripts = soup.find_all('script', type='application/ld+json')
+    for script in scripts:
         try:
-            logger.info(f"调用RPC: {function_name}, 参数: {params}")
-            response = requests.post(
-                url,
-                headers=self.headers,
-                json=params,
-                timeout=10
-            )
-            
-            if response.status_code >= 400:
-                logger.error(f"RPC调用失败 {response.status_code}: {response.text}")
-                return None
-            
-            return response.json() if response.content else {"success": True}
-            
-        except Exception as e:
-            logger.error(f"RPC调用异常: {e}")
-            return None
+            data = json.loads(script.string)
+            if isinstance(data, list):
+                for item in data:
+                    if item.get('@type') == 'Product':
+                        capsule = parse_product_json(item, 'Vertuo')
+                        if capsule:
+                            capsules.append(capsule)
+            elif data.get('@type') == 'Product':
+                capsule = parse_product_json(data, 'Vertuo')
+                if capsule:
+                    capsules.append(capsule)
+        except:
+            continue
     
-    # ========== 胶囊管理 ==========
+    if not capsules:
+        products = soup.find_all(['div', 'li'], class_=lambda x: x and ('product' in x.lower() or 'capsule' in x.lower()))
+        for product in products:
+            capsule = parse_product_html(product, 'Vertuo')
+            if capsule:
+                capsules.append(capsule)
     
-    def get_all_capsules(self):
-        """获取所有胶囊"""
-        result = self._request("GET", "capsules")
-        if result is None:
-            # 返回默认数据
-            return self._get_default_capsules()
-        return result
+    return capsules
+
+
+def determine_pod_type(size_ml: int) -> str:
+    """Determine pod type based on size"""
+    if size_ml is None:
+        return "espresso"
     
-    def _get_default_capsules(self):
-        """返回默认胶囊数据（当数据库为空时）"""
-        return [
-            {
-                'name': 'ristretto',
-                'display_name_en': 'Ristretto',
-                'display_name_zh': '芮斯崔朵',
-                'size_ml': 40,
-                'size_category': 'espresso',
-                'type': 'original',
-                'tasting_notes_en': 'Intense and powerful with cocoa notes',
-                'tasting_notes_zh': '浓烈强劲，带有可可香气',
-                'intensity': 10,
-                'image_url': ''
-            },
-            {
-                'name': 'volluto',
-                'display_name_en': 'Volluto',
-                'display_name_zh': '沃鲁托',
-                'size_ml': 40,
-                'size_category': 'espresso',
-                'type': 'original',
-                'tasting_notes_en': 'Sweet and biscuity with fruity notes',
-                'tasting_notes_zh': '甜美饼干风味，带有果香',
-                'intensity': 4,
-                'image_url': ''
-            },
-            {
-                'name': 'livanto',
-                'display_name_en': 'Livanto',
-                'display_name_zh': '利凡托',
-                'size_ml': 40,
-                'size_category': 'espresso',
-                'type': 'original',
-                'tasting_notes_en': 'Balanced and rounded with caramel notes',
-                'tasting_notes_zh': '平衡圆润，带有焦糖风味',
-                'intensity': 6,
-                'image_url': ''
-            },
-            {
-                'name': 'roma',
-                'display_name_en': 'Roma',
-                'display_name_zh': '罗马',
-                'size_ml': 40,
-                'size_category': 'espresso',
-                'type': 'original',
-                'tasting_notes_en': 'Full and balanced with woody notes',
-                'tasting_notes_zh': '饱满平衡，带有木质香气',
-                'intensity': 8,
-                'image_url': ''
-            },
-            {
-                'name': 'vanilio',
-                'display_name_en': 'Vanilio',
-                'display_name_zh': '香草',
-                'size_ml': 40,
-                'size_category': 'espresso',
-                'type': 'original',
-                'tasting_notes_en': 'Sweet vanilla aroma',
-                'tasting_notes_zh': '甜美的香草香气',
-                'intensity': 5,
-                'image_url': ''
-            },
-            {
-                'name': 'caramelito',
-                'display_name_en': 'Caramelito',
-                'display_name_zh': '焦糖',
-                'size_ml': 40,
-                'size_category': 'espresso',
-                'type': 'original',
-                'tasting_notes_en': 'Sweet caramel notes',
-                'tasting_notes_zh': '甜美的焦糖风味',
-                'intensity': 6,
-                'image_url': ''
-            },
-            {
-                'name': 'ciocattino',
-                'display_name_en': 'Ciocattino',
-                'display_name_zh': '巧克力',
-                'size_ml': 40,
-                'size_category': 'espresso',
-                'type': 'original',
-                'tasting_notes_en': 'Rich chocolate flavor',
-                'tasting_notes_zh': '浓郁的巧克力风味',
-                'intensity': 8,
-                'image_url': ''
-            }
-        ]
-    
-    def get_capsule_by_name(self, name):
-        """根据名称获取胶囊"""
-        result = self._request("GET", "capsules", {"name": name})
-        if result and len(result) > 0:
-            return result[0]
+    if size_ml <= 50:
+        return "espresso"
+    elif size_ml <= 100:
+        return "double"
+    elif size_ml <= 180:
+        return "lungo"
+    elif size_ml <= 250:
+        return "coffee"
+    else:
+        return "alto"
+
+
+def extract_intensity(text: str) -> int:
+    """Extract intensity from description"""
+    if not text:
         return None
     
-    # ========== 库存管理 - 使用存储过程 ==========
+    import re
+    # Look for intensity patterns
+    patterns = [
+        r'intensity[:\s]*(\d+)',
+        r'(\d+)\/13 intensity',
+        r'intensity (\d+)',
+    ]
     
-    def get_inventory(self, user_id='default_user'):
-        """获取用户库存 - 使用RPC"""
-        try:
-            # 方法1: 使用存储过程
-            result = self._rpc_call('get_inventory', {'p_user_id': user_id})
-            
-            if result is not None:
-                inventory = {}
-                for item in result:
-                    inventory[item['capsule_name']] = item['quantity']
-                return inventory
-            
-            # 方法2: 如果RPC失败，回退到直接查询
-            result = self._request("GET", "user_inventory", {"user_id": user_id})
-            
-            inventory = {}
-            if result:
-                for item in result:
-                    inventory[item['capsule_name']] = item['quantity']
-            
-            return inventory
-            
-        except Exception as e:
-            logger.error(f"获取库存失败: {e}")
-            return {}
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            return int(match.group(1))
     
-    def update_inventory(self, capsule_name, quantity, user_id='default_user'):
-        """更新库存 - 使用upsert存储过程"""
-        try:
-            # 使用存储过程
-            result = self._rpc_call('upsert_inventory', {
-                'p_user_id': user_id,
-                'p_capsule_name': capsule_name,
-                'p_quantity': quantity
-            })
-            
-            if result is not None:
-                logger.info(f"库存更新成功: {capsule_name} = {quantity}")
-                return True
-            else:
-                logger.error(f"库存更新失败: {capsule_name}")
-                return False
-                
-        except Exception as e:
-            logger.error(f"更新库存异常: {e}")
-            return False
+    return None
+
+
+def get_sample_capsules() -> List[Dict]:
+    """
+    Return sample capsules data for when scraping fails
+    This provides a fallback with realistic Nespresso products
+    """
     
-    def add_to_inventory(self, capsule_name, quantity_to_add, user_id='default_user'):
-        """添加胶囊到库存 - 使用存储过程"""
-        try:
-            # 使用存储过程
-            result = self._rpc_call('add_to_inventory', {
-                'p_user_id': user_id,
-                'p_capsule_name': capsule_name,
-                'p_quantity_to_add': quantity_to_add
-            })
-            
-            if result is not None:
-                logger.info(f"添加库存成功: {capsule_name} +{quantity_to_add}, 现库存: {result}")
-                return True
-            else:
-                # 如果RPC失败，回退到手动计算
-                inventory = self.get_inventory(user_id)
-                current_qty = inventory.get(capsule_name, 0)
-                new_qty = current_qty + quantity_to_add
-                return self.update_inventory(capsule_name, new_qty, user_id)
-                
-        except Exception as e:
-            logger.error(f"添加库存异常: {e}")
-            return False
+    original_capsules = [
+        # Original Line capsules (name in various languages, using English here)
+        {"name": "Arpeggio", "name_en": "Arpeggio", "tasting_note": "Cereal,蜜糖, caramel", "tasting_note_en": "Cereal, honey, caramel", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 9},
+        {"name": "Ristretto", "name_en": "Ristretto", "tasting_note": "谷物, 可可, 焦糖", "tasting_note_en": "Cereal, cocoa, caramel", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 10},
+        {"name": "Livanto", "name_en": "Livanto", "tasting_note": "焦糖, 饼干, 奶油", "tasting_note_en": "Caramel, biscuit, vanilla", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
+        {"name": "Capriccio", "name_en": "Capriccio", "tasting_note": "谷物, 绿苹果", "tasting_note_en": "Cereal, green apple", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 5},
+        {"name": "Cosmo", "name_en": "Cosmo", "tasting_note": "烘烤, 焦糖, 柑橘", "tasting_note_en": "Roasted, caramel, citrus", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
+        {"name": "Volutto", "name_en": "Volutto", "tasting_note": "烘烤, 杏仁", "tasting_note_en": "Roasted, almond", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 4},
+        {"name": "Dulsao", "name_en": "Dulsao", "tasting_note": "木质, 焦糖, 微微果酸", "tasting_note_en": "Woody, caramel, slight fruit", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
+        {"name": "Bukeela", "name_en": "Bukeela", "tasting_note": "烤谷物, 杏仁", "tasting_note_en": "Roasted cereal, almond", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 3},
+        
+        # Double espresso
+        {"name": "Double Espresso Chiaro", "name_en": "Double Espresso Chiaro", "tasting_note": "烘烤, 水果", "tasting_note_en": "Roasted, fruity", "size_ml": 80, "pod_type": "double", "line": "Original", "intensity": 6},
+        {"name": "Double Espresso Scuro", "name_en": "Double Espresso Scuro", "tasting_note": "可可, 烘烤", "tasting_note_en": "Cocoa, roasted", "size_ml": 80, "pod_type": "double", "line": "Original", "intensity": 8},
+        
+        # Lungo
+        {"name": "Vivalto Lungo", "name_en": "Vivalto Lungo", "tasting_note": "烘烤, 花香, 微微果酸", "tasting_note_en": "Roasted, floral, slight fruit", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 5},
+        {"name": "Fortissio Lungo", "name_en": "Fortissio Lungo", "tasting_note": "烘烤, 绿苹果, 焦糖", "tasting_note_en": "Roasted, green apple, caramel", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 7},
+        {"name": "Linizio Lungo", "name_en": "Linizio Lungo", "tasting_note": "谷物, 麦芽", "tasting_note_en": "Cereal, malt", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 4},
+    ]
     
-    def consume_pod(self, capsule_name, user_id='default_user'):
-        """消耗一个胶囊 - 使用存储过程"""
-        try:
-            # 使用存储过程
-            result = self._rpc_call('consume_pod', {
-                'p_user_id': user_id,
-                'p_capsule_name': capsule_name
-            })
-            
-            if result is True:
-                logger.info(f"消耗胶囊成功: {capsule_name}")
-                return True
-            elif result is False:
-                logger.warning(f"胶囊库存不足: {capsule_name}")
-                return False
-            else:
-                # 如果RPC失败，回退到手动消耗
-                inventory = self.get_inventory(user_id)
-                current_qty = inventory.get(capsule_name, 0)
-                
-                if current_qty > 0:
-                    return self.update_inventory(capsule_name, current_qty - 1, user_id)
-                return False
-                
-        except Exception as e:
-            logger.error(f"消耗胶囊异常: {e}")
-            return False
+    vertuo_capsules = [
+        # Vertuo Line capsules
+        {"name": "Odacio", "name_en": "Odacio", "tasting_note": "烘烤, 绿苹果, 浆果", "tasting_note_en": "Roasted, green apple, berries", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 8},
+        {"name": "Melozio", "name_en": "Melozio", "tasting_note": "烘烤, 焦糖, 奶油", "tasting_note_en": "Roasted, caramel, creamy", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 6},
+        {"name": "Envivo Lungo", "name_en": "Envivo Lungo", "tasting_note": "烘烤, 焦糖, 绿苹果", "tasting_note_en": "Roasted, caramel, green apple", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 9},
+        {"name": "Volcanic", "name_en": "Volcanic", "tasting_note": "烘烤, 烟熏, 可可", "tasting_note_en": "Roasted, smoky, cocoa", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 10},
+        {"name": "Nicaragua", "name_en": "Nicaragua", "tasting_note": "烘烤, 水果, 红酒", "tasting_note_en": "Roasted, fruity, wine", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 7},
+        {"name": "Ethiopia", "name_en": "Ethiopia", "tasting_note": "花香, 柑橘, 茉莉", "tasting_note_en": "Floral, citrus, jasmine", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 6},
+        {"name": "Colombia", "name_en": "Colombia", "tasting_note": "烘烤, 焦糖, 坚果", "tasting_note_en": "Roasted, caramel, nuts", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 6},
+        {"name": "Double Espresso", "name_en": "Double Espresso", "tasting_note": "烘烤, 焦糖, 可可", "tasting_note_en": "Roasted, caramel, cocoa", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 7},
+        
+        # Vertuo Alto sizes
+        {"name": "Rich Chocolate", "name_en": "Rich Chocolate", "tasting_note": "浓郁巧克力, 烘烤", "tasting_note_en": "Rich chocolate, roasted", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 8},
+        {"name": "Hazelnut", "name_en": "Hazelnut", "tasting_note": "烘烤, 榛子", "tasting_note_en": "Roasted, hazelnut", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 6},
+        {"name": "Caramel Cookie", "name_en": "Caramel Cookie", "tasting_note": "焦糖, 饼干", "tasting_note_en": "Caramel, biscuit", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 5},
+        {"name": "Ice Coffee", "name_en": "Ice Coffee", "tasting_note": "清爽, 水果", "tasting_note_en": "Refreshing, fruity", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 4},
+        
+        # Vertuo Gran Lungo
+        {"name": "Intenso", "name_en": "Intenso", "tasting_note": "烘烤, 可可, 焦糖", "tasting_note_en": "Roasted, cocoa, caramel", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 9},
+        {"name": "Dolceo", "name_en": "Dolceo", "tasting_note": "烘烤, 焦糖, 奶油", "tasting_note_en": "Roasted, caramel, creamy", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 6},
+    ]
     
-    # ========== 抽取历史 ==========
+    return original_capsules + vertuo_capsules
+
+
+def scrape_all_capsules() -> List[Dict]:
+    """
+    Scrape all Nespresso capsules (both Original and Vertuo)
+    Falls back to sample data if scraping fails
+    """
+    all_capsules = []
     
-    def add_pick_history(self, capsule_name, preference=None, user_id='default_user'):
-        """记录抽取历史"""
-        try:
-            data = {
-                'user_id': user_id,
-                'capsule_name': capsule_name,
-                'preference_used': json.dumps(preference) if preference else None,
-                'picked_at': datetime.now().isoformat()
-            }
-            
-            response = requests.post(
-                f"{self.url}/rest/v1/pick_history",
-                headers=self.headers,
-                json=data
-            )
-            
-            if response.status_code < 400:
-                logger.info(f"记录历史成功: {capsule_name}")
-                return True
-            else:
-                logger.error(f"记录历史失败: {response.status_code}")
-                return False
-                
-        except Exception as e:
-            logger.error(f"记录历史异常: {e}")
-            return False
+    # Try scraping Original Line
+    try:
+        original = scrape_original_line()
+        if original:
+            all_capsules.extend(original)
+            print(f"Scraped {len(original)} Original Line capsules")
+    except Exception as e:
+        print(f"Error scraping Original Line: {e}")
     
-    def get_pick_history(self, user_id='default_user', limit=10):
-        """获取最近的抽取历史"""
-        try:
-            url = f"{self.url}/rest/v1/pick_history"
-            url += f"?user_id=eq.{user_id}&order=picked_at.desc&limit={limit}"
-            
-            response = requests.get(url, headers=self.headers)
-            
-            if response.status_code < 400:
-                return response.json()
-            return []
-            
-        except Exception as e:
-            logger.error(f"获取历史失败: {e}")
-            return []
+    # Try scraping Vertuo Line
+    try:
+        vertuo = scrape_vertuo_line()
+        if vertuo:
+            all_capsules.extend(vertuo)
+            print(f"Scraped {len(vertuo)} Vertuo Line capsules")
+    except Exception as e:
+        print(f"Error scraping Vertuo Line: {e}")
     
-    # ========== 用户设置 ==========
+    # If no capsules scraped, use sample data
+    if not all_capsules:
+        print("Using sample capsule data")
+        all_capsules = get_sample_capsules()
     
-    def get_user_settings(self, user_id='default_user'):
-        """获取用户设置"""
-        try:
-            result = self._request("GET", "app_settings", {"user_id": user_id})
-            
-            if result and len(result) > 0:
-                return result[0]
-            else:
-                # 创建默认设置
-                default = {
-                    'user_id': user_id,
-                    'language': 'en',
-                    'created_at': datetime.now().isoformat()
-                }
-                
-                response = requests.post(
-                    f"{self.url}/rest/v1/app_settings",
-                    headers=self.headers,
-                    json=default
-                )
-                
-                if response.status_code < 400:
-                    return default
-                else:
-                    return {'user_id': user_id, 'language': 'en'}
-                    
-        except Exception as e:
-            logger.error(f"获取设置失败: {e}")
-            return {'user_id': user_id, 'language': 'en'}
-    
-    def update_user_settings(self, settings, user_id='default_user'):
-        """更新用户设置"""
-        try:
-            settings['updated_at'] = datetime.now().isoformat()
-            
-            url = f"{self.url}/rest/v1/app_settings?user_id=eq.{user_id}"
-            
-            response = requests.patch(
-                url,
-                headers=self.headers,
-                json=settings
-            )
-            
-            return response.status_code < 400
-            
-        except Exception as e:
-            logger.error(f"更新设置失败: {e}")
-            return False
-    
-    # ========== 初始化数据 ==========
-    
-    def initialize_default_capsules(self):
-        """初始化默认胶囊数据到数据库"""
-        try:
-            default_capsules = self._get_default_capsules()
-            
-            for capsule in default_capsules:
-                # 检查是否已存在
-                existing = self.get_capsule_by_name(capsule['name'])
-                if not existing:
-                    # 插入
-                    response = requests.post(
-                        f"{self.url}/rest/v1/capsules",
-                        headers=self.headers,
-                        json=capsule
-                    )
-                    
-                    if response.status_code < 400:
-                        logger.info(f"初始化胶囊: {capsule['name']}")
-                    else:
-                        logger.error(f"初始化失败: {capsule['name']}")
-            
-            return True
-            
-        except Exception as e:
-            logger.error(f"初始化默认胶囊失败: {e}")
-            return False
+    return all_capsules
+
+
+def get_capsules_by_size(capsules: List[Dict], size_ml: int) -> List[Dict]:
+    """Filter capsules by size"""
+    return [c for c in capsules if c.get('size_ml') == size_ml]
+
+
+def get_capsules_by_type(capsules: List[Dict], pod_type: str) -> List[Dict]:
+    """Filter capsules by type (espresso/double/lungo)"""
+    return [c for c in capsules if c.get('pod_type', '').lower() == pod_type.lower()]
+
+
+def get_capsules_by_line(capsules: List[Dict], line: str) -> List[Dict]:
+    """Filter capsules by line (Original/Vertuo)"""
+    return [c for c in capsules if c.get('line', '').lower() == line.lower()]

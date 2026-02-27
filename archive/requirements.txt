@@ -1,0 +1,8 @@
+streamlit
+supabase
+python-dotenv
+pandas
+requests
+beautifulsoup4
+lxml  # beautifulsoup4 的推荐解析器
+html5lib  # 备选解析器

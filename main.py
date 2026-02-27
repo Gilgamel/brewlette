@@ -1,317 +1,428 @@
-# 主应用
+"""
+Nespresso Pod Picker - Main Application
+A Streamlit web app for randomly selecting Nespresso pods
+"""
 import streamlit as st
-import pandas as pd
-from datetime import datetime
 import random
-import time
-import sys
-import os
+from datetime import datetime
 
-# 添加当前目录到路径
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Import our modules
+from src.supabase_client import (
+    get_supabase_client,
+    get_all_capsules,
+    get_all_users,
+    create_user,
+    get_user_by_username,
+    get_user_inventory,
+    add_to_inventory,
+    update_inventory_quantity,
+    decrement_inventory,
+    remove_from_inventory,
+    get_available_pods_for_user,
+    save_capsules
+)
+from src.scraper import scrape_all_capsules, get_sample_capsules
+from src.translator import get_text, translate_capsule
 
-# 导入自定义模块
-from src.supabase_db import SupabaseDB
-from src.translator import Translator
-
-# 页面配置
+# Page configuration
 st.set_page_config(
-    page_title="Brewlette",
+    page_title="Nespresso Pod Picker",
     page_icon="☕",
-    layout="centered",
-    initial_sidebar_state="auto"
+    layout="centered"
 )
 
-# 初始化session state
+# Custom CSS for mobile-friendly design
+st.markdown("""
+    <style>
+    .stButton > button {
+        width: 100%;
+        border-radius: 10px;
+        padding: 10px;
+    }
+    .result-box {
+        background-color: #f0f2f6;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin: 10px 0;
+    }
+    .capsule-card {
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 10px 0;
+    }
+    .footer {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+        font-size: 12px;
+    }
+    @media (max-width: 768px) {
+        .stTextInput, .stSelectbox, .stNumberInput {
+            width: 100% !important;
+        }
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 
-if 'translator' not in st.session_state:
+# Session state initialization
+if 'language' not in st.session_state:
+    st.session_state.language = 'en'
+
+if 'current_user' not in st.session_state:
+    st.session_state.current_user = None
+
+if 'selected_pod' not in st.session_state:
+    st.session_state.selected_pod = None
+
+
+def init_connection():
+    """Initialize Supabase connection"""
     try:
-        settings = st.session_state.db.get_user_settings()
-        lang = settings.get('language', 'en')
-        st.session_state.translator = Translator(lang)
-    except:
-        st.session_state.translator = Translator('en')
+        client = get_supabase_client()
+        return client
+    except ValueError as e:
+        st.error(str(e))
+        st.info("Please configure Supabase credentials in .streamlit/secrets.toml")
+        return None
+    except Exception as e:
+        st.error(f"Connection error: {e}")
+        return None
 
-if 'last_pick' not in st.session_state:
-    st.session_state.last_pick = None
 
-if 'preference' not in st.session_state:
-    st.session_state.preference = None
-
-# 获取翻译函数
-t = st.session_state.translator.t
-
-# 侧边栏
-with st.sidebar:
-    st.title(f"⚙️ {t('settings')}")
+def show_language_toggle():
+    """Show language toggle button"""
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if st.session_state.language == 'en':
+            st.markdown("### ☕ Nespresso Pod Picker")
+        else:
+            st.markdown("### ☕ Nespresso 胶囊抽取器")
     
-    # 语言选择
-    language = st.selectbox(
-        t('language'),
-        options=['English', '中文'],
-        index=0 if st.session_state.translator.language == 'en' else 1
+    with col2:
+        if st.button("中文/EN", key="lang_toggle"):
+            st.session_state.language = 'en' if st.session_state.language == 'zh' else 'zh'
+            st.rerun()
+
+
+def show_user_selector(client):
+    """Show user selection/creation UI"""
+    lang = st.session_state.language
+    
+    # Get all users
+    users = get_all_users(client)
+    usernames = [u['username'] for u in users] if users else []
+    
+    # Create user section
+    with st.expander(get_text("select_user", lang), expanded=True):
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            if usernames:
+                selected = st.selectbox(
+                    get_text("select_user", lang),
+                    options=usernames,
+                    key="user_select"
+                )
+            else:
+                selected = None
+        
+        with col2:
+            if st.button(get_text("create_user", lang), key="create_user_btn"):
+                st.session_state.show_create_user = True
+    
+    # Create new user form
+    if 'show_create_user' not in st.session_state:
+        st.session_state.show_create_user = False
+    
+    if st.session_state.show_create_user:
+        with st.form("create_user_form"):
+            new_username = st.text_input(get_text("enter_username", lang), key="new_username")
+            submit = st.form_submit_button(get_text("create", lang))
+            
+            if submit and new_username:
+                user = create_user(client, new_username)
+                if user:
+                    st.session_state.current_user = user
+                    st.session_state.show_create_user = False
+                    st.rerun()
+                else:
+                    st.error("Error creating user")
+        
+        if st.button("Cancel", key="cancel_create"):
+            st.session_state.show_create_user = False
+            st.rerun()
+    
+    # Set current user
+    if selected and st.session_state.current_user is None:
+        user = get_user_by_username(client, selected)
+        st.session_state.current_user = user
+    
+    return st.session_state.current_user
+
+
+def show_random_picker(client, user):
+    """Show random pod picker UI"""
+    lang = st.session_state.language
+    
+    if not user:
+        st.warning(get_text("need_inventory", lang))
+        return
+    
+    # Get available pods for user
+    available_pods = get_available_pods_for_user(client, user['id'])
+    
+    if not available_pods:
+        st.warning(get_text("need_inventory", lang))
+        return
+    
+    # Preference selection
+    st.markdown(f"**{get_text('preference', lang)}:**")
+    
+    size_options = {
+        "": get_text("no_preference", lang),
+        "40": get_text("espresso_40ml", lang),
+        "80": get_text("double_80ml", lang),
+        "150": get_text("lungo_150ml", lang),
+        "230": get_text("coffee_230ml", lang),
+        "400": get_text("alto_400ml", lang)
+    }
+    
+    preference = st.selectbox(
+        get_text("preference", lang),
+        options=list(size_options.keys()),
+        format_func=lambda x: size_options[x],
+        key="preference_select"
     )
     
-    if language == '中文':
-        st.session_state.translator.set_language('zh')
-    else:
-        st.session_state.translator.set_language('en')
+    # Filter pods based on preference
+    filtered_pods = available_pods
+    if preference:
+        filtered_pods = [p for p in available_pods if p['capsules']['size_ml'] == int(preference)]
     
-    # 保存语言设置
-    try:
-        st.session_state.db.update_user_settings(
-            {'language': st.session_state.translator.language}
-        )
-    except:
-        pass
+    if not filtered_pods:
+        st.warning(get_text("no_pods_available", lang))
+        return
+    
+    # Random pick button
+    if st.button(f"🎲 {get_text('pick_random', lang)}", key="pick_btn", use_container_width=True):
+        # Randomly select a pod
+        selected = random.choice(filtered_pods)
+        st.session_state.selected_pod = selected
+        st.rerun()
+    
+    # Show selected pod
+    if st.session_state.selected_pod:
+        pod_data = st.session_state.selected_pod
+        capsule = pod_data['capsules']
+        translated = translate_capsule(capsule, lang)
+        
+        st.markdown("---")
+        st.markdown(f"## 🎉 {get_text('result', lang)}")
+        
+        # Display capsule info
+        with st.container():
+            st.markdown(f"""
+            <div class="result-box">
+                <h2>{translated['name']}</h2>
+                <p><strong>{translated['tasting_note']}</strong></p>
+                <p>{translated['size_ml']}ml | {translated['pod_type']} | {translated['line']}</p>
+                <p>📊 {get_text('remaining', lang)}: {pod_data['quantity']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Confirm/Skip buttons
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.button(f"✓ {get_text('confirm', lang)}", key="confirm_btn", use_container_width=True):
+                # Decrement inventory
+                decrement_inventory(client, pod_data['id'])
+                st.success(get_text("confirm_success", lang))
+                st.session_state.selected_pod = None
+                st.rerun()
+        
+        with col2:
+            if st.button(f"🔄 {get_text('skip', lang)}", key="skip_btn", use_container_width=True):
+                st.session_state.selected_pod = None
+                st.rerun()
+
+
+def show_inventory(client, user):
+    """Show inventory management UI"""
+    lang = st.session_state.language
+    
+    if not user:
+        return
+    
+    # Get current inventory
+    inventory = get_user_inventory(client, user['id'])
+    
+    # Get all available capsules
+    all_capsules = get_all_capsules(client)
+    
+    # Add new capsule section
+    st.markdown(f"### ➕ {get_text('add_capsule', lang)}")
+    
+    with st.form("add_capsule_form"):
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Capsule selector
+            capsule_options = {c['id']: f"{c.get('name_en', c['name'])} ({c.get('line', '')} - {c.get('size_ml', '?')}ml)" 
+                            for c in all_capsules}
+            selected_capsule_id = st.selectbox(
+                get_text("select_capsule", lang),
+                options=list(capsule_options.keys()),
+                format_func=lambda x: capsule_options.get(x, ""),
+                key="add_capsule_select"
+            )
+        
+        with col2:
+            quantity = st.number_input(get_text("enter_quantity", lang), min_value=1, value=10, key="add_quantity")
+        
+        submit = st.form_submit_button(get_text("add", lang), use_container_width=True)
+        
+        if submit and selected_capsule_id:
+            add_to_inventory(client, user['id'], selected_capsule_id, quantity)
+            st.success(get_text("capsule_added", lang))
+            st.rerun()
     
     st.markdown("---")
     
-    # 显示最近抽取历史
-    st.subheader(f"📜 {t('history')}")
-    try:
-        history = st.session_state.db.get_pick_history(limit=5)
-        if history:
-            for h in history:
-                pod = st.session_state.db.get_capsule_by_name(h['capsule_name'])
-                if pod:
-                    if st.session_state.translator.language == 'zh':
-                        display_name = pod.get('display_name_zh', h['capsule_name'])
-                    else:
-                        display_name = pod.get('display_name_en', h['capsule_name'])
-                else:
-                    display_name = h['capsule_name']
-                
-                time_str = h['picked_at'][:10] if h.get('picked_at') else ''
-                st.caption(f"☕ {display_name} - {time_str}")
-        else:
-            st.caption("No history yet" if language == 'English' else "暂无历史")
-    except Exception as e:
-        st.caption("Error loading history" if language == 'English' else "加载历史失败")
-
-# 主页面
-st.title(f"☕ {t('app_title')}")
-st.markdown(f"*{t('welcome')}*")
-st.markdown("---")
-
-# 获取所有胶囊和库存
-try:
-    all_capsules = st.session_state.db.get_all_capsules()
-    inventory = st.session_state.db.get_inventory()
+    # Show current inventory
+    st.markdown(f"### 📦 {get_text('my_inventory', lang)}")
     
-    # 创建胶囊名称到显示名称的映射
-    capsule_display = {}
-    for c in all_capsules:
-        name = c['name']
-        if st.session_state.translator.language == 'zh' and c.get('display_name_zh'):
-            capsule_display[name] = c['display_name_zh']
-        else:
-            capsule_display[name] = c.get('display_name_en', name)
-    
-    # 创建两列布局
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.subheader(f"📦 {t('inventory')}")
-        
-        # 显示当前库存
-        if inventory:
-            inventory_data = []
-            for name, qty in inventory.items():
-                if qty > 0:
-                    display_name = capsule_display.get(name, name)
-                    inventory_data.append({
-                        t('pod_name'): display_name,
-                        t('quantity'): qty
-                    })
+    if not inventory:
+        st.info(get_text("no_inventory", lang))
+    else:
+        # Display inventory items
+        for item in inventory:
+            capsule = item['capsules']
+            translated = translate_capsule(capsule, lang)
             
-            if inventory_data:
-                df = pd.DataFrame(inventory_data)
-                st.dataframe(df, use_container_width=True, hide_index=True)
-            else:
-                st.info(t('no_pods'))
-        else:
-            st.info(t('no_pods'))
-        
-        # 添加/更新胶囊
-        with st.expander(f"➕ {t('add_pod')}"):
-            if all_capsules:
-                # 创建选择列表
-                pod_options = {}
-                for c in all_capsules:
-                    display = capsule_display.get(c['name'], c['name'])
-                    pod_options[display] = c['name']
+            with st.expander(f"{translated['name']} - {item['quantity']} {get_text('quantity', lang)}"):
+                col1, col2, col3 = st.columns([2, 1, 1])
                 
-                selected_display = st.selectbox(
-                    t('pod_name'),
-                    options=list(pod_options.keys()),
-                    key='add_pod_select'
-                )
-                selected_pod = pod_options[selected_display]
+                with col1:
+                    st.markdown(f"**{translated['name']}**")
+                    st.caption(f"{translated['size_ml']}ml | {translated['pod_type']} | {translated['line']}")
+                    if translated['tasting_note']:
+                        st.caption(f"📝 {translated['tasting_note']}")
                 
-                quantity = st.number_input(
-                    t('quantity'), 
-                    min_value=1, 
-                    value=1, 
-                    step=1,
-                    key='add_quantity'
-                )
-                
-                if st.button(t('update_inventory'), use_container_width=True, key='add_button'):
-                    try:
-                        with st.spinner("Updating..." if language == 'English' else "更新中..."):
-                            if st.session_state.db.add_to_inventory(selected_pod, quantity):
-                                st.success(f"{t('added_success')}: +{quantity} {selected_display}")
-                                time.sleep(1)
-                                st.rerun()
-                            else:
-                                st.error("Update failed" if language == 'English' else "更新失败")
-                    except Exception as e:
-                        st.error(f"Error: {str(e)}")
-    
-    with col2:
-        st.subheader(f"🎯 {t('preferences')}")
-        
-        # 偏好选择
-        preference_type = st.radio(
-            t('filter_by'),
-            options=[t('no_preference'), t('size'), t('intensity')],
-            horizontal=True,
-            key='preference_type'
-        )
-        
-        preference = None
-        if preference_type == t('size'):
-            size_options = [
-                'espresso (40ml)', 
-                'double_espresso (80ml)', 
-                'lungo (110ml)', 
-                'mug (230ml)', 
-                'alto (414ml)'
-            ]
-            selected_size = st.selectbox(t('select_size'), size_options, key='size_select')
-            size_map = {
-                'espresso (40ml)': 'espresso',
-                'double_espresso (80ml)': 'double_espresso',
-                'lungo (110ml)': 'lungo',
-                'mug (230ml)': 'mug',
-                'alto (414ml)': 'alto'
-            }
-            preference = {'size': size_map[selected_size]}
-            st.session_state.preference = preference
-        
-        elif preference_type == t('intensity'):
-            min_intensity, max_intensity = st.slider(
-                t('intensity'), 
-                1, 13, (1, 13),
-                key='intensity_slider'
-            )
-            preference = {
-                'intensity_min': min_intensity, 
-                'intensity_max': max_intensity
-            }
-            st.session_state.preference = preference
-        
-        # 抽取按钮
-        if st.button(t('pick_button'), type="primary", use_container_width=True, key='pick_button'):
-            try:
-                # 获取可用胶囊（有库存的）
-                available_pods = [name for name, qty in inventory.items() if qty > 0]
-                
-                if not available_pods:
-                    st.warning(t('no_pods_available'))
-                    st.stop()
-                
-                # 根据偏好过滤
-                if preference_type != t('no_preference') and preference:
-                    filtered_pods = []
-                    for pod_name in available_pods:
-                        pod_info = st.session_state.db.get_capsule_by_name(pod_name)
-                        if pod_info:
-                            if preference_type == t('size'):
-                                if pod_info.get('size_category') == preference['size']:
-                                    filtered_pods.append(pod_name)
-                            elif preference_type == t('intensity'):
-                                intensity = pod_info.get('intensity', 0)
-                                if preference['intensity_min'] <= intensity <= preference['intensity_max']:
-                                    filtered_pods.append(pod_name)
-                    
-                    if filtered_pods:
-                        st.session_state.last_pick = random.choice(filtered_pods)
-                    else:
-                        st.warning(t('no_pods_match'))
-                        st.session_state.last_pick = None
-                else:
-                    st.session_state.last_pick = random.choice(available_pods)
-                
-            except Exception as e:
-                st.error(f"Error: {str(e)}")
-    
-    # 结果显示
-    if st.session_state.last_pick:
-        st.markdown("---")
-        st.subheader(f"✨ {t('result')}")
-        
-        pod_info = st.session_state.db.get_capsule_by_name(st.session_state.last_pick)
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            if pod_info:
-                display_name = capsule_display.get(st.session_state.last_pick, st.session_state.last_pick)
-                st.metric(t('pod_name'), display_name)
-        
-        with col2:
-            if pod_info:
-                size_display = f"{pod_info.get('size_ml', '?')}ml"
-                st.metric(t('size'), size_display)
-        
-        with col3:
-            if pod_info:
-                st.metric(t('intensity'), pod_info.get('intensity', '?'))
-        
-        with col4:
-            current_qty = inventory.get(st.session_state.last_pick, 0)
-            st.metric(t('remaining'), current_qty)
-        
-        if pod_info:
-            notes_key = 'tasting_notes_zh' if st.session_state.translator.language == 'zh' else 'tasting_notes_en'
-            tasting_notes = pod_info.get(notes_key, '')
-            if tasting_notes:
-                st.info(f"📝 {t('tasting_notes')}: {tasting_notes}")
-        
-        # 确认抽取按钮
-        if st.button(t('confirm_pick'), type="primary", use_container_width=True, key='confirm_button'):
-            try:
-                with st.spinner("Updating inventory..." if language == 'English' else "更新库存中..."):
-                    success = st.session_state.db.consume_pod(st.session_state.last_pick)
-                    
-                    if success:
-                        # 记录抽取历史
-                        st.session_state.db.add_pick_history(
-                            st.session_state.last_pick, 
-                            st.session_state.preference
-                        )
-                        st.success(t('enjoy_coffee'))
-                        st.session_state.last_pick = None
-                        time.sleep(1.5)
+                with col2:
+                    new_qty = st.number_input(
+                        get_text("quantity", lang),
+                        min_value=0,
+                        value=item['quantity'],
+                        key=f"qty_{item['id']}"
+                    )
+                    if new_qty != item['quantity']:
+                        update_inventory_quantity(client, item['id'], new_qty)
                         st.rerun()
-                    else:
-                        st.error(t('failed_consume'))
+                
+                with col3:
+                    if st.button(f"🗑️ {get_text('delete', lang)}", key=f"del_{item['id']}"):
+                        remove_from_inventory(client, item['id'])
+                        st.rerun()
+
+
+def show_admin(client):
+    """Show admin panel"""
+    lang = st.session_state.language
+    
+    st.markdown(f"### ⚙️ {get_text('admin_panel', lang)}")
+    
+    # Get capsule count
+    capsules = get_all_capsules(client)
+    st.info(f"{get_text('total_capsules', lang)}: {len(capsules)}")
+    
+    # Update capsules button
+    if st.button(f"🔄 {get_text('update_btn', lang)}", key="update_btn", use_container_width=True):
+        with st.spinner(get_text("updating", lang)):
+            try:
+                # Scrape new data
+                new_capsules = scrape_all_capsules()
+                
+                # If scraping returns empty, use sample data
+                if not new_capsules:
+                    new_capsules = get_sample_capsules()
+                
+                # Save to database
+                saved = save_capsules(client, new_capsules)
+                st.success(get_text("update_success", lang))
+                st.rerun()
             except Exception as e:
-                st.error(f"Error: {str(e)}")
+                st.error(f"{get_text('update_error', lang)}: {e}")
+    
+    # Show sample capsules list
+    if capsules:
+        with st.expander(f"📋 {get_text('total_capsules', lang)} ({len(capsules)})"):
+            for c in capsules:
+                st.write(f"- {c.get('name_en', c['name'])} ({c.get('line', '')} - {c.get('size_ml', '?')}ml)")
 
-except Exception as e:
-    st.error(f"Error loading data: {str(e)}")
-    st.exception(e)
 
-# 底部信息
-st.markdown("---")
-st.markdown(
-    f"<div style='text-align: center; color: gray; padding: 10px;'>{t('powered_by')}</div>",
-    unsafe_allow_html=True
-)
+def show_footer():
+    """Show footer banner"""
+    lang = st.session_state.language
+    powered_by_text = get_text("powered_by", lang)
+    st.markdown(f"""
+        <div class="footer">
+            {powered_by_text} Nespresso Pod Picker ☕
+        </div>
+    """, unsafe_allow_html=True)
 
-# 显示版本信息
-st.caption(f"🔄 v1.0.0 | Data from Supabase")
+
+def main():
+    """Main application function"""
+    
+    # Initialize connection
+    client = init_connection()
+    if not client:
+        st.warning("Please configure Supabase to continue.")
+        st.info("""
+        ### Setup Instructions:
+        1. Create a free Supabase project at supabase.com
+        2. Create tables: `capsules`, `users`, `inventory`
+        3. Add credentials to .streamlit/secrets.toml
+        """)
+        return
+    
+    # Show language toggle
+    show_language_toggle()
+    st.markdown("---")
+    
+    # User selection
+    user = show_user_selector(client)
+    
+    if user:
+        st.markdown(f"### 👋 {get_text('welcome', lang='en' if st.session_state.language == 'en' else 'zh')} {user['username']}!")
+        st.markdown("---")
+        
+        # Tab navigation
+        lang = st.session_state.language
+        tab1, tab2, tab3 = st.tabs([
+            f"🎲 {get_text('tab_random', lang)}",
+            f"📦 {get_text('tab_inventory', lang)}",
+            f"⚙️ {get_text('tab_admin', lang)}"
+        ])
+        
+        with tab1:
+            show_random_picker(client, user)
+        
+        with tab2:
+            show_inventory(client, user)
+        
+        with tab3:
+            show_admin(client)
+    
+    # Show footer
+    st.markdown("---")
+    show_footer()
+
+
+if __name__ == "__main__":
+    main()

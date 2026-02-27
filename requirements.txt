@@ -1,8 +1,6 @@
-streamlit
-supabase
-python-dotenv
-pandas
-requests
-beautifulsoup4
-lxml  # beautifulsoup4 的推荐解析器
-html5lib  # 备选解析器
+streamlit>=1.28.0
+supabase>=2.0.0
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+pandas>=2.0.0

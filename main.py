@@ -521,10 +521,20 @@ def show_inventory(client, user):
     # Line filter - use selectbox instead of radio for better horizontal display
     line_filter = st.selectbox("Line", ["All", "Original", "Vertuo"], label_visibility="collapsed")
     
-    # Filter capsules
+    # Filter capsules - also deduplicate by name+line+size
     filtered = all_capsules
     if line_filter != "All":
         filtered = [c for c in filtered if c.get('line') == line_filter]
+    
+    # Deduplicate: keep only unique capsules by name+line+size
+    seen = set()
+    unique_capsules = []
+    for c in filtered:
+        key = (c.get('name'), c.get('line'), c.get('size_ml'))
+        if key not in seen:
+            seen.add(key)
+            unique_capsules.append(c)
+    filtered = unique_capsules
     
     # Search
     search = st.text_input("🔍 Search capsule...", key="search_capsule", placeholder="Type name...")

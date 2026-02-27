@@ -4,9 +4,7 @@ A Streamlit web app for randomly selecting Nespresso pods
 """
 import streamlit as st
 import random
-from datetime import datetime
 
-# Import our modules
 from src.supabase_client import (
     get_supabase_client,
     get_all_capsules,
@@ -46,23 +44,11 @@ st.markdown("""
         text-align: center;
         margin: 10px 0;
     }
-    .capsule-card {
-        background-color: white;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin: 10px 0;
-    }
     .footer {
         text-align: center;
         padding: 20px;
         color: #666;
         font-size: 12px;
-    }
-    @media (max-width: 768px) {
-        .stTextInput, .stSelectbox, .stNumberInput {
-            width: 100% !important;
-        }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -112,11 +98,9 @@ def show_user_selector(client):
     """Show user selection/creation UI"""
     lang = st.session_state.language
     
-    # Get all users
     users = get_all_users(client)
     usernames = [u['username'] for u in users] if users else []
     
-    # Create user section
     with st.expander(get_text("select_user", lang), expanded=True):
         col1, col2 = st.columns([2, 1])
         
@@ -134,7 +118,6 @@ def show_user_selector(client):
             if st.button(get_text("create_user", lang), key="create_user_btn"):
                 st.session_state.show_create_user = True
     
-    # Create new user form
     if 'show_create_user' not in st.session_state:
         st.session_state.show_create_user = False
     
@@ -156,7 +139,6 @@ def show_user_selector(client):
             st.session_state.show_create_user = False
             st.rerun()
     
-    # Set current user
     if selected and st.session_state.current_user is None:
         user = get_user_by_username(client, selected)
         st.session_state.current_user = user
@@ -172,14 +154,12 @@ def show_random_picker(client, user):
         st.warning(get_text("need_inventory", lang))
         return
     
-    # Get available pods for user
     available_pods = get_available_pods_for_user(client, user['id'])
     
     if not available_pods:
         st.warning(get_text("need_inventory", lang))
         return
     
-    # Preference selection
     st.markdown(f"**{get_text('preference', lang)}:**")
     
     size_options = {
@@ -198,7 +178,6 @@ def show_random_picker(client, user):
         key="preference_select"
     )
     
-    # Filter pods based on preference
     filtered_pods = available_pods
     if preference:
         filtered_pods = [p for p in available_pods if p['capsules']['size_ml'] == int(preference)]
@@ -207,14 +186,11 @@ def show_random_picker(client, user):
         st.warning(get_text("no_pods_available", lang))
         return
     
-    # Random pick button
     if st.button(f"🎲 {get_text('pick_random', lang)}", key="pick_btn", use_container_width=True):
-        # Randomly select a pod
         selected = random.choice(filtered_pods)
         st.session_state.selected_pod = selected
         st.rerun()
     
-    # Show selected pod
     if st.session_state.selected_pod:
         pod_data = st.session_state.selected_pod
         capsule = pod_data['capsules']
@@ -223,7 +199,6 @@ def show_random_picker(client, user):
         st.markdown("---")
         st.markdown(f"## 🎉 {get_text('result', lang)}")
         
-        # Display capsule info
         with st.container():
             st.markdown(f"""
             <div class="result-box">
@@ -234,12 +209,10 @@ def show_random_picker(client, user):
             </div>
             """, unsafe_allow_html=True)
         
-        # Confirm/Skip buttons
         col1, col2 = st.columns(2)
         
         with col1:
             if st.button(f"✓ {get_text('confirm', lang)}", key="confirm_btn", use_container_width=True):
-                # Decrement inventory
                 decrement_inventory(client, pod_data['id'])
                 st.success(get_text("confirm_success", lang))
                 st.session_state.selected_pod = None
@@ -258,20 +231,15 @@ def show_inventory(client, user):
     if not user:
         return
     
-    # Get current inventory
     inventory = get_user_inventory(client, user['id'])
-    
-    # Get all available capsules
     all_capsules = get_all_capsules(client)
     
-    # Add new capsule section
     st.markdown(f"### ➕ {get_text('add_capsule', lang)}")
     
     with st.form("add_capsule_form"):
         col1, col2 = st.columns(2)
         
         with col1:
-            # Capsule selector
             capsule_options = {c['id']: f"{c.get('name_en', c['name'])} ({c.get('line', '')} - {c.get('size_ml', '?')}ml)" 
                             for c in all_capsules}
             selected_capsule_id = st.selectbox(
@@ -293,13 +261,11 @@ def show_inventory(client, user):
     
     st.markdown("---")
     
-    # Show current inventory
     st.markdown(f"### 📦 {get_text('my_inventory', lang)}")
     
     if not inventory:
         st.info(get_text("no_inventory", lang))
     else:
-        # Display inventory items
         for item in inventory:
             capsule = item['capsules']
             translated = translate_capsule(capsule, lang)
@@ -336,29 +302,23 @@ def show_admin(client):
     
     st.markdown(f"### ⚙️ {get_text('admin_panel', lang)}")
     
-    # Get capsule count
     capsules = get_all_capsules(client)
     st.info(f"{get_text('total_capsules', lang)}: {len(capsules)}")
     
-    # Update capsules button
     if st.button(f"🔄 {get_text('update_btn', lang)}", key="update_btn", use_container_width=True):
         with st.spinner(get_text("updating", lang)):
             try:
-                # Scrape new data
                 new_capsules = scrape_all_capsules()
                 
-                # If scraping returns empty, use sample data
                 if not new_capsules:
                     new_capsules = get_sample_capsules()
                 
-                # Save to database
                 saved = save_capsules(client, new_capsules)
                 st.success(get_text("update_success", lang))
                 st.rerun()
             except Exception as e:
                 st.error(f"{get_text('update_error', lang)}: {e}")
     
-    # Show sample capsules list
     if capsules:
         with st.expander(f"📋 {get_text('total_capsules', lang)} ({len(capsules)})"):
             for c in capsules:
@@ -379,7 +339,6 @@ def show_footer():
 def main():
     """Main application function"""
     
-    # Initialize connection
     client = init_connection()
     if not client:
         st.warning("Please configure Supabase to continue.")
@@ -391,19 +350,16 @@ def main():
         """)
         return
     
-    # Show language toggle
     show_language_toggle()
     st.markdown("---")
     
-    # User selection
     user = show_user_selector(client)
     
     if user:
-        st.markdown(f"### 👋 {get_text('welcome', lang='en' if st.session_state.language == 'en' else 'zh')} {user['username']}!")
+        lang = st.session_state.language
+        st.markdown(f"### 👋 {get_text('welcome', lang)} {user['username']}!")
         st.markdown("---")
         
-        # Tab navigation
-        lang = st.session_state.language
         tab1, tab2, tab3 = st.tabs([
             f"🎲 {get_text('tab_random', lang)}",
             f"📦 {get_text('tab_inventory', lang)}",
@@ -419,7 +375,6 @@ def main():
         with tab3:
             show_admin(client)
     
-    # Show footer
     st.markdown("---")
     show_footer()
 

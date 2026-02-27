@@ -105,29 +105,24 @@ def get_capsule_by_id(client: Client, capsule_id: int) -> dict:
 
 
 def save_capsules(client: Client, capsules: list) -> int:
-    """Save or update capsules in database, deduplicating by name + line + size_ml"""
+    """Save or update capsules in database"""
     saved_count = 0
-    
-    # First, get all existing capsules to check for duplicates
-    existing_capsules = client.table("capsules").select("id, name, line, size_ml").execute()
-    existing_map = {(c["name"], c["line"], c.get("size_ml")): c["id"] for c in existing_capsules.data}
-    
     for capsule in capsules:
-        name = capsule.get("name", "")
-        line = capsule.get("line", "")
-        size_ml = capsule.get("size_ml")
-        key = (name, line, size_ml)
+        # Check if capsule exists
+        existing = client.table("capsules").select("id").eq("name", capsule["name"]).execute()
         
-        if key in existing_map:
-            # Update existing (by name + line + size_ml)
+        if existing.data:
+            # Update existing
             client.table("capsules").update({
                 "name_en": capsule.get("name_en"),
                 "tasting_note": capsule.get("tasting_note"),
                 "tasting_note_en": capsule.get("tasting_note_en"),
+                "size_ml": capsule.get("size_ml"),
                 "pod_type": capsule.get("pod_type"),
+                "line": capsule.get("line"),
                 "intensity": capsule.get("intensity"),
                 "last_updated": datetime.now().isoformat()
-            }).eq("id", existing_map[key]).execute()
+            }).eq("name", capsule["name"]).execute()
         else:
             # Insert new
             client.table("capsules").insert({
@@ -140,70 +135,8 @@ def save_capsules(client: Client, capsules: list) -> int:
                 "line": capsule.get("line"),
                 "intensity": capsule.get("intensity")
             }).execute()
-            # Add to map to avoid duplicates in same batch
-            existing_map[key] = True
         saved_count += 1
     return saved_count
-
-
-def remove_duplicate_capsules(client: Client) -> int:
-    """Remove duplicate capsules, keeping the most recent one"""
-    # Get all capsules
-    all_capsules = client.table("capsules").select("id, name, line, size_ml, last_updated").execute()
-    
-    # Find duplicates (same name + line + size_ml)
-    seen = {}
-    duplicates = []
-    
-    for c in all_capsules.data:
-        key = (c["name"], c["line"], c.get("size_ml"))
-        if key in seen:
-            # Keep the one with more recent last_updated
-            existing = seen[key]
-            existing_time = existing.get("last_updated", "") or ""
-            new_time = c.get("last_updated", "") or ""
-            if new_time > existing_time:
-                duplicates.append(existing["id"])
-                seen[key] = c
-            else:
-                duplicates.append(c["id"])
-        else:
-            seen[key] = c
-    
-    # Delete duplicates
-    for dup_id in duplicates:
-        client.table("capsules").delete().eq("id", dup_id).execute()
-    
-    return len(duplicates)
-
-
-def clear_and_reset_capsules(client: Client, capsules: list) -> int:
-    """Clear all capsules and re-import fresh data using batch insert"""
-    # Delete all existing capsules
-    client.table("capsules").delete().neq("id", 0).execute()
-    
-    # Prepare data for batch insert
-    insert_data = []
-    for capsule in capsules:
-        insert_data.append({
-            "name": capsule["name"],
-            "name_en": capsule.get("name_en"),
-            "tasting_note": capsule.get("tasting_note"),
-            "tasting_note_en": capsule.get("tasting_note_en"),
-            "size_ml": capsule.get("size_ml"),
-            "pod_type": capsule.get("pod_type"),
-            "line": capsule.get("line"),
-            "intensity": capsule.get("intensity")
-        })
-    
-    # Batch insert (Supabase allows up to 1000 rows per insert)
-    if insert_data:
-        # Insert in batches of 1000
-        for i in range(0, len(insert_data), 1000):
-            batch = insert_data[i:i+1000]
-            client.table("capsules").insert(batch).execute()
-    
-    return len(capsules)
 
 
 # User operations
@@ -317,3 +250,66 @@ def get_available_pods_for_user(client: Client, user_id: int, size_filter: str =
             pods = [p for p in pods if p["capsules"]["size_ml"] == target_size]
     
     return pods
+
+
+def remove_duplicate_capsules(client: Client) -> int:
+    """Remove duplicate capsules, keeping the most recent one"""
+    # Get all capsules
+    all_capsules = client.table("capsules").select("id, name, line, size_ml, last_updated").execute()
+    
+    # Find duplicates (same name + line + size_ml)
+    seen = {}
+    duplicates = []
+    
+    for c in all_capsules.data:
+        key = (c["name"], c.get("line"), c.get("size_ml"))
+        if key in seen:
+            # Keep the one with more recent last_updated
+            existing = seen[key]
+            existing_time = existing.get("last_updated", "") or ""
+            new_time = c.get("last_updated", "") or ""
+            if new_time > existing_time:
+                duplicates.append(existing["id"])
+                seen[key] = c
+            else:
+                duplicates.append(c["id"])
+        else:
+            seen[key] = c
+    
+    # Delete duplicates
+    for dup_id in duplicates:
+        client.table("capsules").delete().eq("id", dup_id).execute()
+    
+    return len(duplicates)
+
+
+def clear_and_reset_capsules(client: Client, capsules: list) -> int:
+    """Clear all capsules and re-import fresh data using batch insert"""
+    # First delete all inventory (due to foreign key constraint)
+    client.table("inventory").delete().neq("id", 0).execute()
+    
+    # Then delete all existing capsules
+    client.table("capsules").delete().neq("id", 0).execute()
+    
+    # Prepare data for batch insert
+    insert_data = []
+    for capsule in capsules:
+        insert_data.append({
+            "name": capsule["name"],
+            "name_en": capsule.get("name_en"),
+            "tasting_note": capsule.get("tasting_note"),
+            "tasting_note_en": capsule.get("tasting_note_en"),
+            "size_ml": capsule.get("size_ml"),
+            "pod_type": capsule.get("pod_type"),
+            "line": capsule.get("line"),
+            "intensity": capsule.get("intensity")
+        })
+    
+    # Batch insert (Supabase allows up to 1000 rows per insert)
+    if insert_data:
+        # Insert in batches of 1000
+        for i in range(0, len(insert_data), 1000):
+            batch = insert_data[i:i+1000]
+            client.table("capsules").insert(batch).execute()
+    
+    return len(capsules)

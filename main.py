@@ -18,7 +18,8 @@ from src.supabase_client import (
     remove_from_inventory,
     get_available_pods_for_user,
     save_capsules,
-    remove_duplicate_capsules
+    remove_duplicate_capsules,
+    clear_and_reset_capsules
 )
 from src.scraper import scrape_all_capsules, get_sample_capsules
 from src.translator import get_text, translate_capsule
@@ -684,6 +685,23 @@ def show_admin(client):
                     st.rerun()
                 except Exception as e:
                     st.error(f"Error: {e}")
+    
+    st.markdown("---")
+    
+    # Full reset option
+    st.warning("⚠️ **Full Reset** - This will clear all capsules and re-import fresh data")
+    
+    if st.button("♻️ Reset All Data", key="reset_btn", use_container_width=True):
+        with st.spinner("Resetting..."):
+            try:
+                new_capsules = scrape_all_capsules()
+                if not new_capsules:
+                    new_capsules = get_sample_capsules()
+                count = clear_and_reset_capsules(client, new_capsules)
+                st.success(f"✅ Reset complete! Imported {count} capsules")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Error: {e}")
 
 
 def main():

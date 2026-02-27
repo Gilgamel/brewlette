@@ -177,6 +177,35 @@ def remove_duplicate_capsules(client: Client) -> int:
     return len(duplicates)
 
 
+def clear_and_reset_capsules(client: Client, capsules: list) -> int:
+    """Clear all capsules and re-import fresh data using batch insert"""
+    # Delete all existing capsules
+    client.table("capsules").delete().neq("id", 0).execute()
+    
+    # Prepare data for batch insert
+    insert_data = []
+    for capsule in capsules:
+        insert_data.append({
+            "name": capsule["name"],
+            "name_en": capsule.get("name_en"),
+            "tasting_note": capsule.get("tasting_note"),
+            "tasting_note_en": capsule.get("tasting_note_en"),
+            "size_ml": capsule.get("size_ml"),
+            "pod_type": capsule.get("pod_type"),
+            "line": capsule.get("line"),
+            "intensity": capsule.get("intensity")
+        })
+    
+    # Batch insert (Supabase allows up to 1000 rows per insert)
+    if insert_data:
+        # Insert in batches of 1000
+        for i in range(0, len(insert_data), 1000):
+            batch = insert_data[i:i+1000]
+            client.table("capsules").insert(batch).execute()
+    
+    return len(capsules)
+
+
 # User operations
 def create_user(client: Client, username: str) -> dict:
     """Create a new user"""

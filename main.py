@@ -26,149 +26,196 @@ from src.translator import get_text, translate_capsule
 st.set_page_config(
     page_title="Nespresso Pod Picker",
     page_icon="☕",
-    layout="centered"
+    layout="wide"
 )
 
-# Custom CSS - Modern dark theme
+# Custom CSS - Clean light minimalist theme
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
     
     * {
         font-family: 'Inter', sans-serif !important;
     }
     
     .stApp {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        color: #ffffff;
+        background: #fafafa;
+        color: #1a1a1a;
     }
     
+    /* Clean white cards */
     .stButton > button {
         width: 100%;
-        border-radius: 12px;
+        border-radius: 8px;
         padding: 12px 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        color: #1a1a1a;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        background: #f5f5f5;
+        border-color: #ccc;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     }
     
-    .stSelectbox > div > div, .stNumberInput > div > div {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
+    /* Primary action button */
+    .primary-btn > button {
+        background: #1a1a1a !important;
+        color: #ffffff !important;
+        border: none !important;
+    }
+    
+    .primary-btn > button:hover {
+        background: #333 !important;
+    }
+    
+    .stSelectbox > div > div,
+    .stNumberInput > div > div {
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        color: #1a1a1a;
     }
     
     .stTextInput > div > div {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        color: #1a1a1a;
     }
     
     .stExpander > div {
-        background: rgba(255, 255, 255, 0.05);
+        background: #ffffff;
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid #e0e0e0;
     }
     
     .result-box {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
-        padding: 30px;
-        border-radius: 20px;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 16px;
         text-align: center;
-        margin: 20px 0;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
+        margin: 30px 0;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
     }
     
     .result-box h2 {
-        color: #fff;
-        font-size: 28px;
-        margin-bottom: 10px;
+        color: #1a1a1a;
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 8px;
     }
     
-    .result-box p {
-        color: rgba(255, 255, 255, 0.8);
+    .result-box .tasting {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .result-box .details {
+        color: #999;
+        font-size: 14px;
+    }
+    
+    .result-box .remaining {
+        color: #1a1a1a;
+        font-size: 18px;
+        font-weight: 500;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .capsule-card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 16px;
+        margin: 6px 0;
+        border: 1px solid #e8e8e8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .capsule-card:hover {
+        border-color: #ccc;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .capsule-name {
+        font-weight: 500;
+        color: #1a1a1a;
+    }
+    
+    .capsule-qty {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+    
+    .section-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #666;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     .footer {
         text-align: center;
         padding: 20px;
-        color: rgba(255, 255, 255, 0.5);
+        color: #999;
         font-size: 12px;
     }
     
-    .title-text {
-        font-size: 24px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    
-    .capsule-card {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        padding: 15px;
-        margin: 8px 0;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .capsule-card:hover {
-        background: rgba(255, 255, 255, 0.12);
-    }
-    
+    /* Tabs */
     div[data-testid="stTabs"] button {
         background: transparent;
-        color: rgba(255, 255, 255, 0.7);
-        border-radius: 10px 10px 0 0;
+        color: #666;
+        border-radius: 8px 8px 0 0;
+        font-weight: 500;
     }
     
     div[data-testid="stTabs"] button[data-selected="true"] {
-        background: rgba(102, 126, 234, 0.3);
-        color: white;
+        background: #ffffff;
+        color: #1a1a1a;
+        border-bottom: 2px solid #1a1a1a;
     }
     
     .stAlert {
-        background: rgba(102, 126, 234, 0.2);
-        border-radius: 10px;
-        border: 1px solid rgba(102, 126, 234, 0.3);
+        background: #f5f5f5;
+        border-radius: 8px;
     }
     
     /* Hide Streamlit branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
+    /* Input focus states */
+    input:focus, select:focus {
+        border-color: #1a1a1a !important;
+        outline: none;
     }
-    ::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-    }
-    ::-webkit-scrollbar-thumb {
-        background: rgba(102, 126, 234, 0.5);
-        border-radius: 4px;
+    
+    /* Sidebar expander */
+    .stSidebar .stExpander {
+        background: #f5f5f5;
     }
     </style>
 """, unsafe_allow_html=True)
 
 
-# Session state initialization
+# Session state
 if 'language' not in st.session_state:
     st.session_state.language = 'en'
-
 if 'current_user' not in st.session_state:
     st.session_state.current_user = None
-
 if 'selected_pod' not in st.session_state:
     st.session_state.selected_pod = None
 
@@ -178,44 +225,34 @@ def init_connection():
     try:
         client = get_supabase_client()
         return client
-    except ValueError as e:
+    except (ValueError, Exception) as e:
         st.error(str(e))
         st.info("Please configure Supabase credentials in .streamlit/secrets.toml")
-        return None
-    except Exception as e:
-        st.error(f"Connection error: {e}")
         return None
 
 
 def show_header():
-    """Show app header with language toggle"""
+    """Show app header"""
     lang = st.session_state.language
+    title = "Nespresso Pod Picker" if lang == 'en' else "Nespresso 胶囊抽取器"
     
-    col1, col2 = st.columns([3, 1])
-    
+    col1, col2 = st.columns([4, 1])
     with col1:
-        st.markdown(f"""
-        <div class="title-text">
-            {'☕ Nespresso Pod Picker' if lang == 'en' else '☕ Nespresso 胶囊抽取器'}
-        </div>
-        """, unsafe_allow_html=True)
-    
+        st.markdown(f"### ☕ {title}")
     with col2:
-        if st.button("中文/EN", key="lang_toggle"):
+        if st.button("中文/EN"):
             st.session_state.language = 'en' if st.session_state.language == 'zh' else 'zh'
             st.rerun()
 
 
 def show_user_selector(client):
-    """Show user selection/creation UI"""
+    """Show user selection"""
     lang = st.session_state.language
-    
     users = get_all_users(client)
     usernames = [u['username'] for u in users] if users else []
     
     with st.expander("👤 " + get_text("select_user", lang), expanded=True):
         col1, col2 = st.columns([3, 1])
-        
         with col1:
             if usernames:
                 selected = st.selectbox(
@@ -225,9 +262,8 @@ def show_user_selector(client):
                 )
             else:
                 selected = None
-        
         with col2:
-            if st.button("+" if lang == 'en' else "+"):
+            if st.button("+ New"):
                 st.session_state.show_create_user = True
     
     if 'show_create_user' not in st.session_state:
@@ -236,17 +272,16 @@ def show_user_selector(client):
     if st.session_state.show_create_user:
         col1, col2 = st.columns([3, 1])
         with col1:
-            new_username = st.text_input(get_text("enter_username", lang), key="new_username", placeholder="Your name...")
+            new_username = st.text_input("Username", key="new_username", placeholder="Your name...")
         with col2:
-            if st.button("✓" if lang == 'en' else "✓"):
+            if st.button("✓"):
                 if new_username:
                     user = create_user(client, new_username)
                     if user:
                         st.session_state.current_user = user
                         st.session_state.show_create_user = False
                         st.rerun()
-        
-        if st.button("✕ Cancel" if lang == 'en' else "✕ 取消"):
+        if st.button("Cancel"):
             st.session_state.show_create_user = False
             st.rerun()
     
@@ -258,7 +293,7 @@ def show_user_selector(client):
 
 
 def show_random_picker(client, user):
-    """Show random pod picker UI"""
+    """Show random pod picker"""
     lang = st.session_state.language
     
     if not user:
@@ -271,17 +306,17 @@ def show_random_picker(client, user):
         st.warning("📦 " + get_text("need_inventory", lang))
         return
     
-    # Size preference selector
+    # Size preference
     size_options = [
-        ("", "🎲 " + get_text("no_preference", lang)),
-        ("40", "☕ Espresso (40ml)"),
-        ("80", "💪 Double (80ml)"),
-        ("150", "🌊 Lungo (150ml)"),
-        ("230", "🏔️ Coffee (230ml)"),
+        ("", "🎲 All"),
+        ("40", "☕ Espresso"),
+        ("80", "💪 Double"),
+        ("150", "🌊 Lungo"),
+        ("230", "🏔️ Coffee"),
     ]
     
     preference = st.selectbox(
-        "📍 " + get_text("preference", lang),
+        "Preference",
         options=[x[0] for x in size_options],
         format_func=lambda x: next((y[1] for y in size_options if y[0] == x), ""),
         key="preference_select"
@@ -295,51 +330,47 @@ def show_random_picker(client, user):
         st.warning("😔 " + get_text("no_pods_available", lang))
         return
     
-    # Random pick button
-    if st.button("🎲 " + get_text("pick_random", lang), key="pick_btn", use_container_width=True):
+    st.markdown('<div class="primary-btn">', unsafe_allow_html=True)
+    if st.button("🎲 Pick Random", key="pick_btn", use_container_width=True):
         selected = random.choice(filtered_pods)
         st.session_state.selected_pod = selected
         st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
     
     if st.session_state.selected_pod:
         pod_data = st.session_state.selected_pod
         capsule = pod_data['capsules']
-        translated = translate_capsule(capsule, lang)
         
         st.markdown("---")
         
         with st.container():
             st.markdown(f"""
             <div class="result-box">
-                <h2>✨ {translated['name']}</h2>
-                <p style="font-size: 16px;">{translated['tasting_note']}</p>
-                <p style="color: rgba(255,255,255,0.6);">
-                    {translated['size_ml']}ml • {translated['pod_type']} • {translated['line']}
-                </p>
-                <p style="margin-top: 15px; font-size: 18px;">
-                    📊 {get_text('remaining', lang)}: <strong>{pod_data['quantity']}</strong>
-                </p>
+                <h2>✨ {capsule.get('name_en', capsule.get('name'))}</h2>
+                <p class="tasting">{capsule.get('tasting_note', '')}</p>
+                <p class="details">{capsule.get('size_ml')}ml • {capsule.get('pod_type')} • {capsule.get('line')}</p>
+                <p class="remaining">Remaining: {pod_data['quantity']}</p>
             </div>
             """, unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         
         with col1:
-            if st.button("✓ " + get_text("confirm", lang), key="confirm_btn", use_container_width=True):
+            if st.button("✓ Confirm", key="confirm_btn", use_container_width=True):
                 decrement_inventory(client, pod_data['id'])
                 st.balloons()
-                st.success("☕ " + get_text("confirm_success", lang))
+                st.success("☕ Enjoy your coffee!")
                 st.session_state.selected_pod = None
                 st.rerun()
         
         with col2:
-            if st.button("🔄 " + get_text("skip", lang), key="skip_btn", use_container_width=True):
+            if st.button("🔄 Skip", key="skip_btn", use_container_width=True):
                 st.session_state.selected_pod = None
                 st.rerun()
 
 
 def show_inventory(client, user):
-    """Show inventory management UI"""
+    """Show inventory management"""
     lang = st.session_state.language
     
     if not user:
@@ -348,94 +379,76 @@ def show_inventory(client, user):
     inventory = get_user_inventory(client, user['id'])
     all_capsules = get_all_capsules(client)
     
-    # Add new capsule section with search
-    st.markdown("### ➕ " + get_text("add_capsule", lang))
+    # Add new capsule
+    st.markdown('<p class="section-title">Add Capsule</p>', unsafe_allow_html=True)
     
-    # Search input
-    search_query = st.text_input("🔍 " + ("Search capsules..." if lang == 'en' else "搜索胶囊..."), key="search_capsule")
+    # Search
+    search = st.text_input("🔍 Search", key="search_capsule", placeholder="Type to search...")
     
-    # Filter capsules based on search
-    filtered_capsules = all_capsules
-    if search_query:
-        search_lower = search_query.lower()
-        filtered_capsules = [
-            c for c in all_capsules 
-            if search_lower in c.get('name', '').lower() 
-            or search_lower in c.get('name_en', '').lower()
-            or search_lower in c.get('line', '').lower()
-        ]
+    # Filter
+    filtered = all_capsules
+    if search:
+        s = search.lower()
+        filtered = [c for c in all_capsules if s in c.get('name', '').lower() or s in c.get('name_en', '').lower()]
     
-    # Quick filter buttons
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("Original", key="filter_original"):
-            filtered_capsules = [c for c in filtered_capsules if c.get('line') == 'Original']
-    with col2:
-        if st.button("Vertuo", key="filter_vertuo"):
-            filtered_capsules = [c for c in filtered_capsules if c.get('line') == 'Vertuo']
-    with col3:
-        if st.button("All", key="filter_all"):
+    # Quick filters
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        if st.button("Original"):
+            filtered = [c for c in filtered if c.get('line') == 'Original']
+    with c2:
+        if st.button("Vertuo"):
+            filtered = [c for c in filtered if c.get('line') == 'Vertuo']
+    with c3:
+        if st.button("Clear"):
             pass
     
-    if filtered_capsules:
-        capsule_options = {c['id']: f"{c.get('name_en', c['name'])} ({c.get('line', '')} {c.get('size_ml', '?')}ml)" for c in filtered_capsules}
+    if filtered:
+        # Simple name only dropdown
+        capsule_options = {c['id']: c.get('name_en', c['name']) for c in filtered}
         
         col1, col2 = st.columns([3, 1])
-        
         with col1:
-            selected_capsule_id = st.selectbox(
-                get_text("select_capsule", lang),
+            selected = st.selectbox(
+                "Select capsule",
                 options=list(capsule_options.keys()),
                 format_func=lambda x: capsule_options.get(x, ""),
-                key="add_capsule_select"
+                key="add_capsule_select",
+                label_visibility="collapsed"
             )
-        
         with col2:
-            quantity = st.number_input(get_text("enter_quantity", lang), min_value=1, value=10, key="add_quantity")
+            qty = st.number_input("Qty", min_value=1, value=10, key="add_quantity", label_visibility="collapsed")
         
-        if st.button("➕ " + get_text("add", lang), key="add_btn", use_container_width=True):
-            if selected_capsule_id:
-                add_to_inventory(client, user['id'], selected_capsule_id, quantity)
-                st.success("✅ " + get_text("capsule_added", lang))
+        if st.button("➕ Add to Inventory", key="add_btn", use_container_width=True):
+            if selected:
+                add_to_inventory(client, user['id'], selected, qty)
+                st.success("✅ Added!")
                 st.rerun()
-    else:
-        st.info("No capsules found" if lang == 'en' else "没有找到胶囊")
     
     st.markdown("---")
     
-    # Show current inventory
-    st.markdown("### 📦 " + get_text("my_inventory", lang))
+    # Current inventory
+    st.markdown('<p class="section-title">My Inventory</p>', unsafe_allow_html=True)
     
     if not inventory:
-        st.info("📭 " + get_text("no_inventory", lang))
+        st.info("No capsules yet. Add some above!")
     else:
-        # Sort by quantity descending
-        inventory_sorted = sorted(inventory, key=lambda x: x['quantity'], reverse=True)
+        inv_sorted = sorted(inventory, key=lambda x: x['quantity'], reverse=True)
         
-        for item in inventory_sorted:
+        for item in inv_sorted:
             capsule = item['capsules']
-            translated = translate_capsule(capsule, lang)
+            name = capsule.get('name_en', capsule.get('name'))
             
             with st.container():
                 st.markdown(f"""
                 <div class="capsule-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong>{translated['name']}</strong>
-                            <span style="color: rgba(255,255,255,0.5); font-size: 12px;">
-                                {translated['size_ml']}ml • {translated['line']}
-                            </span>
-                        </div>
-                        <div style="text-align: right;">
-                            <span style="font-size: 24px; font-weight: bold; color: #667eea;">{item['quantity']}</span>
-                        </div>
-                    </div>
+                    <span class="capsule-name">{name}</span>
+                    <span class="capsule-qty">{item['quantity']}</span>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                col1, col2, col3 = st.columns([3, 1, 1])
-                
-                with col1:
+                c1, c2 = st.columns([3, 1])
+                with c1:
                     new_qty = st.number_input(
                         "Qty",
                         min_value=0,
@@ -446,8 +459,7 @@ def show_inventory(client, user):
                     if new_qty != item['quantity']:
                         update_inventory_quantity(client, item['id'], new_qty)
                         st.rerun()
-                
-                with col3:
+                with c2:
                     if st.button("🗑️", key=f"del_{item['id']}"):
                         remove_from_inventory(client, item['id'])
                         st.rerun()
@@ -457,62 +469,27 @@ def show_admin(client):
     """Show admin panel"""
     lang = st.session_state.language
     
-    st.markdown("### ⚙️ " + get_text("admin_panel", lang))
-    
     capsules = get_all_capsules(client)
-    st.info(f"📊 {get_text('total_capsules', lang)}: {len(capsules)}")
+    st.info(f"📊 Total: {len(capsules)} capsules")
     
-    if st.button("🔄 " + get_text("update_btn", lang), key="update_btn", use_container_width=True):
-        with st.spinner("⏳ " + get_text("updating", lang)):
+    if st.button("🔄 Update Data", key="update_btn", use_container_width=True):
+        with st.spinner("Updating..."):
             try:
                 new_capsules = scrape_all_capsules()
-                
                 if not new_capsules:
                     new_capsules = get_sample_capsules()
-                
                 saved = save_capsules(client, new_capsules)
-                st.success("✅ " + get_text("update_success", lang))
+                st.success("✅ Updated!")
                 st.rerun()
             except Exception as e:
-                st.error(f"❌ {get_text('update_error', lang)}: {e}")
-    
-    # Show capsules by line
-    if capsules:
-        orig_caps = [c for c in capsules if c.get('line') == 'Original']
-        vert_caps = [c for c in capsules if c.get('line') == 'Vertuo']
-        
-        with st.expander(f"📋 Original ({len(orig_caps)})"):
-            for c in orig_caps:
-                st.write(f"• {c.get('name_en', c['name'])} ({c.get('size_ml', '?')}ml)")
-        
-        with st.expander(f"📋 Vertuo ({len(vert_caps)})"):
-            for c in vert_caps:
-                st.write(f"• {c.get('name_en', c['name'])} ({c.get('size_ml', '?')}ml)")
-
-
-def show_footer():
-    """Show footer banner"""
-    lang = st.session_state.language
-    powered_by_text = get_text("powered_by", lang)
-    st.markdown(f"""
-        <div class="footer">
-            ✨ {powered_by_text} Nespresso Pod Picker
-        </div>
-    """, unsafe_allow_html=True)
+                st.error(f"Error: {e}")
 
 
 def main():
-    """Main application function"""
-    
+    """Main app"""
     client = init_connection()
     if not client:
-        st.warning("⚠️ Please configure Supabase to continue.")
-        st.info("""
-        ### Setup Instructions:
-        1. Create a free Supabase project at [supabase.com](https://supabase.com)
-        2. Create tables: `capsules`, `users`, `inventory`
-        3. Add credentials to `.streamlit/secrets.toml`
-        """)
+        st.warning("⚠️ Configure Supabase to continue")
         return
     
     show_header()
@@ -522,13 +499,13 @@ def main():
     
     if user:
         lang = st.session_state.language
-        st.markdown(f"### 👋 {get_text('welcome', lang)} {user['username']}!")
+        st.markdown(f"### 👋 Hi, {user['username']}!")
         st.markdown("---")
         
         tab1, tab2, tab3 = st.tabs([
-            "🎲 " + get_text('tab_random', lang),
-            "📦 " + get_text('tab_inventory', lang),
-            "⚙️ " + get_text('tab_admin', lang)
+            "🎲 Pick",
+            "📦 Inventory",
+            "⚙️ Settings"
         ])
         
         with tab1:
@@ -541,7 +518,7 @@ def main():
             show_admin(client)
     
     st.markdown("---")
-    show_footer()
+    st.markdown('<p class="footer">☕ Nespresso Pod Picker</p>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":

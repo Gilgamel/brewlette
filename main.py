@@ -29,31 +29,48 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS - Clean light minimalist theme, centered
+# Custom CSS - iOS MarkTime Style
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif');
     
     * {
-        font-family: 'Inter', sans-serif !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif !important;
+    }
+    
+    /* iOS System Colors */
+    :root {
+        --ios-bg: #f2f2f7;
+        --ios-card: #ffffff;
+        --ios-text: #000000;
+        --ios-text-secondary: #8e8e93;
+        --ios-blue: #007aff;
+        --ios-orange: #ff9500;
+        --ios-green: #34c759;
+        --ios-red: #ff3b30;
     }
     
     .stApp {
-        background: #fafafa;
-        color: #1a1a1a;
+        background: var(--ios-bg);
+        color: var(--ios-text);
     }
     
-    /* Center the main content */
+    /* Center the main content - iOS max width */
     .block-container {
-        padding-top: 2rem;
+        padding-top: 1.5rem;
         padding-bottom: 2rem;
-        max-width: 700px;
+        max-width: 680px;
         margin: 0 auto;
     }
     
-    /* Center align headers */
-    h1, h2, h3 {
-        text-align: center;
+    /* Center align headers - iOS style */
+    h1, h2, h3, h4 {
+        font-weight: 600;
+        color: #000;
+    }
+    
+    h3 {
+        font-size: 22px;
     }
     
     /* Center content */
@@ -61,169 +78,195 @@ st.markdown("""
         text-align: center;
     }
     
-    /* Clean white cards */
+    /* iOS Style Buttons */
     .stButton > button {
         width: 100%;
-        border-radius: 8px;
-        padding: 12px 20px;
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        color: #1a1a1a;
+        border-radius: 12px;
+        padding: 14px 20px;
+        background: var(--ios-card);
+        border: none;
+        color: var(--ios-blue);
         font-weight: 500;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        font-size: 17px;
+        transition: all 0.15s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
     .stButton > button:hover {
-        background: #f5f5f5;
-        border-color: #ccc;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        background: #f2f2f7;
     }
     
-    /* Primary action button */
+    .stButton > button:active {
+        background: #e5e5ea;
+        transform: scale(0.98);
+    }
+    
+    /* Primary action button - iOS blue */
     .primary-btn > button {
-        background: #1a1a1a !important;
+        background: var(--ios-blue) !important;
         color: #ffffff !important;
         border: none !important;
     }
     
     .primary-btn > button:hover {
-        background: #333 !important;
+        background: #0066cc !important;
     }
     
+    /* iOS Style Inputs */
     .stSelectbox > div > div,
     .stNumberInput > div > div {
-        background: #ffffff;
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-        color: #1a1a1a;
+        background: var(--ios-card);
+        border-radius: 10px;
+        border: none;
+        color: var(--ios-text);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
     .stTextInput > div > div {
-        background: #ffffff;
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-        color: #1a1a1a;
+        background: var(--ios-card);
+        border-radius: 10px;
+        border: none;
+        color: var(--ios-text);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
-    .stExpander > div {
-        background: #ffffff;
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
+        background: transparent !important;
+    }
+    
+    /* iOS Style Tabs */
+    div[data-testid="stTabs"] {
+        background: var(--ios-card);
         border-radius: 12px;
-        border: 1px solid #e0e0e0;
+        padding: 4px;
     }
     
+    div[data-testid="stTabs"] button {
+        background: transparent;
+        color: var(--ios-text-secondary);
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+    
+    div[data-testid="stTabs"] button[data-selected="true"] {
+        background: var(--ios-blue);
+        color: #ffffff;
+    }
+    
+    /* iOS Cards */
+    .stExpander > div {
+        background: var(--ios-card);
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    /* Result Box - iOS style */
     .result-box {
-        background: #ffffff;
-        padding: 40px;
+        background: var(--ios-card);
+        padding: 32px;
         border-radius: 16px;
         text-align: center;
-        margin: 30px 0;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        margin: 24px 0;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
     
     .result-box h2 {
-        color: #1a1a1a;
-        font-size: 32px;
+        color: #000;
+        font-size: 28px;
         font-weight: 600;
         margin-bottom: 8px;
     }
     
     .result-box .tasting {
-        color: #666;
-        font-size: 16px;
-        margin-bottom: 16px;
+        color: var(--ios-text-secondary);
+        font-size: 15px;
+        margin-bottom: 12px;
     }
     
     .result-box .details {
-        color: #999;
-        font-size: 14px;
+        color: var(--ios-text-secondary);
+        font-size: 13px;
     }
     
     .result-box .remaining {
-        color: #1a1a1a;
-        font-size: 18px;
+        color: var(--ios-text);
+        font-size: 17px;
         font-weight: 500;
         margin-top: 20px;
         padding-top: 20px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid #e5e5ea;
     }
     
-    .capsule-card {
-        background: #ffffff;
+    /* iOS Radio buttons */
+    div[data-testid="stRadio"] > div {
+        background: var(--ios-card);
         border-radius: 10px;
-        padding: 16px;
-        margin: 6px 0;
-        border: 1px solid #e8e8e8;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        padding: 4px;
     }
     
-    .capsule-card:hover {
-        border-color: #ccc;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    
-    .capsule-name {
-        font-weight: 500;
-        color: #1a1a1a;
-    }
-    
-    .capsule-qty {
-        font-size: 20px;
-        font-weight: 600;
-        color: #1a1a1a;
-    }
-    
-    .section-title {
-        font-size: 14px;
-        font-weight: 500;
-        color: #666;
-        margin-bottom: 16px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .footer {
-        text-align: center;
-        padding: 20px;
-        color: #999;
-        font-size: 12px;
-    }
-    
-    /* Tabs */
-    div[data-testid="stTabs"] button {
+    div[data-testid="stRadio"] label {
         background: transparent;
-        color: #666;
-        border-radius: 8px 8px 0 0;
-        font-weight: 500;
-    }
-    
-    div[data-testid="stTabs"] button[data-selected="true"] {
-        background: #ffffff;
-        color: #1a1a1a;
-        border-bottom: 2px solid #1a1a1a;
-    }
-    
-    .stAlert {
-        background: #f5f5f5;
         border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    div[data-testid="stRadio"] label:has(input:checked) {
+        background: var(--ios-blue);
+        color: white;
+    }
+    
+    /* Alerts - iOS style */
+    .stAlert {
+        background: var(--ios-card);
+        border-radius: 10px;
+        border: none;
     }
     
     /* Hide Streamlit branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* Input focus states */
+    /* iOS Focus states */
     input:focus, select:focus {
-        border-color: #1a1a1a !important;
-        outline: none;
+        box-shadow: 0 0 0 3px rgba(0,122,255,0.3) !important;
     }
     
-    /* Sidebar expander */
-    .stSidebar .stExpander {
-        background: #f5f5f5;
+    /* Spinner */
+    .stSpinner {
+        color: var(--ios-blue);
+    }
+    
+    /* Success/Error messages - iOS */
+    .stSuccess {
+        background: #d4edda;
+        color: #155724;
+        border-radius: 10px;
+    }
+    
+    .stError {
+        background: #f8d7da;
+        color: #721c24;
+        border-radius: 10px;
+    }
+    
+    /* Section headers */
+    .section-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ios-text-secondary);
+        margin-bottom: 12px;
+    }
+    
+    .footer {
+        text-align: center;
+        padding: 20px;
+        color: var(--ios-text-secondary);
+        font-size: 12px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -394,7 +437,7 @@ def show_random_picker(client, user):
 
 
 def show_inventory(client, user):
-    """Show inventory management"""
+    """Show inventory management - iOS MarkTime style"""
     lang = st.session_state.language
     
     if not user:
@@ -403,34 +446,111 @@ def show_inventory(client, user):
     inventory = get_user_inventory(client, user['id'])
     all_capsules = get_all_capsules(client)
     
-    # Add new capsule
-    st.markdown('<p class="section-title">Add Capsule</p>', unsafe_allow_html=True)
+    # iOS Style Header
+    st.markdown("""
+    <style>
+    .ios-header {
+        font-size: 22px;
+        font-weight: 600;
+        color: #1c1c1e;
+        margin-bottom: 20px;
+    }
+    .ios-section-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: #8e8e93;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+    }
+    .ios-hint {
+        font-size: 13px;
+        color: #8e8e93;
+        margin-bottom: 16px;
+        padding: 12px;
+        background: #f2f2f7;
+        border-radius: 10px;
+    }
+    .ios-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .ios-capsule-name {
+        font-size: 17px;
+        font-weight: 500;
+        color: #000000;
+    }
+    .ios-capsule-info {
+        font-size: 13px;
+        color: #8e8e93;
+        margin-top: 4px;
+    }
+    .ios-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-right: 8px;
+    }
+    .ios-badge-espresso { background: #e8f5e9; color: #2e7d32; }
+    .ios-badge-double { background: #fff3e0; color: #ef6c00; }
+    .ios-badge-lungo { background: #e3f2fd; color: #1565c0; }
+    .ios-badge-coffee { background: #f3e5f5; color: #7b1fa2; }
+    .ios-line-original { color: #007aff; }
+    .ios-line-vertuo { color: #ff9500; }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Add new capsule section
+    st.markdown('<p class="ios-header">📦 Add to Inventory</p>', unsafe_allow_html=True)
+    
+    # Size guide hint
+    st.markdown("""
+    <div class="ios-hint">
+        ☕ <b>Espresso</b> 40ml &nbsp;|&nbsp; 
+        💪 <b>Double</b> 80ml &nbsp;|&nbsp; 
+        🌊 <b>Lungo</b> 150ml &nbsp;|&nbsp; 
+        🏔️ <b>Coffee</b> 230ml
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Line filter
+    c1, c2, c3 = st.columns([1, 1, 2])
+    with c1:
+        line_filter = st.radio("Line", ["All", "Original", "Vertuo"], horizontal=True, label_visibility="collapsed")
+    
+    # Filter capsules
+    filtered = all_capsules
+    if line_filter != "All":
+        filtered = [c for c in filtered if c.get('line') == line_filter]
     
     # Search
-    search = st.text_input("🔍 Search", key="search_capsule", placeholder="Type to search...")
+    search = st.text_input("🔍 Search capsule...", key="search_capsule", placeholder="Type name...")
     
-    # Filter
-    filtered = all_capsules
     if search:
         s = search.lower()
-        filtered = [c for c in all_capsules if s in c.get('name', '').lower() or s in c.get('name_en', '').lower()]
+        filtered = [c for c in filtered if s in c.get('name', '').lower() or s in c.get('name_en', '').lower()]
     
-    # Quick filters
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        if st.button("Original"):
-            filtered = [c for c in filtered if c.get('line') == 'Original']
-    with c2:
-        if st.button("Vertuo"):
-            filtered = [c for c in filtered if c.get('line') == 'Vertuo']
-    with c3:
-        if st.button("Clear"):
-            pass
+    # Sort by size (small to large)
+    filtered = sorted(filtered, key=lambda x: x.get('size_ml', 0))
     
     if filtered:
-        # Simple name only dropdown
-        capsule_options = {c['id']: c.get('name_en', c['name']) for c in filtered}
+        # Build options with size info
+        def format_capsule_option(c):
+            name = c.get('name_en', c.get('name', ''))
+            size = c.get('size_ml', 0)
+            line = c.get('line', '')
+            pod_type = c.get('pod_type', '')
+            # Short format: Name | Size | Type
+            return f"{name} | {size}ml"
         
+        capsule_options = {c['id']: format_capsule_option(c) for c in filtered}
+        
+        # Show selection
         col1, col2 = st.columns([3, 1])
         with col1:
             selected = st.selectbox(
@@ -443,6 +563,26 @@ def show_inventory(client, user):
         with col2:
             qty = st.number_input("Qty", min_value=1, value=10, key="add_quantity", label_visibility="collapsed")
         
+        # Show selected capsule details
+        if selected:
+            selected_capsule = next((c for c in filtered if c['id'] == selected), None)
+            if selected_capsule:
+                size = selected_capsule.get('size_ml', 0)
+                line = selected_capsule.get('line', '')
+                pod_type = selected_capsule.get('pod_type', '')
+                
+                # Get badge class
+                badge_class = f"ios-badge-{pod_type}" if pod_type else ""
+                line_class = f"ios-line-{line.lower()}" if line else ""
+                
+                st.markdown(f"""
+                <div class="ios-card">
+                    <span class="ios-badge {badge_class}">{size}ml</span>
+                    <span class="{line_class}">{line}</span>
+                    <div class="ios-capsule-info">{pod_type} • Intensity: {selected_capsule.get('intensity', '-')}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        
         if st.button("➕ Add to Inventory", key="add_btn", use_container_width=True):
             if selected:
                 add_to_inventory(client, user['id'], selected, qty)
@@ -452,22 +592,35 @@ def show_inventory(client, user):
     st.markdown("---")
     
     # Current inventory
-    st.markdown('<p class="section-title">My Inventory</p>', unsafe_allow_html=True)
+    st.markdown('<p class="ios-header">📋 My Inventory</p>', unsafe_allow_html=True)
     
     if not inventory:
         st.info("No capsules yet. Add some above!")
     else:
+        # Sort by quantity
         inv_sorted = sorted(inventory, key=lambda x: x['quantity'], reverse=True)
         
         for item in inv_sorted:
             capsule = item['capsules']
             name = capsule.get('name_en', capsule.get('name'))
+            size = capsule.get('size_ml', 0)
+            line = capsule.get('line', '')
+            pod_type = capsule.get('pod_type', '')
+            
+            badge_class = f"ios-badge-{pod_type}" if pod_type else ""
+            line_class = f"ios-line-{line.lower()}" if line else ""
             
             with st.container():
                 st.markdown(f"""
-                <div class="capsule-card">
-                    <span class="capsule-name">{name}</span>
-                    <span class="capsule-qty">{item['quantity']}</span>
+                <div class="ios-card" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="ios-capsule-name">{name}</div>
+                        <div class="ios-capsule-info">
+                            <span class="ios-badge {badge_class}">{size}ml</span>
+                            <span class="{line_class}">{line}</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 600; color: #000;">{item['quantity']}</div>
                 </div>
                 """, unsafe_allow_html=True)
                 

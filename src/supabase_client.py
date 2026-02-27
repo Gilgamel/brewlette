@@ -105,24 +105,29 @@ def get_capsule_by_id(client: Client, capsule_id: int) -> dict:
 
 
 def save_capsules(client: Client, capsules: list) -> int:
-    """Save or update capsules in database"""
+    """Save or update capsules in database, deduplicating by name + line"""
     saved_count = 0
+    
+    # First, get all existing capsules to check for duplicates
+    existing_capsules = client.table("capsules").select("id, name, line").execute()
+    existing_map = {(c["name"], c["line"]): c["id"] for c in existing_capsules.data}
+    
     for capsule in capsules:
-        # Check if capsule exists
-        existing = client.table("capsules").select("id").eq("name", capsule["name"]).execute()
+        name = capsule.get("name", "")
+        line = capsule.get("line", "")
+        key = (name, line)
         
-        if existing.data:
-            # Update existing
+        if key in existing_map:
+            # Update existing (by name + line)
             client.table("capsules").update({
                 "name_en": capsule.get("name_en"),
                 "tasting_note": capsule.get("tasting_note"),
                 "tasting_note_en": capsule.get("tasting_note_en"),
                 "size_ml": capsule.get("size_ml"),
                 "pod_type": capsule.get("pod_type"),
-                "line": capsule.get("line"),
                 "intensity": capsule.get("intensity"),
                 "last_updated": datetime.now().isoformat()
-            }).eq("name", capsule["name"]).execute()
+            }).eq("id", existing_map[key]).execute()
         else:
             # Insert new
             client.table("capsules").insert({
@@ -135,8 +140,41 @@ def save_capsules(client: Client, capsules: list) -> int:
                 "line": capsule.get("line"),
                 "intensity": capsule.get("intensity")
             }).execute()
+            # Add to map to avoid duplicates in same batch
+            existing_map[key] = True
         saved_count += 1
     return saved_count
+
+
+def remove_duplicate_capsules(client: Client) -> int:
+    """Remove duplicate capsules, keeping the most recent one"""
+    # Get all capsules
+    all_capsules = client.table("capsules").select("id, name, line, last_updated").execute()
+    
+    # Find duplicates (same name + line)
+    seen = {}
+    duplicates = []
+    
+    for c in all_capsules.data:
+        key = (c["name"], c["line"])
+        if key in seen:
+            # Keep the one with more recent last_updated
+            existing = seen[key]
+            existing_time = existing.get("last_updated", "") or ""
+            new_time = c.get("last_updated", "") or ""
+            if new_time > existing_time:
+                duplicates.append(existing["id"])
+                seen[key] = c
+            else:
+                duplicates.append(c["id"])
+        else:
+            seen[key] = c
+    
+    # Delete duplicates
+    for dup_id in duplicates:
+        client.table("capsules").delete().eq("id", dup_id).execute()
+    
+    return len(duplicates)
 
 
 # User operations

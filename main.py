@@ -17,7 +17,8 @@ from src.supabase_client import (
     decrement_inventory,
     remove_from_inventory,
     get_available_pods_for_user,
-    save_capsules
+    save_capsules,
+    remove_duplicate_capsules
 )
 from src.scraper import scrape_all_capsules, get_sample_capsules
 from src.translator import get_text, translate_capsule
@@ -29,7 +30,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS - iOS MarkTime Style
+# Custom CSS - Morandi Color Style
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif');
@@ -38,24 +39,26 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif !important;
     }
     
-    /* iOS System Colors */
+    /* Morandi Color Palette */
     :root {
-        --ios-bg: #f2f2f7;
-        --ios-card: #ffffff;
-        --ios-text: #000000;
-        --ios-text-secondary: #8e8e93;
-        --ios-blue: #007aff;
-        --ios-orange: #ff9500;
-        --ios-green: #34c759;
-        --ios-red: #ff3b30;
+        --m-bg: #f5f3f0;
+        --m-card: #ffffff;
+        --m-text: #5a5a5a;
+        --m-text-light: #9a9a9a;
+        --m-accent: #8b9dc3;
+        --m-accent-dark: #6b7aa3;
+        --m-green: #a8b5a0;
+        --m-pink: #d4b8b0;
+        --m-cream: #e8e0d5;
+        --m-lavender: #b8a9c9;
     }
     
     .stApp {
-        background: var(--ios-bg);
-        color: var(--ios-text);
+        background: var(--m-bg);
+        color: var(--m-text);
     }
     
-    /* Center the main content - iOS max width */
+    /* Center the main content */
     .block-container {
         padding-top: 1.5rem;
         padding-bottom: 2rem;
@@ -63,14 +66,14 @@ st.markdown("""
         margin: 0 auto;
     }
     
-    /* Center align headers - iOS style */
+    /* Headers */
     h1, h2, h3, h4 {
-        font-weight: 600;
-        color: #000;
+        font-weight: 500;
+        color: var(--m-text);
     }
     
     h3 {
-        font-size: 22px;
+        font-size: 20px;
     }
     
     /* Center content */
@@ -78,152 +81,155 @@ st.markdown("""
         text-align: center;
     }
     
-    /* iOS Style Buttons */
+    /* Buttons - Morandi style */
     .stButton > button {
         width: 100%;
-        border-radius: 12px;
+        border-radius: 14px;
         padding: 14px 20px;
-        background: var(--ios-card);
-        border: none;
-        color: var(--ios-blue);
-        font-weight: 500;
-        font-size: 17px;
-        transition: all 0.15s ease;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background: var(--m-card);
+        border: 1px solid var(--m-cream);
+        color: var(--m-text);
+        font-weight: 400;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     
     .stButton > button:hover {
-        background: #f2f2f7;
+        background: var(--m-cream);
+        border-color: #d8d4cd;
     }
     
     .stButton > button:active {
-        background: #e5e5ea;
-        transform: scale(0.98);
+        background: var(--m-cream);
+        transform: scale(0.99);
     }
     
-    /* Primary action button - iOS blue */
+    /* Primary action button - Morandi accent */
     .primary-btn > button {
-        background: var(--ios-blue) !important;
+        background: var(--m-accent) !important;
         color: #ffffff !important;
         border: none !important;
     }
     
     .primary-btn > button:hover {
-        background: #0066cc !important;
+        background: var(--m-accent-dark) !important;
     }
     
-    /* iOS Style Inputs */
+    /* Inputs - Morandi style */
     .stSelectbox > div > div,
     .stNumberInput > div > div {
-        background: var(--ios-card);
-        border-radius: 10px;
-        border: none;
-        color: var(--ios-text);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background: var(--m-card);
+        border-radius: 12px;
+        border: 1px solid var(--m-cream);
+        color: var(--m-text);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
     
     .stTextInput > div > div {
-        background: var(--ios-card);
-        border-radius: 10px;
-        border: none;
-        color: var(--ios-text);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background: var(--m-card);
+        border-radius: 12px;
+        border: 1px solid var(--m-cream);
+        color: var(--m-text);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
     
     .stTextInput input, .stSelectbox div[data-baseweb="select"] {
         background: transparent !important;
+        color: var(--m-text) !important;
     }
     
-    /* iOS Style Tabs */
+    /* Tabs - Morandi style */
     div[data-testid="stTabs"] {
-        background: var(--ios-card);
-        border-radius: 12px;
-        padding: 4px;
+        background: var(--m-card);
+        border-radius: 14px;
+        padding: 6px;
     }
     
     div[data-testid="stTabs"] button {
         background: transparent;
-        color: var(--ios-text-secondary);
-        border-radius: 8px;
-        font-weight: 500;
+        color: var(--m-text-light);
+        border-radius: 10px;
+        font-weight: 400;
         font-size: 13px;
-        padding: 8px 16px;
+        padding: 10px 18px;
     }
     
     div[data-testid="stTabs"] button[data-selected="true"] {
-        background: var(--ios-blue);
+        background: var(--m-accent);
         color: #ffffff;
     }
     
-    /* iOS Cards */
+    /* Cards */
     .stExpander > div {
-        background: var(--ios-card);
-        border-radius: 12px;
+        background: var(--m-card);
+        border-radius: 14px;
         border: none;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     }
     
-    /* Result Box - iOS style */
+    /* Result Box - Morandi style */
     .result-box {
-        background: var(--ios-card);
+        background: var(--m-card);
         padding: 32px;
-        border-radius: 16px;
+        border-radius: 18px;
         text-align: center;
         margin: 24px 0;
         border: none;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     }
     
     .result-box h2 {
-        color: #000;
-        font-size: 28px;
-        font-weight: 600;
+        color: var(--m-text);
+        font-size: 26px;
+        font-weight: 500;
         margin-bottom: 8px;
     }
     
     .result-box .tasting {
-        color: var(--ios-text-secondary);
-        font-size: 15px;
+        color: var(--m-text-light);
+        font-size: 14px;
         margin-bottom: 12px;
     }
     
     .result-box .details {
-        color: var(--ios-text-secondary);
+        color: var(--m-text-light);
         font-size: 13px;
     }
     
     .result-box .remaining {
-        color: var(--ios-text);
-        font-size: 17px;
-        font-weight: 500;
+        color: var(--m-text);
+        font-size: 15px;
+        font-weight: 400;
         margin-top: 20px;
         padding-top: 20px;
-        border-top: 1px solid #e5e5ea;
+        border-top: 1px solid var(--m-cream);
     }
     
-    /* iOS Radio buttons */
+    /* Radio buttons - Morandi style */
     div[data-testid="stRadio"] > div {
-        background: var(--ios-card);
-        border-radius: 10px;
-        padding: 4px;
+        background: var(--m-card);
+        border-radius: 12px;
+        padding: 6px;
     }
     
     div[data-testid="stRadio"] label {
         background: transparent;
         border-radius: 8px;
-        padding: 8px 12px;
+        padding: 8px 14px;
         font-size: 13px;
+        color: var(--m-text);
     }
     
     div[data-testid="stRadio"] label:has(input:checked) {
-        background: var(--ios-blue);
+        background: var(--m-accent);
         color: white;
     }
     
-    /* Alerts - iOS style */
+    /* Alerts - Morandi style */
     .stAlert {
-        background: var(--ios-card);
-        border-radius: 10px;
+        background: var(--m-card);
+        border-radius: 12px;
         border: none;
     }
     
@@ -231,41 +237,41 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* iOS Focus states */
+    /* Focus states */
     input:focus, select:focus {
-        box-shadow: 0 0 0 3px rgba(0,122,255,0.3) !important;
+        box-shadow: 0 0 0 2px rgba(139,157,195,0.3) !important;
     }
     
     /* Spinner */
     .stSpinner {
-        color: var(--ios-blue);
+        color: var(--m-accent);
     }
     
-    /* Success/Error messages - iOS */
+    /* Success/Error messages - Morandi */
     .stSuccess {
-        background: #d4edda;
-        color: #155724;
+        background: #e8efe6;
+        color: #5a7a52;
         border-radius: 10px;
     }
     
     .stError {
-        background: #f8d7da;
-        color: #721c24;
+        background: #f5e6e4;
+        color: #8a5a52;
         border-radius: 10px;
     }
     
     /* Section headers */
     .section-title {
         font-size: 13px;
-        font-weight: 500;
-        color: var(--ios-text-secondary);
+        font-weight: 400;
+        color: var(--m-text-light);
         margin-bottom: 12px;
     }
     
     .footer {
         text-align: center;
         padding: 20px;
-        color: var(--ios-text-secondary);
+        color: var(--m-text-light);
         font-size: 12px;
     }
     </style>
@@ -446,71 +452,65 @@ def show_inventory(client, user):
     inventory = get_user_inventory(client, user['id'])
     all_capsules = get_all_capsules(client)
     
-    # iOS Style Header
+    # Morandi Style Header
     st.markdown("""
     <style>
-    .ios-header {
-        font-size: 22px;
-        font-weight: 600;
-        color: #1c1c1e;
-        margin-bottom: 20px;
-    }
-    .ios-section-title {
-        font-size: 13px;
+    .m-header {
+        font-size: 20px;
         font-weight: 500;
-        color: #8e8e93;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 12px;
-    }
-    .ios-hint {
-        font-size: 13px;
-        color: #8e8e93;
+        color: #5a5a5a;
         margin-bottom: 16px;
-        padding: 12px;
-        background: #f2f2f7;
-        border-radius: 10px;
     }
-    .ios-card {
+    .m-hint {
+        font-size: 13px;
+        color: #9a9a9a;
+        margin-bottom: 16px;
+        padding: 14px;
         background: #ffffff;
         border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .m-card {
+        background: #ffffff;
+        border-radius: 14px;
         padding: 16px;
-        margin-bottom: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
     }
-    .ios-capsule-name {
-        font-size: 17px;
+    .m-capsule-name {
+        font-size: 16px;
         font-weight: 500;
-        color: #000000;
+        color: #5a5a5a;
     }
-    .ios-capsule-info {
+    .m-capsule-info {
         font-size: 13px;
-        color: #8e8e93;
+        color: #9a9a9a;
         margin-top: 4px;
     }
-    .ios-badge {
+    .m-badge {
         display: inline-block;
-        padding: 4px 8px;
-        border-radius: 6px;
+        padding: 4px 10px;
+        border-radius: 8px;
         font-size: 12px;
-        font-weight: 500;
+        font-weight: 400;
         margin-right: 8px;
     }
-    .ios-badge-espresso { background: #e8f5e9; color: #2e7d32; }
-    .ios-badge-double { background: #fff3e0; color: #ef6c00; }
-    .ios-badge-lungo { background: #e3f2fd; color: #1565c0; }
-    .ios-badge-coffee { background: #f3e5f5; color: #7b1fa2; }
-    .ios-line-original { color: #007aff; }
-    .ios-line-vertuo { color: #ff9500; }
+    /* Morandi badges - softer colors */
+    .m-badge-espresso { background: #e8e4df; color: #6b6b6b; }
+    .m-badge-double { background: #e6dccf; color: #7a6b5a; }
+    .m-badge-lungo { background: #dfe4e8; color: #5a6670; }
+    .m-badge-coffee { background: #e0dde4; color: #6b5a70; }
+    .m-line-original { color: #8b9dc3; }
+    .m-line-vertuo { color: #c3a98b; }
     </style>
     """, unsafe_allow_html=True)
     
     # Add new capsule section
-    st.markdown('<p class="ios-header">📦 Add to Inventory</p>', unsafe_allow_html=True)
+    st.markdown('<p class="m-header">📦 Add to Inventory</p>', unsafe_allow_html=True)
     
     # Size guide hint
     st.markdown("""
-    <div class="ios-hint">
+    <div class="m-hint">
         ☕ <b>Espresso</b> 40ml &nbsp;|&nbsp; 
         💪 <b>Double</b> 80ml &nbsp;|&nbsp; 
         🌊 <b>Lungo</b> 150ml &nbsp;|&nbsp; 
@@ -572,14 +572,14 @@ def show_inventory(client, user):
                 pod_type = selected_capsule.get('pod_type', '')
                 
                 # Get badge class
-                badge_class = f"ios-badge-{pod_type}" if pod_type else ""
-                line_class = f"ios-line-{line.lower()}" if line else ""
+                badge_class = f"m-badge-{pod_type}" if pod_type else ""
+                line_class = f"m-line-{line.lower()}" if line else ""
                 
                 st.markdown(f"""
-                <div class="ios-card">
-                    <span class="ios-badge {badge_class}">{size}ml</span>
+                <div class="m-card">
+                    <span class="m-badge {badge_class}">{size}ml</span>
                     <span class="{line_class}">{line}</span>
-                    <div class="ios-capsule-info">{pod_type} • Intensity: {selected_capsule.get('intensity', '-')}</div>
+                    <div class="m-capsule-info">{pod_type} • Intensity: {selected_capsule.get('intensity', '-')}</div>
                 </div>
                 """, unsafe_allow_html=True)
         
@@ -592,7 +592,7 @@ def show_inventory(client, user):
     st.markdown("---")
     
     # Current inventory
-    st.markdown('<p class="ios-header">📋 My Inventory</p>', unsafe_allow_html=True)
+    st.markdown('<p class="m-header">📋 My Inventory</p>', unsafe_allow_html=True)
     
     if not inventory:
         st.info("No capsules yet. Add some above!")
@@ -607,20 +607,20 @@ def show_inventory(client, user):
             line = capsule.get('line', '')
             pod_type = capsule.get('pod_type', '')
             
-            badge_class = f"ios-badge-{pod_type}" if pod_type else ""
-            line_class = f"ios-line-{line.lower()}" if line else ""
+            badge_class = f"m-badge-{pod_type}" if pod_type else ""
+            line_class = f"m-line-{line.lower()}" if line else ""
             
             with st.container():
                 st.markdown(f"""
-                <div class="ios-card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="m-card" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div class="ios-capsule-name">{name}</div>
-                        <div class="ios-capsule-info">
-                            <span class="ios-badge {badge_class}">{size}ml</span>
+                        <div class="m-capsule-name">{name}</div>
+                        <div class="m-capsule-info">
+                            <span class="m-badge {badge_class}">{size}ml</span>
                             <span class="{line_class}">{line}</span>
                         </div>
                     </div>
-                    <div style="font-size: 24px; font-weight: 600; color: #000;">{item['quantity']}</div>
+                    <div style="font-size: 22px; font-weight: 500; color: #5a5a5a;">{item['quantity']}</div>
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -649,17 +649,33 @@ def show_admin(client):
     capsules = get_all_capsules(client)
     st.info(f"📊 Total: {len(capsules)} capsules")
     
-    if st.button("🔄 Update Data", key="update_btn", use_container_width=True):
-        with st.spinner("Updating..."):
-            try:
-                new_capsules = scrape_all_capsules()
-                if not new_capsules:
-                    new_capsules = get_sample_capsules()
-                saved = save_capsules(client, new_capsules)
-                st.success("✅ Updated!")
-                st.rerun()
-            except Exception as e:
-                st.error(f"Error: {e}")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("🔄 Update Data", key="update_btn", use_container_width=True):
+            with st.spinner("Updating..."):
+                try:
+                    new_capsules = scrape_all_capsules()
+                    if not new_capsules:
+                        new_capsules = get_sample_capsules()
+                    saved = save_capsules(client, new_capsules)
+                    st.success("✅ Updated!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error: {e}")
+    
+    with col2:
+        if st.button("🧹 Remove Duplicates", key="dedup_btn", use_container_width=True):
+            with st.spinner("Removing duplicates..."):
+                try:
+                    removed = remove_duplicate_capsules(client)
+                    if removed > 0:
+                        st.success(f"✅ Removed {removed} duplicates!")
+                    else:
+                        st.info("No duplicates found")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error: {e}")
 
 
 def main():

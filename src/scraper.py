@@ -261,49 +261,72 @@ def get_sample_capsules() -> List[Dict]:
     """
     Return sample capsules data for when scraping fails
     This provides a fallback with realistic Nespresso products
+    Note: Collaboration capsules (Starbucks, etc.) are primarily available on Vertuo line
     """
     
+    # Original Line - 经典款
     original_capsules = [
-        # Original Line capsules (name in various languages, using English here)
         {"name": "Arpeggio", "name_en": "Arpeggio", "tasting_note": "Cereal,蜜糖, caramel", "tasting_note_en": "Cereal, honey, caramel", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 9},
         {"name": "Ristretto", "name_en": "Ristretto", "tasting_note": "谷物, 可可, 焦糖", "tasting_note_en": "Cereal, cocoa, caramel", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 10},
         {"name": "Livanto", "name_en": "Livanto", "tasting_note": "焦糖, 饼干, 奶油", "tasting_note_en": "Caramel, biscuit, vanilla", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
         {"name": "Capriccio", "name_en": "Capriccio", "tasting_note": "谷物, 绿苹果", "tasting_note_en": "Cereal, green apple", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 5},
-        {"name": "Cosmo", "name_en": "Cosmo", "tasting_note": "烘烤, 焦糖, 柑橘", "tasting_note_en": "Roasted, caramel, citrus", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
-        {"name": "Volutto", "name_en": "Volutto", "tasting_note": "烘烤, 杏仁", "tasting_note_en": "Roasted, almond", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 4},
-        {"name": "Dulsao", "name_en": "Dulsao", "tasting_note": "木质, 焦糖, 微微果酸", "tasting_note_en": "Woody, caramel, slight fruit", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
-        {"name": "Bukeela", "name_en": "Bukeela", "tasting_note": "烤谷物, 杏仁", "tasting_note_en": "Roasted cereal, almond", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 3},
+        {"name": "Kazaar", "name_en": "Kazaar", "tasting_note": "浓烈, 可可, 辛辣", "tasting_note_en": "Intense, cocoa, spicy", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 12},
+        {"name": "Dharkan", "name_en": "Dharkan", "tasting_note": "烘烤, 可可, 烟熏", "tasting_note_en": "Roasted, cocoa, smoky", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 11},
+        {"name": "Roma", "name_en": "Roma", "tasting_note": "烘烤, 谷物", "tasting_note_en": "Roasted, cereal", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
+        {"name": "Decaf", "name_en": "Decaf Intenso", "tasting_note": "烘烤, 焦糖", "tasting_note_en": "Roasted, caramel", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 7},
         
-        # Double espresso
-        {"name": "Double Espresso Chiaro", "name_en": "Double Espresso Chiaro", "tasting_note": "烘烤, 水果", "tasting_note_en": "Roasted, fruity", "size_ml": 80, "pod_type": "double", "line": "Original", "intensity": 6},
-        {"name": "Double Espresso Scuro", "name_en": "Double Espresso Scuro", "tasting_note": "可可, 烘烤", "tasting_note_en": "Cocoa, roasted", "size_ml": 80, "pod_type": "double", "line": "Original", "intensity": 8},
+        # Original Line - Double
+        {"name": "Doppio", "name_en": "Doppio", "tasting_note": "烘烤, 焦糖", "tasting_note_en": "Roasted, caramel", "size_ml": 80, "pod_type": "double", "line": "Original", "intensity": 9},
         
-        # Lungo
+        # Original Line - Lungo
         {"name": "Vivalto Lungo", "name_en": "Vivalto Lungo", "tasting_note": "烘烤, 花香, 微微果酸", "tasting_note_en": "Roasted, floral, slight fruit", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 5},
         {"name": "Fortissio Lungo", "name_en": "Fortissio Lungo", "tasting_note": "烘烤, 绿苹果, 焦糖", "tasting_note_en": "Roasted, green apple, caramel", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 7},
-        {"name": "Linizio Lungo", "name_en": "Linizio Lungo", "tasting_note": "谷物, 麦芽", "tasting_note_en": "Cereal, malt", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 4},
+        {"name": "Decaf Lungo", "name_en": "Decaf Lungo", "tasting_note": "烘烤, 柔和", "tasting_note_en": "Roasted, smooth", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 4},
     ]
     
+    # Vertuo Line - 经典款 + 联名款
     vertuo_capsules = [
-        # Vertuo Line capsules
+        # Vertuo Espresso (40ml)
         {"name": "Odacio", "name_en": "Odacio", "tasting_note": "烘烤, 绿苹果, 浆果", "tasting_note_en": "Roasted, green apple, berries", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 8},
         {"name": "Melozio", "name_en": "Melozio", "tasting_note": "烘烤, 焦糖, 奶油", "tasting_note_en": "Roasted, caramel, creamy", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 6},
-        {"name": "Envivo Lungo", "name_en": "Envivo Lungo", "tasting_note": "烘烤, 焦糖, 绿苹果", "tasting_note_en": "Roasted, caramel, green apple", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 9},
         {"name": "Volcanic", "name_en": "Volcanic", "tasting_note": "烘烤, 烟熏, 可可", "tasting_note_en": "Roasted, smoky, cocoa", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 10},
         {"name": "Nicaragua", "name_en": "Nicaragua", "tasting_note": "烘烤, 水果, 红酒", "tasting_note_en": "Roasted, fruity, wine", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 7},
         {"name": "Ethiopia", "name_en": "Ethiopia", "tasting_note": "花香, 柑橘, 茉莉", "tasting_note_en": "Floral, citrus, jasmine", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 6},
         {"name": "Colombia", "name_en": "Colombia", "tasting_note": "烘烤, 焦糖, 坚果", "tasting_note_en": "Roasted, caramel, nuts", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 6},
-        {"name": "Double Espresso", "name_en": "Double Espresso", "tasting_note": "烘烤, 焦糖, 可可", "tasting_note_en": "Roasted, caramel, cocoa", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 7},
         
-        # Vertuo Alto sizes
+        # Vertuo Double (80ml)
+        {"name": "Double Espresso", "name_en": "Double Espresso", "tasting_note": "烘烤, 焦糖, 可可", "tasting_note_en": "Roasted, caramel, cocoa", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 7},
+        {"name": "Chiaro", "name_en": "Chiaro", "tasting_note": "柔和, 烘烤, 焦糖", "tasting_note_en": "Smooth, roasted, caramel", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 4},
+        {"name": "Scuro", "name_en": "Scuro", "tasting_note": "深度烘烤, 可可, 烟熏", "tasting_note_en": "Dark roast, cocoa, smoky", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 9},
+        
+        # Vertuo Gran Lungo (150ml)
+        {"name": "Envivo Lungo", "name_en": "Envivo Lungo", "tasting_note": "烘烤, 焦糖, 绿苹果", "tasting_note_en": "Roasted, caramel, green apple", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 9},
+        {"name": "Intenso", "name_en": "Intenso", "tasting_note": "烘烤, 可可, 焦糖", "tasting_note_en": "Roasted, cocoa, caramel", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 9},
+        {"name": "Dolceo", "name_en": "Dolceo", "tasting_note": "烘烤, 焦糖, 奶油", "tasting_note_en": "Roasted, caramel, creamy", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 6},
+        
+        # Vertuo Alto (230ml)
         {"name": "Rich Chocolate", "name_en": "Rich Chocolate", "tasting_note": "浓郁巧克力, 烘烤", "tasting_note_en": "Rich chocolate, roasted", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 8},
         {"name": "Hazelnut", "name_en": "Hazelnut", "tasting_note": "烘烤, 榛子", "tasting_note_en": "Roasted, hazelnut", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 6},
         {"name": "Caramel Cookie", "name_en": "Caramel Cookie", "tasting_note": "焦糖, 饼干", "tasting_note_en": "Caramel, biscuit", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 5},
         {"name": "Ice Coffee", "name_en": "Ice Coffee", "tasting_note": "清爽, 水果", "tasting_note_en": "Refreshing, fruity", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 4},
         
-        # Vertuo Gran Lungo
-        {"name": "Intenso", "name_en": "Intenso", "tasting_note": "烘烤, 可可, 焦糖", "tasting_note_en": "Roasted, cocoa, caramel", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 9},
-        {"name": "Dolceo", "name_en": "Dolceo", "tasting_note": "烘烤, 焦糖, 奶油", "tasting_note_en": "Roasted, caramel, creamy", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 6},
+        # ===== VERTUO 联名款胶囊 (Starbucks 等) =====
+        # Starbucks Collection (联名款)
+        {"name": "Starbucks Blonde Espresso", "name_en": "Starbucks Blonde Espresso", "tasting_note": "轻度烘烤, 焦糖, 柑橘", "tasting_note_en": "Light roast, caramel, citrus", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 5},
+        {"name": "Starbucks Veranda Blend", "name_en": "Starbucks Veranda Blend", "tasting_note": "轻度烘烤, 麦芽, 巧克力", "tasting_note_en": "Light roast, malt, chocolate", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 4},
+        {"name": "Starbucks Pike Place", "name_en": "Starbucks Pike Place", "tasting_note": "中度烘烤, 焦糖, 可可", "tasting_note_en": "Medium roast, caramel, cocoa", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 6},
+        {"name": "Starbucks Dark Roast", "name_en": "Starbucks Dark Roast", "tasting_note": "深度烘烤, 可可, 烟熏", "tasting_note_en": "Dark roast, cocoa, smoky", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 9},
+        
+        # Starbucks Alto (230ml) 联名款
+        {"name": "Starbucks Caramel Macchiato", "name_en": "Starbucks Caramel Macchiato", "tasting_note": "焦糖, 牛奶, 香草", "tasting_note_en": "Caramel, milk, vanilla", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 5},
+        {"name": "Starbucks Cappuccino", "name_en": "Starbucks Cappuccino", "tasting_note": "烘烤, 奶油, 焦糖", "tasting_note_en": "Roasted, creamy, caramel", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 6},
+        
+        # NOLA - New Orleans Style (Vertuo 特有)
+        {"name": "NOLA", "name_en": "NOLA", "tasting_note": "新奥尔良风格, 焦糖, 香草", "tasting_note_en": "New Orleans style, caramel, vanilla", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 5},
+        
+        # Limited Editions
+        {"name": "Fizzio", "name_en": "Fizzio", "tasting_note": "气泡, 柑橘, 薄荷", "tasting_note_en": "Fizzy, citrus, mint", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 4},
+        {"name": " Bianco", "name_en": " Bianco", "tasting_note": "奶油, 饼干, 香草", "tasting_note_en": "Creamy, biscuit, vanilla", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 5},
     ]
     
     return original_capsules + vertuo_capsules

@@ -1,0 +1,982 @@
+[
+  {
+    "name": "Hawaii Kona",
+    "name_en": "Hawaii Kona",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "and aromas for a unique coffee experience.",
+    "tasting_note_en": "and aromas for a unique coffee experience."
+  },
+  {
+    "name": "Caffè Florian",
+    "name_en": "Caffè Florian",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "coffee",
+    "intensity": 9,
+    "tasting_note": "and aromas for a unique coffee experience.",
+    "tasting_note_en": "and aromas for a unique coffee experience."
+  },
+  {
+    "name": "Pistachio Vanilla Flavour",
+    "name_en": "Pistachio Vanilla Flavour",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "and aromas for a unique coffee experience.",
+    "tasting_note_en": "and aromas for a unique coffee experience."
+  },
+  {
+    "name": "Flavoured Sweet Almond and Hibiscus",
+    "name_en": "Flavoured Sweet Almond and Hibiscus",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": null,
+    "tasting_note": "in your cart. Activate to add the product",
+    "tasting_note_en": "in your cart. Activate to add the product"
+  },
+  {
+    "name": "Flavoured Cinnamon and Candied Tamarind",
+    "name_en": "Flavoured Cinnamon and Candied Tamarind",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": null,
+    "tasting_note": "in your cart. Activate to add the product",
+    "tasting_note_en": "in your cart. Activate to add the product"
+  },
+  {
+    "name": "Tanzania",
+    "name_en": "Tanzania",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 5,
+    "tasting_note": "in your cart. Activate to add the product",
+    "tasting_note_en": "in your cart. Activate to add the product"
+  },
+  {
+    "name": "Maple Pecan",
+    "name_en": "Maple Pecan",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": null,
+    "tasting_note": "in your cart. Activate to add the product",
+    "tasting_note_en": "in your cart. Activate to add the product"
+  },
+  {
+    "name": "Pumpkin Spice Cake",
+    "name_en": "Pumpkin Spice Cake",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": null,
+    "tasting_note": "Spicy",
+    "tasting_note_en": "Spicy"
+  },
+  {
+    "name": "Freddo Intenso",
+    "name_en": "Freddo Intenso",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": null,
+    "tasting_note": "Intense Roasted",
+    "tasting_note_en": "Intense Roasted"
+  },
+  {
+    "name": "Vaniglia Decaffeinato",
+    "name_en": "Vaniglia Decaffeinato",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Vienna Lungo Decaffeinato",
+    "name_en": "Vienna Lungo Decaffeinato",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "coffee",
+    "intensity": 7,
+    "tasting_note": "Malted Cereal",
+    "tasting_note_en": "Malted Cereal"
+  },
+  {
+    "name": "Volluto Decaffeinato",
+    "name_en": "Volluto Decaffeinato",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "coffee",
+    "intensity": 4,
+    "tasting_note": "Balanced",
+    "tasting_note_en": "Balanced"
+  },
+  {
+    "name": "Arpeggio Decaffeinato",
+    "name_en": "Arpeggio Decaffeinato",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "coffee",
+    "intensity": 9,
+    "tasting_note": "Cocoa",
+    "tasting_note_en": "Cocoa"
+  },
+  {
+    "name": "Ristretto Decaffeinato",
+    "name_en": "Ristretto Decaffeinato",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 10,
+    "tasting_note": "Best Served As",
+    "tasting_note_en": "Best Served As"
+  },
+  {
+    "name": "Ispirazione Napoli",
+    "name_en": "Ispirazione Napoli",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 13,
+    "tasting_note": "notes",
+    "tasting_note_en": "notes"
+  },
+  {
+    "name": "Kazaar",
+    "name_en": "Kazaar",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 12,
+    "tasting_note": "tic notes.",
+    "tasting_note_en": "tic notes."
+  },
+  {
+    "name": "Ristretto",
+    "name_en": "Ristretto",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 10,
+    "tasting_note": "notes",
+    "tasting_note_en": "notes"
+  },
+  {
+    "name": "Arpeggio",
+    "name_en": "Arpeggio",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 9,
+    "tasting_note": "turns into the cocoa notes that give this espresso its gravitas",
+    "tasting_note_en": "turns into the cocoa notes that give this espresso its gravitas"
+  },
+  {
+    "name": "Ispirazione Venezia",
+    "name_en": "Ispirazione Venezia",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 8,
+    "tasting_note": "notes",
+    "tasting_note_en": "notes"
+  },
+  {
+    "name": "Ispirazione Roma",
+    "name_en": "Ispirazione Roma",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 8,
+    "tasting_note": "of the coffee with that hint of acidity that gives Roma its elegance. A fine grind preserves the cof",
+    "tasting_note_en": "of the coffee with that hint of acidity that gives Roma its elegance. A fine grind preserves the cof"
+  },
+  {
+    "name": "Livanto",
+    "name_en": "Livanto",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 6,
+    "tasting_note": "Caramel",
+    "tasting_note_en": "Caramel"
+  },
+  {
+    "name": "Cape Town Lungo",
+    "name_en": "Cape Town Lungo",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 10,
+    "tasting_note": "Intense Roasted",
+    "tasting_note_en": "Intense Roasted"
+  },
+  {
+    "name": "Miami Espresso",
+    "name_en": "Miami Espresso",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 9,
+    "tasting_note": "Intense Roasted",
+    "tasting_note_en": "Intense Roasted"
+  },
+  {
+    "name": "Vienna Lungo",
+    "name_en": "Vienna Lungo",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 6,
+    "tasting_note": "Malted Cereal",
+    "tasting_note_en": "Malted Cereal"
+  },
+  {
+    "name": "Rio de Janeiro Espresso",
+    "name_en": "Rio de Janeiro Espresso",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 9,
+    "tasting_note": "Spicy",
+    "tasting_note_en": "Spicy"
+  },
+  {
+    "name": "Istanbul Espresso",
+    "name_en": "Istanbul Espresso",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 8,
+    "tasting_note": "Fruity",
+    "tasting_note_en": "Fruity"
+  },
+  {
+    "name": "Paris Espresso",
+    "name_en": "Paris Espresso",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 6,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Tokyo Lungo",
+    "name_en": "Tokyo Lungo",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 6,
+    "tasting_note": "Intense Roasted",
+    "tasting_note_en": "Intense Roasted"
+  },
+  {
+    "name": "Stockholm Lungo",
+    "name_en": "Stockholm Lungo",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": 8,
+    "tasting_note": "Intense Roasted",
+    "tasting_note_en": "Intense Roasted"
+  },
+  {
+    "name": "Buenos Aires Lungo",
+    "name_en": "Buenos Aires Lungo",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 4,
+    "tasting_note": "Caramel",
+    "tasting_note_en": "Caramel"
+  },
+  {
+    "name": "Shanghai Lungo",
+    "name_en": "Shanghai Lungo",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 5,
+    "tasting_note": "Berry",
+    "tasting_note_en": "Berry"
+  },
+  {
+    "name": "Kahawa ya Congo",
+    "name_en": "Kahawa ya Congo",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 7,
+    "tasting_note": "Balanced",
+    "tasting_note_en": "Balanced"
+  },
+  {
+    "name": "India",
+    "name_en": "India",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 11,
+    "tasting_note": "Intense",
+    "tasting_note_en": "Intense"
+  },
+  {
+    "name": "Colombia",
+    "name_en": "Colombia",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 6,
+    "tasting_note": "Winey",
+    "tasting_note_en": "Winey"
+  },
+  {
+    "name": "Nicaragua",
+    "name_en": "Nicaragua",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 5,
+    "tasting_note": "Sweet",
+    "tasting_note_en": "Sweet"
+  },
+  {
+    "name": "Ethiopia",
+    "name_en": "Ethiopia",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 4,
+    "tasting_note": "Fruity",
+    "tasting_note_en": "Fruity"
+  },
+  {
+    "name": "Nocciola",
+    "name_en": "Nocciola",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Coffee",
+    "intensity": null,
+    "tasting_note": "Flavoured",
+    "tasting_note_en": "Flavoured"
+  },
+  {
+    "name": "Caramello",
+    "name_en": "Caramello",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Coffee",
+    "intensity": null,
+    "tasting_note": "Caramel",
+    "tasting_note_en": "Caramel"
+  },
+  {
+    "name": "Vaniglia",
+    "name_en": "Vaniglia",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Coffee",
+    "intensity": null,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Cioccolatino",
+    "name_en": "Cioccolatino",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": null,
+    "tasting_note": "Ristretto (25ml)",
+    "tasting_note_en": "Ristretto (25ml)"
+  },
+  {
+    "name": "Corto",
+    "name_en": "Corto",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": null,
+    "tasting_note": "Ristretto (25ml)",
+    "tasting_note_en": "Ristretto (25ml)"
+  },
+  {
+    "name": "Scuro",
+    "name_en": "Scuro",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": null,
+    "tasting_note": "Ristretto (25ml)",
+    "tasting_note_en": "Ristretto (25ml)"
+  },
+  {
+    "name": "Chiaro",
+    "name_en": "Chiaro",
+    "line": "Original",
+    "size_ml": 110,
+    "pod_type": "Lungo",
+    "intensity": null,
+    "tasting_note": "Ristretto (25ml)",
+    "tasting_note_en": "Ristretto (25ml)"
+  },
+  {
+    "name": "Capriccio",
+    "name_en": "Capriccio",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 5,
+    "tasting_note": "Balanced",
+    "tasting_note_en": "Balanced"
+  },
+  {
+    "name": "Cosi",
+    "name_en": "Cosi",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 4,
+    "tasting_note": "Fruity",
+    "tasting_note_en": "Fruity"
+  },
+  {
+    "name": "Volluto",
+    "name_en": "Volluto",
+    "line": "Original",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 4,
+    "tasting_note": "Balanced",
+    "tasting_note_en": "Balanced"
+  },
+  {
+    "name": "Hawaii Kona",
+    "name_en": "Hawaii Kona",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "and aromas for a unique coffee experience.",
+    "tasting_note_en": "and aromas for a unique coffee experience."
+  },
+  {
+    "name": "Pistachio Vanilla Flavour Over Ice",
+    "name_en": "Pistachio Vanilla Flavour Over Ice",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "and aromas for a unique coffee experience.",
+    "tasting_note_en": "and aromas for a unique coffee experience."
+  },
+  {
+    "name": "White Chocolate Strawberry",
+    "name_en": "White Chocolate Strawberry",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "and aromas for a unique coffee experience.",
+    "tasting_note_en": "and aromas for a unique coffee experience."
+  },
+  {
+    "name": "Flavoured Sweet Almond and Hibiscus",
+    "name_en": "Flavoured Sweet Almond and Hibiscus",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": null,
+    "tasting_note": "Almond",
+    "tasting_note_en": "Almond"
+  },
+  {
+    "name": "Flavoured Cinnamon and Candied Tamarind",
+    "name_en": "Flavoured Cinnamon and Candied Tamarind",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": null,
+    "tasting_note": "Over Ice in your cart. Activate to add the product",
+    "tasting_note_en": "Over Ice in your cart. Activate to add the product"
+  },
+  {
+    "name": "Tanzania",
+    "name_en": "Tanzania",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": 5,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Blend No. 2",
+    "name_en": "Blend No. 2",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": 7,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Gingerbread",
+    "name_en": "Gingerbread",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": null,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Pumpkin Spice Cake",
+    "name_en": "Pumpkin Spice Cake",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": null,
+    "tasting_note": "Spicy",
+    "tasting_note_en": "Spicy"
+  },
+  {
+    "name": "Togetherness Blend",
+    "name_en": "Togetherness Blend",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": 7,
+    "tasting_note": "notes, while the unwashed beans are roasted slightly darker to develop some body and intensity.",
+    "tasting_note_en": "notes, while the unwashed beans are roasted slightly darker to develop some body and intensity."
+  },
+  {
+    "name": "Ice Leggero",
+    "name_en": "Ice Leggero",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Ice Forte",
+    "name_en": "Ice Forte",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "Intense Roasted",
+    "tasting_note_en": "Intense Roasted"
+  },
+  {
+    "name": "Cold Brew Style Intense",
+    "name_en": "Cold Brew Style Intense",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "Caramel",
+    "tasting_note_en": "Caramel"
+  },
+  {
+    "name": "Double espresso Chiaro Decaffeinato",
+    "name_en": "Double espresso Chiaro Decaffeinato",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": 8,
+    "tasting_note": "Roasted Cereral",
+    "tasting_note_en": "Roasted Cereral"
+  },
+  {
+    "name": "Sweet Vanilla Decaffeinato",
+    "name_en": "Sweet Vanilla Decaffeinato",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": null,
+    "tasting_note": "Vanilla",
+    "tasting_note_en": "Vanilla"
+  },
+  {
+    "name": "Half Caffeinato",
+    "name_en": "Half Caffeinato",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": 5,
+    "tasting_note": "s as their caffeinated version.",
+    "tasting_note_en": "s as their caffeinated version."
+  },
+  {
+    "name": "Melozio Decaffeinato",
+    "name_en": "Melozio Decaffeinato",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": 6,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Fortado Decaffeinato",
+    "name_en": "Fortado Decaffeinato",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": 8,
+    "tasting_note": "Woody",
+    "tasting_note_en": "Woody"
+  },
+  {
+    "name": "Altissio Decaffeinato",
+    "name_en": "Altissio Decaffeinato",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": 9,
+    "tasting_note": "Cocoa",
+    "tasting_note_en": "Cocoa"
+  },
+  {
+    "name": "Kahawa ya Congo",
+    "name_en": "Kahawa ya Congo",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 6,
+    "tasting_note": "Balanced",
+    "tasting_note_en": "Balanced"
+  },
+  {
+    "name": "Bianco Forte",
+    "name_en": "Bianco Forte",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": null,
+    "tasting_note": "Balanced",
+    "tasting_note_en": "Balanced"
+  },
+  {
+    "name": "Intenso",
+    "name_en": "Intenso",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 9,
+    "tasting_note": "Intense",
+    "tasting_note_en": "Intense"
+  },
+  {
+    "name": "Stormio",
+    "name_en": "Stormio",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 8,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Odacio",
+    "name_en": "Odacio",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 7,
+    "tasting_note": "Intense",
+    "tasting_note_en": "Intense"
+  },
+  {
+    "name": "Mexico",
+    "name_en": "Mexico",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 7,
+    "tasting_note": "Spicy",
+    "tasting_note_en": "Spicy"
+  },
+  {
+    "name": "Melozio",
+    "name_en": "Melozio",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 6,
+    "tasting_note": ". The other Arabicas get are lightly roasted to round out Melozio.",
+    "tasting_note_en": ". The other Arabicas get are lightly roasted to round out Melozio."
+  },
+  {
+    "name": "Vivida",
+    "name_en": "Vivida",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": null,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "El Salvador",
+    "name_en": "El Salvador",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 5,
+    "tasting_note": "and lightly-bodied",
+    "tasting_note_en": "and lightly-bodied"
+  },
+  {
+    "name": "Solelio",
+    "name_en": "Solelio",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 2,
+    "tasting_note": "and lightly-bodied",
+    "tasting_note_en": "and lightly-bodied"
+  },
+  {
+    "name": "Alto Onice",
+    "name_en": "Alto Onice",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 7,
+    "tasting_note": "Intense Roasted",
+    "tasting_note_en": "Intense Roasted"
+  },
+  {
+    "name": "Alto Ambrato",
+    "name_en": "Alto Ambrato",
+    "line": "Vertuo",
+    "size_ml": 230,
+    "pod_type": "Coffee",
+    "intensity": 4,
+    "tasting_note": "Honey",
+    "tasting_note_en": "Honey"
+  },
+  {
+    "name": "Fortado",
+    "name_en": "Fortado",
+    "line": "Vertuo",
+    "size_ml": 150,
+    "pod_type": "Lungo",
+    "intensity": 8,
+    "tasting_note": "Cocoa",
+    "tasting_note_en": "Cocoa"
+  },
+  {
+    "name": "Costa Rica",
+    "name_en": "Costa Rica",
+    "line": "Vertuo",
+    "size_ml": 150,
+    "pod_type": "Lungo",
+    "intensity": 7,
+    "tasting_note": "Malted Cereal",
+    "tasting_note_en": "Malted Cereal"
+  },
+  {
+    "name": "Arondio",
+    "name_en": "Arondio",
+    "line": "Vertuo",
+    "size_ml": 150,
+    "pod_type": "Lungo",
+    "intensity": 6,
+    "tasting_note": ". The Guatemalan washed Robusta is dark roasted to bring out a full crema.",
+    "tasting_note_en": ". The Guatemalan washed Robusta is dark roasted to bring out a full crema."
+  },
+  {
+    "name": "Inizio",
+    "name_en": "Inizio",
+    "line": "Vertuo",
+    "size_ml": 150,
+    "pod_type": "Lungo",
+    "intensity": 4,
+    "tasting_note": "Floral",
+    "tasting_note_en": "Floral"
+  },
+  {
+    "name": "Ethiopia",
+    "name_en": "Ethiopia",
+    "line": "Vertuo",
+    "size_ml": 150,
+    "pod_type": "Lungo",
+    "intensity": 4,
+    "tasting_note": "alive and singing through the unveiled wilder, heavier aromatics.",
+    "tasting_note_en": "alive and singing through the unveiled wilder, heavier aromatics."
+  },
+  {
+    "name": "Il Caffè",
+    "name_en": "Il Caffè",
+    "line": "Vertuo",
+    "size_ml": 25,
+    "pod_type": "Espresso",
+    "intensity": 11,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Diavolitto",
+    "name_en": "Diavolitto",
+    "line": "Vertuo",
+    "size_ml": 25,
+    "pod_type": "Espresso",
+    "intensity": 11,
+    "tasting_note": "Intense",
+    "tasting_note_en": "Intense"
+  },
+  {
+    "name": "Ristretto Classico",
+    "name_en": "Ristretto Classico",
+    "line": "Vertuo",
+    "size_ml": 25,
+    "pod_type": "Espresso",
+    "intensity": 9,
+    "tasting_note": "Intense",
+    "tasting_note_en": "Intense"
+  },
+  {
+    "name": "Altissio",
+    "name_en": "Altissio",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 9,
+    "tasting_note": "Intense",
+    "tasting_note_en": "Intense"
+  },
+  {
+    "name": "Orafio",
+    "name_en": "Orafio",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 6,
+    "tasting_note": "Caramel",
+    "tasting_note_en": "Caramel"
+  },
+  {
+    "name": "Voltesso",
+    "name_en": "Voltesso",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 4,
+    "tasting_note": "and Elegant",
+    "tasting_note_en": "and Elegant"
+  },
+  {
+    "name": "Bianco Piccolo",
+    "name_en": "Bianco Piccolo",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": null,
+    "tasting_note": "Sweet",
+    "tasting_note_en": "Sweet"
+  },
+  {
+    "name": "Double Espresso Scuro",
+    "name_en": "Double Espresso Scuro",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 11,
+    "tasting_note": "Cocoa",
+    "tasting_note_en": "Cocoa"
+  },
+  {
+    "name": "Double Espresso Chiaro",
+    "name_en": "Double Espresso Chiaro",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 8,
+    "tasting_note": "ed Coffees",
+    "tasting_note_en": "ed Coffees"
+  },
+  {
+    "name": "Double Espresso Dolce",
+    "name_en": "Double Espresso Dolce",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": 5,
+    "tasting_note": "Cereal",
+    "tasting_note_en": "Cereal"
+  },
+  {
+    "name": "Bianco Doppio",
+    "name_en": "Bianco Doppio",
+    "line": "Vertuo",
+    "size_ml": 40,
+    "pod_type": "Espresso",
+    "intensity": null,
+    "tasting_note": "Sweet",
+    "tasting_note_en": "Sweet"
+  },
+  {
+    "name": "Maple Pecan",
+    "name_en": "Maple Pecan",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "Flavoured",
+    "tasting_note_en": "Flavoured"
+  },
+  {
+    "name": "Roasted Hazelnut",
+    "name_en": "Roasted Hazelnut",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "Flavoured",
+    "tasting_note_en": "Flavoured"
+  },
+  {
+    "name": "Golden Caramel",
+    "name_en": "Golden Caramel",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "coffee",
+    "intensity": null,
+    "tasting_note": "Flavoured",
+    "tasting_note_en": "Flavoured"
+  },
+  {
+    "name": "Sweet Vanilla",
+    "name_en": "Sweet Vanilla",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": null,
+    "tasting_note": "Vanilla",
+    "tasting_note_en": "Vanilla"
+  },
+  {
+    "name": "Rich Chocolate",
+    "name_en": "Rich Chocolate",
+    "line": "Vertuo",
+    "size_ml": 80,
+    "pod_type": "Double",
+    "intensity": null,
+    "tasting_note": "Chocolate",
+    "tasting_note_en": "Chocolate"
+  }
+]

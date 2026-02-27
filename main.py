@@ -518,10 +518,8 @@ def show_inventory(client, user):
     </div>
     """, unsafe_allow_html=True)
     
-    # Line filter
-    c1, c2, c3 = st.columns([1, 1, 2])
-    with c1:
-        line_filter = st.radio("Line", ["All", "Original", "Vertuo"], horizontal=True, label_visibility="collapsed")
+    # Line filter - use selectbox instead of radio for better horizontal display
+    line_filter = st.selectbox("Line", ["All", "Original", "Vertuo"], label_visibility="collapsed")
     
     # Filter capsules
     filtered = all_capsules

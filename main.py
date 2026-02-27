@@ -29,7 +29,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS - Clean light minimalist theme
+# Custom CSS - Clean light minimalist theme, centered
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
@@ -41,6 +41,24 @@ st.markdown("""
     .stApp {
         background: #fafafa;
         color: #1a1a1a;
+    }
+    
+    /* Center the main content */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    /* Center align headers */
+    h1, h2, h3 {
+        text-align: center;
+    }
+    
+    /* Center content */
+    .stMarkdown {
+        text-align: center;
     }
     
     /* Clean white cards */

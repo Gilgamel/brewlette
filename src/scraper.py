@@ -260,30 +260,32 @@ def extract_intensity(text: str) -> int:
 
 def get_sample_capsules() -> List[Dict]:
     """
-    Return sample capsules data - scraped from Nespresso Canada website
+    Return comprehensive sample capsules data
+    Based on official Nespresso Canada product listings
     Updated: 2026-02-27
+    
+    Note: Each capsule may have multiple sizes (e.g., Altissio Decaffeinato can be 40ml or 80ml)
     """
     
-    # Scraped data from Nespresso Canada
     capsules = [
-        # Original Line - Espresso
+        # ========== ORIGINAL LINE - ESPRESSO (40ml) ==========
         {"name": "Arpeggio", "name_en": "Arpeggio", "tasting_note": "Cocoa", "tasting_note_en": "Cocoa", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 9},
-        {"name": "Ristretto", "name_en": "Ristretto", "tasting_note": "", "tasting_note_en": "", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 10},
+        {"name": "Ristretto", "name_en": "Ristretto", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 10},
         {"name": "Livanto", "name_en": "Livanto", "tasting_note": "Caramel", "tasting_note_en": "Caramel", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
         {"name": "Capriccio", "name_en": "Capriccio", "tasting_note": "Balanced", "tasting_note_en": "Balanced", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 5},
-        {"name": "Kazaar", "name_en": "Kazaar", "tasting_note": "", "tasting_note_en": "", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 12},
-        {"name": "Dhom", "name_en": "Dhom", "tasting_note": "", "tasting_note_en": "", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
-        {"name": "Ispirazione Roma", "name_en": "Ispirazione Roma", "tasting_note": "", "tasting_note_en": "", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
-        {"name": "Ispirazione Venezia", "name_en": "Ispirazione Venezia", "tasting_note": "", "tasting_note_en": "", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
-        {"name": "Ispirazione Napoli", "name_en": "Ispirazione Napoli", "tasting_note": "", "tasting_note_en": "", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 13},
-        {"name": "Ispirazione Firenze", "name_en": "Ispirazione Firenze", "tasting_note": "", "tasting_note_en": "", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 7},
+        {"name": "Kazaar", "name_en": "Kazaar", "tasting_note": "Spicy", "tasting_note_en": "Spicy", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 12},
+        {"name": "Dhorm", "name_en": "Dhorm", "tasting_note": "Balanced", "tasting_note_en": "Balanced", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
+        {"name": "Ispirazione Roma", "name_en": "Ispirazione Roma", "tasting_note": "Balanced", "tasting_note_en": "Balanced", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
+        {"name": "Ispirazione Venezia", "name_en": "Ispirazione Venezia", "tasting_note": "Balanced", "tasting_note_en": "Balanced", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 8},
+        {"name": "Ispirazione Napoli", "name_en": "Ispirazione Napoli", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 13},
+        {"name": "Ispirazione Firenze", "name_en": "Ispirazione Firenze", "tasting_note": "Balanced", "tasting_note_en": "Balanced", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 7},
         {"name": "Cosi", "name_en": "Cosi", "tasting_note": "Fruity", "tasting_note_en": "Fruity", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 4},
-        {"name": "Volluto", "name_en": "Volluto", "tasting_note": "Balanced", "tasting_note_en": "Balanced", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 4},
+        {"name": "Volluto", "name_en": "Volluto", "tasting_note": "Sweet", "tasting_note_en": "Sweet", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 4},
         {"name": "Rosabaya", "name_en": "Rosabaya", "tasting_note": "Fruity", "tasting_note_en": "Fruity", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
         {"name": "Dulsao", "name_en": "Dulsao", "tasting_note": "Sweet", "tasting_note_en": "Sweet", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
         {"name": "Bukeela", "name_en": "Bukeela", "tasting_note": "Cereal", "tasting_note_en": "Cereal", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
         
-        # Original Line - Lungo
+        # ========== ORIGINAL LINE - LUNGO (150ml) ==========
         {"name": "Vienna Lungo", "name_en": "Vienna Lungo", "tasting_note": "Malted Cereal", "tasting_note_en": "Malted Cereal", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 6},
         {"name": "Cape Town Lungo", "name_en": "Cape Town Lungo", "tasting_note": "Intense Roasted", "tasting_note_en": "Intense Roasted", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 10},
         {"name": "Tokyo Lungo", "name_en": "Tokyo Lungo", "tasting_note": "Intense Roasted", "tasting_note_en": "Intense Roasted", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 6},
@@ -292,7 +294,7 @@ def get_sample_capsules() -> List[Dict]:
         {"name": "Lisboa Lungo", "name_en": "Lisboa Lungo", "tasting_note": "Malted", "tasting_note_en": "Malted", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 5},
         {"name": "Baku Lungo", "name_en": "Baku Lungo", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 150, "pod_type": "lungo", "line": "Original", "intensity": 9},
         
-        # Original Line - Single Origin
+        # ========== ORIGINAL LINE - SINGLE ORIGIN (40ml) ==========
         {"name": "Ethiopia", "name_en": "Ethiopia", "tasting_note": "Fruity", "tasting_note_en": "Fruity", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 4},
         {"name": "Colombia", "name_en": "Colombia", "tasting_note": "Winey", "tasting_note_en": "Winey", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
         {"name": "India", "name_en": "India", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 11},
@@ -302,29 +304,38 @@ def get_sample_capsules() -> List[Dict]:
         {"name": "Guatemala", "name_en": "Guatemala", "tasting_note": "Spicy", "tasting_note_en": "Spicy", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 7},
         {"name": "Costa Rica", "name_en": "Costa Rica", "tasting_note": "Honey", "tasting_note_en": "Honey", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 5},
         
-        # Original Line - Decaf
+        # ========== ORIGINAL LINE - DECAF (40ml) ==========
         {"name": "Arpeggio Decaffeinato", "name_en": "Arpeggio Decaffeinato", "tasting_note": "Cocoa", "tasting_note_en": "Cocoa", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 9},
-        {"name": "Volluto Decaffeinato", "name_en": "Volluto Decaffeinato", "tasting_note": "Balanced", "tasting_note_en": "Balanced", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 4},
-        {"name": "Ristretto Decaffeinato", "name_en": "Ristretto Decaffeinato", "tasting_note": "", "tasting_note_en": "", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 10},
+        {"name": "Volluto Decaffeinato", "name_en": "Volluto Decaffeinato", "tasting_note": "Sweet", "tasting_note_en": "Sweet", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 4},
+        {"name": "Ristretto Decaffeinato", "name_en": "Ristretto Decaffeinato", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 10},
         {"name": "Livanto Decaffeinato", "name_en": "Livanto Decaffeinato", "tasting_note": "Caramel", "tasting_note_en": "Caramel", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": 6},
         
-        # Original Line - Flavoured
+        # ========== ORIGINAL LINE - FLAVOURED (40ml) ==========
         {"name": "Caramello", "name_en": "Caramello", "tasting_note": "Caramel", "tasting_note_en": "Caramel", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": None},
         {"name": "Vaniglia", "name_en": "Vaniglia", "tasting_note": "Vanilla", "tasting_note_en": "Vanilla", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": None},
         {"name": "Nocciola", "name_en": "Nocciola", "tasting_note": "Hazelnut", "tasting_note_en": "Hazelnut", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": None},
         {"name": "Cioccolino", "name_en": "Cioccolino", "tasting_note": "Chocolate", "tasting_note_en": "Chocolate", "size_ml": 40, "pod_type": "espresso", "line": "Original", "intensity": None},
         
-        # Vertuo Line - Espresso
+        # ========== VERTUO LINE - ESPRESSO (40ml) ==========
         {"name": "Altissio", "name_en": "Altissio", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 9},
         {"name": "Diavolitto", "name_en": "Diavolitto", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 11},
-        {"name": "Double Espresso Scuro", "name_en": "Double Espresso Scuro", "tasting_note": "Cocoa", "tasting_note_en": "Cocoa", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 11},
         
-        # Vertuo Line - Bianco (80ml)
+        # ========== VERTUO LINE - DOUBLE ESPRESSO (80ml) ==========
+        {"name": "Altissio", "name_en": "Altissio", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 9},
+        {"name": "Diavolitto", "name_en": "Diavolitto", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 11},
+        
+        # ========== VERTUO LINE - BIANCO (80ml) ==========
         {"name": "Bianco", "name_en": "Bianco", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 8},
         {"name": "Bianco Odacio", "name_en": "Bianco Odacio", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 8},
         {"name": "Bianco Intensivo", "name_en": "Bianco Intensivo", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 11},
         
-        # Vertuo Line - Coffee (Alto)
+        # ========== VERTUO LINE - LUNGO (150ml) ==========
+        {"name": "Fortado", "name_en": "Fortado", "tasting_note": "Cocoa", "tasting_note_en": "Cocoa", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 8},
+        {"name": "Envivo", "name_en": "Envivo", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 9},
+        {"name": "Istanbul", "name_en": "Istanbul", "tasting_note": "Spicy", "tasting_note_en": "Spicy", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 7},
+        {"name": "Buenos Aires", "name_en": "Buenos Aires", "tasting_note": "Caramel", "tasting_note_en": "Caramel", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 6},
+        
+        # ========== VERTUO LINE - COFFEE/ALTO (230ml) ==========
         {"name": "Melozio", "name_en": "Melozio", "tasting_note": "Cereal", "tasting_note_en": "Cereal", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 6},
         {"name": "Odacio", "name_en": "Odacio", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 7},
         {"name": "Stormio", "name_en": "Stormio", "tasting_note": "Cereal", "tasting_note_en": "Cereal", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 8},
@@ -334,28 +345,22 @@ def get_sample_capsules() -> List[Dict]:
         {"name": "Alto Dolce", "name_en": "Alto Dolce", "tasting_note": "Caramel", "tasting_note_en": "Caramel", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 5},
         {"name": "Voltesso", "name_en": "Voltesso", "tasting_note": "Light", "tasting_note_en": "Light", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 4},
         
-        # Vertuo Line - Lungo
-        {"name": "Fortado", "name_en": "Fortado", "tasting_note": "Cocoa", "tasting_note_en": "Cocoa", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 8},
-        {"name": "Envivo", "name_en": "Envivo", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 9},
-        {"name": "Istanbul", "name_en": "Istanbul", "tasting_note": "Spicy", "tasting_note_en": "Spicy", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 7},
-        {"name": "Buenos Aires", "name_en": "Buenos Aires", "tasting_note": "Caramel", "tasting_note_en": "Caramel", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 6},
-        
-        # Vertuo Line - Double Espresso
+        # ========== VERTUO LINE - DOUBLE ESPRESSO (80ml) ==========
         {"name": "Double Espresso Chiaro", "name_en": "Double Espresso Chiaro", "tasting_note": "Floral", "tasting_note_en": "Floral", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 8},
         {"name": "Double Espresso Dolce", "name_en": "Double Espresso Dolce", "tasting_note": "Cereal", "tasting_note_en": "Cereal", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 5},
         {"name": "Double Espresso Scuro", "name_en": "Double Espresso Scuro", "tasting_note": "Cocoa", "tasting_note_en": "Cocoa", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 11},
         
-        # Vertuo Line - Decaf
-        {"name": "Altissio Decaffeinato", "name_en": "Altissio Decaffeinato", "tasting_note": "Cocoa", "tasting_note_en": "Cocoa", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 9},
+        # ========== VERTUO LINE - DECAFFEINATO ==========
+        {"name": "Altissio Decaffeinato", "name_en": "Altissio Decaffeinato", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 40, "pod_type": "espresso", "line": "Vertuo", "intensity": 9},
         {"name": "Melozio Decaffeinato", "name_en": "Melozio Decaffeinato", "tasting_note": "Cereal", "tasting_note_en": "Cereal", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 6},
-        {"name": "Fortado Decaffeinato", "name_en": "Fortado Decaffeinato", "tasting_note": "Woody", "tasting_note_en": "Woody", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 8},
+        {"name": "Fortado Decaffeinato", "name_en": "Fortado Decaffeinato", "tasting_note": "Cocoa", "tasting_note_en": "Cocoa", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 8},
         
-        # Vertuo Line - Flavoured
+        # ========== VERTUO LINE - FLAVOURED (80ml) ==========
         {"name": "Sweet Vanilla", "name_en": "Sweet Vanilla", "tasting_note": "Vanilla", "tasting_note_en": "Vanilla", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": None},
         {"name": "Rich Chocolate", "name_en": "Rich Chocolate", "tasting_note": "Chocolate", "tasting_note_en": "Chocolate", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": None},
         {"name": "Caramel Creme", "name_en": "Caramel Creme", "tasting_note": "Caramel", "tasting_note_en": "Caramel", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": None},
         
-        # Vertuo Line - Single Origin
+        # ========== VERTUO LINE - SINGLE ORIGIN ==========
         {"name": "Ethiopia", "name_en": "Ethiopia", "tasting_note": "Floral", "tasting_note_en": "Floral", "size_ml": 150, "pod_type": "lungo", "line": "Vertuo", "intensity": 4},
         {"name": "Colombia", "name_en": "Colombia", "tasting_note": "Fruity", "tasting_note_en": "Fruity", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 6},
         {"name": "Mexico", "name_en": "Mexico", "tasting_note": "Spicy", "tasting_note_en": "Spicy", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 7},
@@ -363,11 +368,11 @@ def get_sample_capsules() -> List[Dict]:
         {"name": "Kenya", "name_en": "Kenya", "tasting_note": "Citrus", "tasting_note_en": "Citrus", "size_ml": 80, "pod_type": "double", "line": "Vertuo", "intensity": 6},
         {"name": "Indonesia", "name_en": "Indonesia", "tasting_note": "Earthy", "tasting_note_en": "Earthy", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 8},
         
-        # Vertuo Line - Barista Creations
+        # ========== VERTUO LINE - BARISTA CREATIONS (230ml) ==========
         {"name": "Cortez", "name_en": "Cortez", "tasting_note": "Spicy", "tasting_note_en": "Spicy", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 9},
         {"name": "Napoli", "name_en": "Napoli", "tasting_note": "Intense", "tasting_note_en": "Intense", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 10},
         {"name": "Roma", "name_en": "Roma", "tasting_note": "Balanced", "tasting_note_en": "Balanced", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 8},
-        {"name": " Milano", "name_en": " Milano", "tasting_note": "Sweet", "tasting_note_en": "Sweet", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 6},
+        {"name": "Milano", "name_en": "Milano", "tasting_note": "Sweet", "tasting_note_en": "Sweet", "size_ml": 230, "pod_type": "coffee", "line": "Vertuo", "intensity": 6},
     ]
     
     return capsules

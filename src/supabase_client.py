@@ -285,25 +285,36 @@ def remove_duplicate_capsules(client: Client) -> int:
 
 def clear_and_reset_capsules(client: Client, capsules: list) -> int:
     """Clear all capsules and re-import fresh data using batch insert"""
-    # First delete all inventory (due to foreign key constraint)
-    client.table("inventory").delete().neq("id", 0).execute()
+    try:
+        # First delete all inventory (due to foreign key constraint)
+        client.table("inventory").delete().neq("id", 0).execute()
+    except Exception as e:
+        print(f"Error deleting inventory: {e}")
     
-    # Then delete all existing capsules
-    client.table("capsules").delete().neq("id", 0).execute()
+    try:
+        # Then delete all existing capsules
+        client.table("capsules").delete().neq("id", 0).execute()
+    except Exception as e:
+        print(f"Error deleting capsules: {e}")
     
-    # Prepare data for batch insert
+    # Prepare data for batch insert - remove duplicates first
+    seen = set()
     insert_data = []
     for capsule in capsules:
-        insert_data.append({
-            "name": capsule["name"],
-            "name_en": capsule.get("name_en"),
-            "tasting_note": capsule.get("tasting_note"),
-            "tasting_note_en": capsule.get("tasting_note_en"),
-            "size_ml": capsule.get("size_ml"),
-            "pod_type": capsule.get("pod_type"),
-            "line": capsule.get("line"),
-            "intensity": capsule.get("intensity")
-        })
+        # Create unique key based on name, line, and size
+        key = (capsule["name"], capsule.get("line"), capsule.get("size_ml"))
+        if key not in seen:
+            seen.add(key)
+            insert_data.append({
+                "name": capsule["name"],
+                "name_en": capsule.get("name_en"),
+                "tasting_note": capsule.get("tasting_note"),
+                "tasting_note_en": capsule.get("tasting_note_en"),
+                "size_ml": capsule.get("size_ml"),
+                "pod_type": capsule.get("pod_type"),
+                "line": capsule.get("line"),
+                "intensity": capsule.get("intensity")
+            })
     
     # Batch insert (Supabase allows up to 1000 rows per insert)
     if insert_data:
@@ -312,4 +323,4 @@ def clear_and_reset_capsules(client: Client, capsules: list) -> int:
             batch = insert_data[i:i+1000]
             client.table("capsules").insert(batch).execute()
     
-    return len(capsules)
+    return len(insert_data)

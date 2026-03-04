@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0D5C2E">
+    <meta name="description" content="Nespresso Capsule Random Picker - Pick your next coffee randomly!">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Nespresso Picker">
+
+    <title>Nespresso Capsule Picker</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>☕ Nespresso Picker</h1>
+            <div class="header-controls">
+                <button id="langToggle" class="icon-btn" aria-label="Toggle Language">
+                    <span id="langLabel">EN</span>
+                </button>
+                <button id="userBtn" class="icon-btn" aria-label="User">
+                    👤
+                </button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab active" data-tab="pick">
+                <span class="tab-icon">🎲</span>
+                <span class="tab-text" data-en="Pick" data-zh="抽取">Pick</span>
+            </button>
+            <button class="tab" data-tab="inventory">
+                <span class="tab-icon">📦</span>
+                <span class="tab-text" data-en="Inventory" data-zh="库存">Inventory</span>
+            </button>
+            <button class="tab" data-tab="capsules">
+                <span class="tab-icon">☕</span>
+                <span class="tab-text" data-en="Capsules" data-zh="胶囊">Capsules</span>
+            </button>
+        </nav>
+
+        <main>
+            <!-- Pick Tab -->
+            <section id="pick-tab" class="tab-content active">
+                <div class="filter-section">
+                    <h3 data-en="Filter by Size" data-zh="按容量筛选">Filter by Size</h3>
+                    <div class="size-buttons">
+                        <button class="size-btn" data-size="espresso">
+                            <span class="size-icon">40ml</span>
+                            <span class="size-name" data-en="Espresso" data-zh="浓缩">Espresso</span>
+                        </button>
+                        <button class="size-btn" data-size="double">
+                            <span class="size-icon">80ml</span>
+                            <span class="size-name" data-en="Double" data-zh="双份">Double</span>
+                        </button>
+                        <button class="size-btn" data-size="lungo">
+                            <span class="size-icon">150ml</span>
+                            <span class="size-name" data-en="Lungo" data-zh="大杯">Lungo</span>
+                        </button>
+                        <button class="size-btn" data-size="coffee">
+                            <span class="size-icon">230ml</span>
+                            <span class="size-name" data-en="Coffee" data-zh="咖啡">Coffee</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="line-filter">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="originalLine" checked>
+                        <span data-en="Original Line" data-zh="Original系列">Original Line</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="vertuoLine" checked>
+                        <span data-en="Vertuo Line" data-zh="Vertuo系列">Vertuo Line</span>
+                    </label>
+                </div>
+
+                <div class="pick-section">
+                    <button id="pickBtn" class="pick-button">
+                        <span class="pick-text" data-en="Pick My Coffee!" data-zh="抽取我的咖啡！">Pick My Coffee!</span>
+                    </button>
+                </div>
+
+                <div id="result" class="result hidden">
+                    <div class="result-card">
+                        <div class="result-name" id="resultName"></div>
+                        <div class="result-info">
+                            <span class="result-line" id="resultLine"></span>
+                            <span class="result-size" id="resultSize"></span>
+                            <span class="result-intensity" id="resultIntensity"></span>
+                        </div>
+                        <div class="result-note" id="resultNote"></div>
+                        <div class="result-actions">
+                            <button id="confirmBtn" class="action-btn confirm">
+                                <span data-en="Confirm & Use" data-zh="确认使用">Confirm & Use</span>
+                            </button>
+                            <button id="rerollBtn" class="action-btn reroll">
+                                <span data-en="Pick Again" data-zh="重新抽取">Pick Again</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="emptyFilter" class="empty-state hidden">
+                    <p data-en="No capsules match your filters. Try different options." data-zh="没有胶囊符合筛选条件，请尝试其他选项。">No capsules match your filters. Try different options.</p>
+                </div>
+            </section>
+
+            <!-- Inventory Tab -->
+            <section id="inventory-tab" class="tab-content">
+                <div class="inventory-header">
+                    <h3 data-en="My Inventory" data-zh="我的库存">My Inventory</h3>
+                    <div class="inventory-stats">
+                        <span id="totalCapsules">0</span>
+                        <span data-en="capsules" data-zh="颗胶囊">capsules</span>
+                    </div>
+                </div>
+
+                <div id="inventoryList" class="inventory-list">
+                    <div class="empty-state" id="emptyInventory">
+                        <p data-en="Your inventory is empty. Start picking and confirm to add capsules!" data-zh="你的库存为空。开始抽取并确认添加胶囊！">Your inventory is empty. Start picking and confirm to add capsules!</p>
+                    </div>
+                </div>
+
+                <div id="inventoryManagement" class="inventory-management hidden">
+                    <div class="management-header">
+                        <h4 id="manageCapsuleName"></h4>
+                        <button id="closeManage" class="close-btn">&times;</button>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="qty-btn" id="qtyMinus">-</button>
+                        <span id="manageQty">0</span>
+                        <button class="qty-btn" id="qtyPlus">+</button>
+                    </div>
+                    <button id="deleteCapsule" class="delete-btn" data-en="Remove from Inventory" data-zh="从库存中移除">Remove from Inventory</button>
+                </div>
+            </section>
+
+            <!-- Capsules Tab -->
+            <section id="capsules-tab" class="tab-content">
+                <div class="capsules-header">
+                    <input type="text" id="searchCapsules" class="search-input" placeholder="Search capsules..." data-placeholder-en="Search capsules..." data-placeholder-zh="搜索胶囊...">
+                </div>
+
+                <div class="capsules-filters">
+                    <select id="filterLine" class="filter-select">
+                        <option value="all" data-en="All Lines" data-zh="所有系列">All Lines</option>
+                        <option value="Original" data-en="Original" data-zh="Original">Original</option>
+                        <option value="Vertuo" data-en="Vertuo" data-zh="Vertuo">Vertuo</option>
+                    </select>
+                    <select id="filterType" class="filter-select">
+                        <option value="all" data-en="All Sizes" data-zh="所有容量">All Sizes</option>
+                        <option value="espresso" data-en="Espresso (40ml)" data-zh="浓缩 (40ml)">Espresso (40ml)</option>
+                        <option value="double" data-en="Double (80ml)" data-zh="双份 (80ml)">Double (80ml)</option>
+                        <option value="lungo" data-en="Lungo (150ml)" data-zh="大杯 (150ml)">Lungo (150ml)</option>
+                        <option value="coffee" data-en="Coffee (230ml)" data-zh="咖啡 (230ml)">Coffee (230ml)</option>
+                    </select>
+                </div>
+
+                <div id="capsulesList" class="capsules-grid"></div>
+
+                <div id="emptyCapsules" class="empty-state hidden">
+                    <p data-en="No capsules found." data-zh="未找到胶囊。">No capsules found.</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- User Modal -->
+        <div id="userModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle" data-en="User Profile" data-zh="用户资料">User Profile</h3>
+                    <button class="close-btn" id="closeUserModal">&times;</button>
+                </div>
+                <div id="userForm" class="modal-body">
+                    <div class="form-group">
+                        <label for="userName" data-en="Display Name" data-zh="显示名称">Display Name</label>
+                        <input type="text" id="userName" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail" data-en="Email (optional)" data-zh="邮箱（可选）">Email (optional)</label>
+                        <input type="email" id="userEmail" placeholder="your@email.com">
+                    </div>
+                    <button id="saveUser" class="primary-btn" data-en="Save" data-zh="保存">Save</button>
+                </div>
+                <div id="userProfile" class="modal-body hidden">
+                    <div class="user-info">
+                        <div class="user-avatar" id="profileAvatar"></div>
+                        <div class="user-details">
+                            <div id="profileName"></div>
+                            <div id="profileEmail"></div>
+                        </div>
+                    </div>
+                    <button id="logoutBtn" class="secondary-btn" data-en="Switch User" data-zh="切换用户">Switch User</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast hidden"></div>
+
+        <!-- Install Prompt -->
+        <div id="installPrompt" class="install-prompt hidden">
+            <div class="install-content">
+                <span data-en="Install this app for a better experience!" data-zh="安装此应用以获得更好的体验！">Install this app for a better experience!</span>
+                <div class="install-buttons">
+                    <button id="installBtn" class="install-btn" data-en="Install" data-zh="安装">Install</button>
+                    <button id="dismissInstall" class="dismiss-btn">&times;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -172,6 +172,27 @@
             </section>
         </main>
 
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 data-en="Login / Register" data-zh="登录 / 注册">Login / Register</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="loginUsername" data-en="Username" data-zh="用户名">Username</label>
+                        <input type="text" id="loginUsername" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword" data-en="Password" data-zh="密码">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password">
+                    </div>
+                    <button id="loginBtn" class="primary-btn" data-en="Login" data-zh="登录">Login</button>
+                    <button id="registerBtn" class="secondary-btn" data-en="Register New Account" data-zh="注册新账号">Register New Account</button>
+                </div>
+            </div>
+        </div>
+
         <!-- User Modal -->
         <div id="userModal" class="modal hidden">
             <div class="modal-content">
@@ -179,26 +200,14 @@
                     <h3 id="modalTitle" data-en="User Profile" data-zh="用户资料">User Profile</h3>
                     <button class="close-btn" id="closeUserModal">&times;</button>
                 </div>
-                <div id="userForm" class="modal-body">
-                    <div class="form-group">
-                        <label for="userName" data-en="Display Name" data-zh="显示名称">Display Name</label>
-                        <input type="text" id="userName" placeholder="Your name">
-                    </div>
-                    <div class="form-group">
-                        <label for="userEmail" data-en="Email (optional)" data-zh="邮箱（可选）">Email (optional)</label>
-                        <input type="email" id="userEmail" placeholder="your@email.com">
-                    </div>
-                    <button id="saveUser" class="primary-btn" data-en="Save" data-zh="保存">Save</button>
-                </div>
-                <div id="userProfile" class="modal-body hidden">
+                <div id="userProfile" class="modal-body">
                     <div class="user-info">
                         <div class="user-avatar" id="profileAvatar"></div>
                         <div class="user-details">
                             <div id="profileName"></div>
-                            <div id="profileEmail"></div>
                         </div>
                     </div>
-                    <button id="logoutBtn" class="secondary-btn" data-en="Switch User" data-zh="切换用户">Switch User</button>
+                    <button id="logoutBtn" class="secondary-btn" data-en="Logout" data-zh="退出登录">Logout</button>
                 </div>
             </div>
         </div>

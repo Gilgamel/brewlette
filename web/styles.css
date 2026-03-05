@@ -904,3 +904,39 @@ main {
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+/* ==================== Stock Badges ==================== */
+.capsule-card {
+    position: relative;
+}
+
+.capsule-card.out-of-stock {
+    opacity: 0.6;
+}
+
+.stock-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.stock-badge.stock-ok {
+    background: rgba(56, 142, 60, 0.15);
+    color: var(--success);
+}
+
+.stock-badge.stock-empty {
+    background: rgba(211, 47, 47, 0.15);
+    color: var(--error);
+}
+
+.capsule-card.in-stock {
+    border: 2px solid var(--success);
+}
+
+.capsule-card.out-of-stock {
+    border: 2px solid var(--border);
+}

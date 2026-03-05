@@ -1,59 +1,130 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Project instructions for Claude Code.
 
 ## Project Overview
 
-Nespresso Pod Picker is a Streamlit web application for randomly selecting Nespresso coffee capsules based on user preferences and inventory tracking. Supports both Original Line and Vertuo Line capsules with Chinese/English language toggle.
+Nespresso Pod Picker - A PWA (Progressive Web App) for randomly selecting Nespresso coffee capsules with inventory management.
 
-## Running the Application
+## Running Locally
 
 ```bash
-streamlit run main.py
+# Option 1: Python simple server
+cd web
+python -m http.server 8000
+# Then open http://localhost:8000
+
+# Option 2: VS Code Live Server
+# Right-click index.html > Open with Live Server
 ```
 
-The app runs on port 8501 by default (configured in `.streamlit/config.toml`).
+## Deployment
 
-## Dependencies
+### Vercel (Recommended for Supabase integration)
+1. Push code to GitHub
+2. Go to https://vercel.com
+3. Import the repository
+4. Deploy
+
+### Netlify
+1. Push code to GitHub
+2. Go to https://netlify.com
+3. Drag and drop the `web` folder
+4. Or connect to GitHub for automatic deploys
+
+### GitHub Pages
+1. Push `web/` folder contents to a GitHub repository
+2. Go to Settings > Pages
+3. Enable GitHub Pages
+
+## Supabase Setup
+
+1. Create a Supabase project at https://supabase.com
+2. Run the following SQL in Supabase SQL Editor:
+
+```sql
+-- Capsules table
+CREATE TABLE capsules (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    name_en VARCHAR(255),
+    tasting_note TEXT,
+    tasting_note_en TEXT,
+    size_ml INTEGER,
+    pod_type VARCHAR(50),
+    line VARCHAR(50),
+    intensity INTEGER,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Users table
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Inventory table
+CREATE TABLE inventory (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    pod_id INTEGER REFERENCES capsules(id),
+    quantity INTEGER DEFAULT 0,
+    UNIQUE(user_id, pod_id)
+);
+
+-- Enable RLS (optional)
+ALTER TABLE capsules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access
+CREATE POLICY "Public read capsules" ON capsules FOR SELECT USING (true);
+CREATE POLICY "Public read users" ON users FOR SELECT USING (true);
+CREATE POLICY "Public read inventory" ON inventory FOR SELECT USING (true);
+
+-- Allow authenticated insert/update
+CREATE POLICY "Authenticated insert users" ON users FOR INSERT WITH CHECK (true);
+CREATE POLICY "Authenticated insert inventory" ON inventory FOR INSERT WITH CHECK (true);
+CREATE POLICY "Authenticated update inventory" ON inventory FOR UPDATE USING (true);
+CREATE POLICY "Authenticated delete inventory" ON inventory FOR DELETE USING (true);
+```
+
+3. Copy the Supabase URL and anon key
+4. Edit `web/supabase.js` and replace the credentials
+
+## Project Structure
 
 ```
-streamlit>=1.28.0
-supabase>=2.0.0
-requests>=2.31.0
-beautifulsoup4>=4.12.0
-lxml>=4.9.0
-pandas>=2.0.0
+brewlette/
+├── web/                 # PWA application
+│   ├── index.html       # Main HTML
+│   ├── app.js           # App logic
+│   ├── supabase.js      # Supabase client
+│   ├── styles.css       # Styles
+│   ├── sw.js            # Service worker (PWA)
+│   ├── manifest.json    # PWA manifest
+│   └── data/
+│       └── capsules.json # Local capsule data (fallback)
+├── data/                # Data files
+│   └── capsules.json
+├── src/                 # Source modules (for reference)
+│   ├── scraper.py
+│   ├── supabase_client.py
+│   └── translator.py
+└── CLAUDE.md
 ```
 
-Install with: `pip install -r requirements.txt`
+## Features
 
-## Architecture
+- Random capsule selection filtered by size
+- Multi-user inventory management
+- Chinese/English language toggle
+- PWA - installable on mobile/desktop
+- Works offline with local data fallback
 
-### Core Components
+## Tech Stack
 
-- **main.py** - Streamlit UI with tabs: Random Pick, My Inventory, Admin Panel
-- **src/supabase_client.py** - Database operations (capsules, users, inventory tables)
-- **src/scraper.py** - Web scraping for Nespresso data + fallback sample data
-- **src/translator.py** - i18n for Chinese/English
-
-### Database Schema (Supabase)
-
-Three tables: `capsules` (master pod data), `users` (multi-user support), `inventory` (user pod quantities). SQL schema provided in README.md.
-
-### Key Features
-
-- Random capsule selection filtered by size (40ml espresso, 80ml double, 150ml lungo, 230ml coffee)
-- Multi-user inventory management with quantity tracking
-- Admin panel to scrape/update capsule data from Nespresso Canada website
-- Language toggle between English and Chinese
-
-## Configuration
-
-Supabase credentials must be set in `.streamlit/secrets.toml`:
-```toml
-[supabase]
-url = "your-supabase-url"
-key = "your-anon-key"
-```
-
-Or via environment variables: `SUPABASE_URL` and `SUPABASE_KEY`.
+- Vanilla JavaScript (no framework)
+- Supabase (backend/database)
+- PWA (Service Worker + Manifest)

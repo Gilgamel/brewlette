@@ -79,7 +79,37 @@ async function init() {
 // ==================== Data Loading ====================
 async function loadCapsulesData() {
     try {
-        const response = await fetch('../data/capsules.json');
+        // Try to load from Supabase first
+        if (typeof supabase !== 'undefined') {
+            const capsules = await supabase.getAllCapsules();
+            if (capsules && capsules.length > 0) {
+                // Transform Supabase data to match app format
+                state.capsules = capsules.map(c => ({
+                    id: c.id,
+                    name: c.name_en || c.name,
+                    name_en: c.name_en || c.name,
+                    name_zh: c.name_en || c.name,  // Will need translation
+                    line: c.line,
+                    size_ml: c.size_ml,
+                    pod_type: c.pod_type,
+                    intensity: c.intensity,
+                    tasting_note_en: c.tasting_note_en || c.tasting_note,
+                    tasting_note_zh: c.tasting_note_en || c.tasting_note,
+                    color: getCapsuleColor(c.line, c.intensity)
+                }));
+                console.log(`Loaded ${state.capsules.length} capsules from Supabase`);
+                state.filteredCapsules = [...state.capsules];
+                renderCapsulesGrid();
+                return;
+            }
+        }
+    } catch (error) {
+        console.log('Using local data:', error.message);
+    }
+
+    // Fallback: try to load from local JSON
+    try {
+        const response = await fetch('./data/capsules.json');
         if (response.ok) {
             const data = await response.json();
             state.capsules = data.capsules || [];
@@ -87,10 +117,26 @@ async function loadCapsulesData() {
             state.capsules = getSampleCapsules();
         }
     } catch (error) {
-        console.log('Using sample capsules data');
         state.capsules = getSampleCapsules();
     }
     state.filteredCapsules = [...state.capsules];
+}
+
+// Helper function to generate capsule color based on line and intensity
+function getCapsuleColor(line, intensity) {
+    if (line === 'Vertuo') {
+        if (intensity >= 9) return '#8B0000';  // Dark red - intense
+        if (intensity >= 7) return '#B22222';  // Firebrick
+        if (intensity >= 5) return '#CD5C5C'; // Indian red
+        return '#F08080';                      // Light coral - mild
+    } else {
+        // Original Line colors
+        if (intensity >= 10) return '#3D2314'; // Very dark brown
+        if (intensity >= 8) return '#5C4033';  // Dark brown
+        if (intensity >= 6) return '#8B6914';  // Golden brown
+        if (intensity >= 4) return '#A89070';   // Light brown
+        return '#C4A77D';                       // Tan - mild
+    }
 }
 
 function getSampleCapsules() {
@@ -440,6 +486,10 @@ function switchTab(tabName) {
     if (tabName !== 'pick') {
         elements.result.classList.add('hidden');
     }
+    // Render capsules when switching to capsules tab
+    if (tabName === 'capsules') {
+        renderCapsulesGrid();
+    }
 }
 
 // ==================== Language ====================
@@ -670,9 +720,11 @@ function renderCapsulesGrid() {
     }).join('');
 
     elements.capsulesList.innerHTML = html;
-    elements.capsulesList.querySelectorAll('.capsule-card').forEach(card => {
+    const cards = elements.capsulesList.querySelectorAll('.capsule-card');
+    cards.forEach(card => {
         card.addEventListener('click', () => {
-            const capsule = state.capsules.find(c => c.id === card.dataset.id);
+            // Use == for type coercion (id might be number or string)
+            const capsule = state.capsules.find(c => c.id == card.dataset.id);
             if (capsule) openAddInventoryModal(capsule);
         });
     });

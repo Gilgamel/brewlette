@@ -5,9 +5,9 @@ const ASSETS_TO_CACHE = [
     './index.html',
     './styles.css',
     './app.js',
+    './supabase.js',
     './manifest.json',
-    '../data/capsules.json',
-    'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">☕</text></svg>'
+    './data/capsules.json'
 ];
 
 // ==================== Install Event ====================
@@ -49,6 +49,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Skip chrome-extension and other non-http requests
+    if (!event.request.url.startsWith('http')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then((cachedResponse) => {
@@ -61,18 +66,21 @@ self.addEventListener('fetch', (event) => {
                 return fetch(event.request)
                     .then((networkResponse) => {
                         // Check if valid response
-                        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                        if (!networkResponse || networkResponse.status !== 200) {
                             return networkResponse;
                         }
 
-                        // Clone the response
-                        const responseToCache = networkResponse.clone();
+                        // Only cache same-origin requests
+                        if (event.request.url.origin === self.location.origin) {
+                            // Clone the response
+                            const responseToCache = networkResponse.clone();
 
-                        // Add to cache for future use
-                        caches.open(CACHE_NAME)
-                            .then((cache) => {
-                                cache.put(event.request, responseToCache);
-                            });
+                            // Add to cache for future use
+                            caches.open(CACHE_NAME)
+                                .then((cache) => {
+                                    cache.put(event.request, responseToCache);
+                                });
+                        }
 
                         return networkResponse;
                     })

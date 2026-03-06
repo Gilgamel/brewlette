@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0D5C2E">
-    <meta name="description" content="Nespresso Capsule Random Picker - Pick your next coffee randomly!">
+    <meta name="description" content="Brewlette - Random Coffee Capsule Picker">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Nespresso Picker">
+    <meta name="apple-mobile-web-app-title" content="Brewlette">
 
-    <title>Nespresso Capsule Picker</title>
+    <title>Brewlette 随便喝</title>
 
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
@@ -20,7 +20,7 @@
 <body>
     <div id="app">
         <header>
-            <h1>☕ Nespresso Picker</h1>
+            <h1>☕ Brewlette <span style="font-size:0.6em">随便喝</span></h1>
             <div class="header-controls">
                 <button id="langToggle" class="icon-btn" aria-label="Toggle Language">
                     <span id="langLabel">EN</span>
@@ -227,6 +227,11 @@
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>powered by <strong>Gilgamel</strong></p>
+        </footer>
     </div>
 
     <script src="supabase.js"></script>

@@ -615,6 +615,12 @@ function applyLanguage(lang) {
     state.language = lang;
     elements.langLabel.textContent = lang === 'en' ? 'EN' : '中';
 
+    // Update app title based on language
+    const titleEl = document.querySelector('header h1');
+    if (titleEl) {
+        titleEl.innerHTML = lang === 'en' ? '☕ Brewlette' : '☕ 随便喝';
+    }
+
     document.querySelectorAll('[data-en]').forEach(el => {
         const key = el.dataset[lang];
         if (key) {

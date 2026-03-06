@@ -67,7 +67,7 @@ const elements = {
 // ==================== Initialization ====================
 async function init() {
     await loadCapsulesData();
-    checkLoginStatus();
+    await checkLoginStatus();
     setupEventListeners();
     registerServiceWorker();
     checkInstallPrompt();
@@ -257,19 +257,33 @@ function getCurrentUser() {
     return users[userId] || null;
 }
 
-function checkLoginStatus() {
+async function checkLoginStatus() {
     const user = getCurrentUser();
     if (user) {
-        state.user = user;
+        // Try to get user with ID from Supabase
+        try {
+            if (typeof supabase !== 'undefined') {
+                const supabaseUser = await supabase.getUserByUsername(user.username);
+                if (supabaseUser) {
+                    state.user = supabaseUser;
+                } else {
+                    state.user = user;
+                }
+            } else {
+                state.user = user;
+            }
+        } catch (e) {
+            state.user = user;
+        }
         state.isLoggedIn = true;
-        loadInventory();
+        await loadInventory();
         elements.loginModal.classList.add('hidden');
     } else {
         elements.loginModal.classList.remove('hidden');
     }
 }
 
-function login() {
+async function login() {
     const username = elements.loginUsername.value.trim();
     const password = elements.loginPassword.value.trim();
     const lang = state.language;
@@ -279,22 +293,51 @@ function login() {
         return;
     }
 
-    const users = getUsers();
+    try {
+        // Try to login via Supabase
+        if (typeof supabase !== 'undefined') {
+            const user = await supabase.getUserByUsername(username);
+            if (!user) {
+                showToast(lang === 'en' ? 'User not found. Register first.' : '用户不存在，请先注册', 'error');
+                return;
+            }
 
-    // Check if user exists
+            // For simplicity, we'll use localStorage password check for now
+            // In production, you'd use proper Supabase Auth
+            const users = getUsers();
+            if (!users[username] || users[username].password !== simpleHash(password)) {
+                showToast(lang === 'en' ? 'Wrong password' : '密码错误', 'error');
+                return;
+            }
+
+            // Login successful
+            state.user = user;
+            state.isLoggedIn = true;
+            localStorage.setItem('nespresso_current_user', username);
+            elements.loginModal.classList.add('hidden');
+            await loadInventory();
+            renderInventory();
+            showToast(lang === 'en' ? `Welcome, ${username}!` : `欢迎，${username}！`, 'success');
+            elements.loginPassword.value = '';
+            return;
+        }
+    } catch (error) {
+        console.log('Supabase login failed, trying localStorage');
+    }
+
+    // Fallback to localStorage
+    const users = getUsers();
     if (!users[username]) {
         showToast(lang === 'en' ? 'User not found. Register first.' : '用户不存在，请先注册', 'error');
         return;
     }
 
-    // Verify password (simple hash for demo)
     const storedHash = users[username].password;
     if (storedHash !== simpleHash(password)) {
         showToast(lang === 'en' ? 'Wrong password' : '密码错误', 'error');
         return;
     }
 
-    // Login successful
     state.user = { username: username };
     state.isLoggedIn = true;
     localStorage.setItem('nespresso_current_user', username);
@@ -305,7 +348,7 @@ function login() {
     elements.loginPassword.value = '';
 }
 
-function register() {
+async function register() {
     const username = elements.loginUsername.value.trim();
     const password = elements.loginPassword.value.trim();
     const lang = state.language;
@@ -325,26 +368,35 @@ function register() {
         return;
     }
 
+    // Save to localStorage (needed for password verification)
     const users = getUsers();
-
     if (users[username]) {
         showToast(lang === 'en' ? 'Username already exists' : '用户名已存在', 'error');
         return;
     }
 
-    // Create new user
+    // Create new user in localStorage
     users[username] = {
         username: username,
         password: simpleHash(password)
     };
     saveUsers(users);
 
+    // Try to create user in Supabase
+    try {
+        if (typeof supabase !== 'undefined') {
+            await supabase.createUser(username);
+        }
+    } catch (error) {
+        console.log('Supabase user creation skipped');
+    }
+
     // Auto login
     state.user = { username: username };
     state.isLoggedIn = true;
     localStorage.setItem('nespresso_current_user', username);
     elements.loginModal.classList.add('hidden');
-    loadInventory();
+    await loadInventory();
     renderInventory();
     showToast(lang === 'en' ? `Account created! Welcome, ${username}!` : `账号已创建！欢迎，${username}！`, 'success');
     elements.loginPassword.value = '';
@@ -373,20 +425,63 @@ function simpleHash(str) {
 }
 
 // ==================== Inventory ====================
-function loadInventory() {
+async function loadInventory() {
     const username = state.user?.username;
     if (!username) {
         state.inventory = {};
         return;
     }
+
+    // Try to load from Supabase first
+    try {
+        if (typeof supabase !== 'undefined' && state.user?.id) {
+            const supabaseInventory = await supabase.getUserInventory(state.user.id);
+            if (supabaseInventory && supabaseInventory.length > 0) {
+                const inv = {};
+                supabaseInventory.forEach(item => {
+                    if (item.capsules) {
+                        inv[item.capsules.id] = {
+                            ...item.capsules,
+                            quantity: item.quantity,
+                            inventoryId: item.id
+                        };
+                    }
+                });
+                state.inventory = inv;
+                // Also save to localStorage as backup
+                localStorage.setItem(`nespresso_inv_${username}`, JSON.stringify(state.inventory));
+                return;
+            }
+        }
+    } catch (error) {
+        console.log('Loading from Supabase failed, using localStorage');
+    }
+
+    // Fallback to localStorage
     const savedInventory = localStorage.getItem(`nespresso_inv_${username}`);
     state.inventory = savedInventory ? JSON.parse(savedInventory) : {};
 }
 
-function saveInventory() {
+async function saveInventory() {
     const username = state.user?.username;
     if (!username) return;
+
+    // Always save to localStorage as backup
     localStorage.setItem(`nespresso_inv_${username}`, JSON.stringify(state.inventory));
+
+    // Try to save to Supabase
+    try {
+        if (typeof supabase !== 'undefined' && state.user?.id) {
+            // Save each inventory item to Supabase
+            for (const [capsuleId, item] of Object.entries(state.inventory)) {
+                if (item.quantity > 0) {
+                    await supabase.addToInventory(state.user.id, capsuleId, item.quantity);
+                }
+            }
+        }
+    } catch (error) {
+        console.log('Saving to Supabase failed');
+    }
 }
 
 function setInventoryQuantity(capsuleId, quantity) {

@@ -883,6 +883,7 @@ function registerServiceWorker() {
 let deferredPrompt;
 
 function checkInstallPrompt() {
+    // Chrome/Edge: Use beforeinstallprompt event
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -892,6 +893,27 @@ function checkInstallPrompt() {
         elements.installPrompt.classList.add('hidden');
         deferredPrompt = null;
     });
+
+    // Safari: Check if already installed or show manual instructions
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) {
+        // Check if running in standalone mode (already installed)
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            return; // Already installed
+        }
+        // Show install instructions for Safari
+        const installText = document.getElementById('installText');
+        const installBtn = document.getElementById('installBtn');
+        if (installText) {
+            installText.textContent = 'Tap Share > Add to Home Screen';
+        }
+        if (installBtn) {
+            installBtn.style.display = 'none'; // Hide install button for Safari
+        }
+        setTimeout(() => {
+            elements.installPrompt.classList.remove('hidden');
+        }, 2000);
+    }
 }
 
 function installApp() {

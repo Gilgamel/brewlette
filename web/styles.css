@@ -744,6 +744,21 @@ main {
     transition: var(--transition);
 }
 
+.text-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--gray);
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.text-btn:hover {
+    color: var(--primary);
+}
+
 .user-info {
     display: flex;
     align-items: center;

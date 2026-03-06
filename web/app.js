@@ -53,6 +53,8 @@ const elements = {
     loginPassword: document.getElementById('loginPassword'),
     loginBtn: document.getElementById('loginBtn'),
     registerBtn: document.getElementById('registerBtn'),
+    skipLoginBtn: document.getElementById('skipLoginBtn'),
+    closeLoginModal: document.getElementById('closeLoginModal'),
     userModal: document.getElementById('userModal'),
     profileAvatar: document.getElementById('profileAvatar'),
     profileName: document.getElementById('profileName'),
@@ -413,6 +415,16 @@ function logout() {
     showToast(state.language === 'en' ? 'Logged out' : '已退出登录', 'success');
 }
 
+function skipLogin() {
+    // Continue as guest (no login required)
+    state.user = null;
+    state.isLoggedIn = false;
+    state.inventory = {};
+    elements.loginModal.classList.add('hidden');
+    renderInventory();
+    renderCapsulesGrid();
+}
+
 // Simple hash function for demo (not secure for production)
 function simpleHash(str) {
     let hash = 0;
@@ -550,6 +562,11 @@ function setupEventListeners() {
     // Login/Register
     elements.loginBtn.addEventListener('click', login);
     elements.registerBtn.addEventListener('click', register);
+    elements.skipLoginBtn.addEventListener('click', skipLogin);
+    elements.closeLoginModal.addEventListener('click', skipLogin);
+    elements.loginModal.addEventListener('click', (e) => {
+        if (e.target === elements.loginModal) skipLogin();
+    });
     elements.loginPassword.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') login();
     });

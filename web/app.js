@@ -932,7 +932,24 @@ function showToast(message, type = '') {
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker registered'))
+            .then(reg => {
+                console.log('Service Worker registered');
+                // Check for updates
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New version available
+                            showToast(
+                                state.language === 'en'
+                                    ? 'New version available! Refresh to update.'
+                                    : '有新版本可用！刷新以更新。',
+                                'success'
+                            );
+                        }
+                    });
+                });
+            })
             .catch(err => console.log('SW registration failed:', err));
     }
 }

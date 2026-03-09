@@ -1,5 +1,5 @@
 // ==================== Service Worker for Offline Support ====================
-const CACHE_NAME = 'nespresso-picker-v1';
+const CACHE_NAME = 'nespresso-picker-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

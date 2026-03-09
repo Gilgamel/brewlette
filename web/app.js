@@ -307,7 +307,15 @@ async function login() {
             // For simplicity, we'll use localStorage password check for now
             // In production, you'd use proper Supabase Auth
             const users = getUsers();
-            if (!users[username] || users[username].password !== simpleHash(password)) {
+            if (!users[username]) {
+                // User exists in Supabase but not in localStorage
+                // Create localStorage record with the password
+                users[username] = {
+                    username: username,
+                    password: simpleHash(password)
+                };
+                saveUsers(users);
+            } else if (users[username].password !== simpleHash(password)) {
                 showToast(lang === 'en' ? 'Wrong password' : '密码错误', 'error');
                 return;
             }
@@ -375,6 +383,19 @@ async function register() {
     if (users[username]) {
         showToast(lang === 'en' ? 'Username already exists' : '用户名已存在', 'error');
         return;
+    }
+
+    // Also check Supabase for existing user
+    try {
+        if (typeof supabase !== 'undefined') {
+            const existingSupabaseUser = await supabase.getUserByUsername(username);
+            if (existingSupabaseUser) {
+                showToast(lang === 'en' ? 'Username already exists' : '用户名已存在', 'error');
+                return;
+            }
+        }
+    } catch (error) {
+        console.log('Supabase check skipped');
     }
 
     // Create new user in localStorage

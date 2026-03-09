@@ -1,0 +1,89 @@
+<string>:30: SyntaxWarning: invalid escape sequence '\!'
+Total: 87
+Starbucks® Blonde Espresso Roast | Smooth & sweet notes | None
+Starbucks® Veranda Blend | Mellow & Cocoa Notes | None
+Starbucks® Smooth Caramel | Flavoured coffee featuring creamy caramel and vanilla notes | None
+Starbucks® Creamy Vanilla | Flavored coffee featuring sweet vanilla and biscuit notes | None
+Starbucks® Single Origin Colombia | Balanced ​with Nutty Notes​ | None
+Starbucks® Pike Place® Roast | Smooth with Chocolate Notes | None
+Starbucks® Espresso Roast | Rich & Caramelly Notes | None
+Starbucks® Caffè Verona® | Roasty Sweet & Dark Cocoa Notes | None
+French Lavender & Vanilla Decaffeinato | French Lavender and Vanilla flavoured decaffeinated coffee | None
+Hawaii Kona | Fruity & Nutty | None
+Pistachio Vanilla Flavour Over Ice | Pistachio & Vanilla Flavoured | None
+White Chocolate Strawberry | White chocolate & strawberry | None
+Flavoured Sweet Almond and Hibiscus | Almond & hibiscus flavoured | None
+Flavoured Cinnamon and Candied Tamarind | Cinnamon and tamarind flavoured | None
+Tanzania | Exclusive coffee creation with dry cereals and citrus | None
+Blend No. 2 | Fruity & Biscuity | None
+Gingerbread | Gingerbread & Spice | None
+Pumpkin Spice Cake | Pumpkin & Spices Flavoured | None
+Tanzania | Exclusive coffee creation with dry cereals and citrus | None
+Togetherness Blend | Exclusive coffee creation with honey & woody notes | None
+Travel Mug - Samra Origins | Medium - 400 ml | None
+Iced Coffee Tumbler - Samra Origins | Large - 540 ml | None
+Spring Collection Set - Vertuo | Includes 2 coffee sleeves, 1 tote bag and 1 travel mug | None
+Blue Bottle Coffee Set | Includes 2 coffee sleeves and 1 Blue Bottle Tumbler | None
+Cozy Winter Coffee Set - Vertuo | Featuring our Limited Edition Festive coffees, a reversible tote bag, a dark chocolate box and coffee mug | None
+Curated Best-sellers + Collagen Coffee Box | Includes 1 large travel mug, 20 coffee capsules & 1 box of Vital Protein Collagen Peptides | None
+Active - Vitamin B6 | Vitamin B6 infused & almond and vanilla flavoured coffee | None
+Ice Leggero | Light Cereal and Fruity | None
+Ice Forte | Intense and Spicy | None
+Cold Brew Style Intense | Sweet Caramel and Roasted Cereal | None
+Iced Coffee Tumbler - Blue Bottle | Large - 540 ml | None
+Double espresso Chiaro Decaffeinato | Woody and Toasted Cereal | None
+Sweet Vanilla Decaffeinato | Coffee (230ml) | None
+Half Caffeinato | Biscuity and Malted Cereal​ | None
+Melozio Decaffeinato | Toasted cereal and biscuity​ | None
+Fortado Decaffeinato | Intensely Roasted and Woody​ | None
+Altissio Decaffeinato | Cocoa and Intensely Roasted | None
+Kahawa ya Congo | Fruity & Biscuity | None
+Bianco Forte | Dark Roasted and Cereal | None
+Intenso | Smooth & Strong | None
+Stormio | Spicy and Woody​ | None
+Ice Forte | Intense and Spicy | None
+Odacio | Toasted Cereal and Fruity​ | None
+Mexico | Woody and Spicy | None
+Melozio | Toasted Cereal and Biscuity​ | None
+Melozio Decaffeinato | Toasted cereal and biscuity​ | None
+Vivida | Same smooth blend of our best-seller coffee Melozio, now enriched with vitamin B12\* | None
+Colombia - Fairtrade | Red Fruit Notes | None
+Half Caffeinato | Biscuity and Malted Cereal​ | None
+El Salvador | Sweet and Jam | None
+Solelio | Fruity and lightly-bodied | None
+Alto Onice | Woody and spicy​ | None
+Alto Ambrato | Toasted Cereal and Honeyed​ | None
+Carafe Pour-Over Style | Intensely Roasted and Smoky | None
+Cold Brew Style Intense | Sweet Caramel and Roasted Cereal | None
+Fortado | Intensely Roasted and Woody​ | None
+Fortado Decaffeinato | Intensely Roasted and Woody​ | None
+Costa Rica | Malted and Sweet​ Cereals | None
+Arondio | Toasted Cereal and Caramel​ | None
+Inizio | Floral and Cereal | None
+Ethiopia | Floral and delicate | None
+Ice Leggero | Light Cereal and Fruity | None
+Il Caffè | Intensely Roasted and Toasted Cereal | None
+Diavolitto | Spicy and Oak Wood | None
+Ristretto Classico | Intensely roasted & berry | None
+Altissio | Cocoa and Intensely Roasted | None
+Altissio Decaffeinato | Cocoa and Intensely Roasted | None
+Orafio | Caramel and Malted Cereal | None
+Voltesso | Light and Sweet | None
+Peru Organic | Fruity and Elegant | None
+Bianco Piccolo | Intense and Smooth | None
+Double Espresso Scuro | Intensely Roasted and Cocoa | None
+Double Espresso Chiaro | Woody and Toasted Cereal | None
+Double Espresso Dolce | Caramel and Malted Cereal | None
+Double espresso Chiaro Decaffeinato | Woody and Toasted Cereal | None
+Bianco Doppio | Smooth and Caramel | None
+Active - Vitamin B6 | Vitamin B6 infused & almond and vanilla flavoured coffee | None
+Maple Pecan | Maple and Pecan Flavoured | None
+Roasted Hazelnut | Hazelnut Flavoured | None
+Golden Caramel | Caramel Flavoured | None
+Sweet Vanilla | Vanilla Flavoured | None
+Rich Chocolate | Dark Chocolate Flavoured | None
+Sweet Vanilla Decaffeinato | Coffee (230ml) | None
+Decaffeinated Pleasure Vertuo Assortment | A Selection of Decaffeinated Coffees | None
+Intense Vertuo Coffee Lovers Assortment | A Selection of Strong Coffees | None
+Canadians’ Favourites Vertuo Assortment | 6 of our Best-selling Coffees in Canada | None
+Flavoured Vertuo Coffee Lovers Assortment | Discover our selection of coffees specially crafted to complement milk, for cold or hot recipes. | None

@@ -6,7 +6,9 @@
       "Bash(curl:*)",
       "WebFetch(domain:qwqjfsgemtxihpzrcrnv.supabase.co)",
       "Bash(node:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(firecrawl scrape:*)",
+      "Bash(ls:*)"
     ]
   }
 }

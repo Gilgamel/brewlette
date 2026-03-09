@@ -92,10 +92,7 @@ header h1 {
     align-items: center;
     gap: 6px;
     letter-spacing: -0.3px;
-    background: linear-gradient(135deg, #7C5CDB 0%, #9D85EE 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text);
 }
 
 .header-controls {
@@ -329,10 +326,7 @@ main {
 .result-name {
     font-size: 1.7rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #7C5CDB 0%, #9D85EE 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text);
     margin-bottom: 12px;
     letter-spacing: -0.3px;
 }

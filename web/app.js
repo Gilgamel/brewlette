@@ -295,67 +295,72 @@ async function login() {
         return;
     }
 
+    // First check localStorage (password is stored locally)
+    const users = getUsers();
+    if (users[username]) {
+        // User exists in localStorage, check password
+        if (users[username].password !== simpleHash(password)) {
+            showToast(lang === 'en' ? 'Wrong password' : '密码错误', 'error');
+            return;
+        }
+
+        // Login successful with localStorage
+        state.user = { username: username };
+        state.isLoggedIn = true;
+        localStorage.setItem('nespresso_current_user', username);
+        elements.loginModal.classList.add('hidden');
+
+        // Try to sync with Supabase in background
+        if (typeof supabase !== 'undefined') {
+            try {
+                const supabaseUser = await supabase.getUserByUsername(username);
+                if (supabaseUser) {
+                    state.user = supabaseUser;
+                } else {
+                    // Create user in Supabase if not exists
+                    await supabase.createUser(username);
+                }
+            } catch (e) {
+                console.log('Supabase sync skipped');
+            }
+        }
+
+        await loadInventory();
+        renderInventory();
+        showToast(lang === 'en' ? `Welcome, ${username}!` : `欢迎，${username}！`, 'success');
+        elements.loginPassword.value = '';
+        return;
+    }
+
+    // User not in localStorage, try Supabase
     try {
-        // Try to login via Supabase
         if (typeof supabase !== 'undefined') {
             const user = await supabase.getUserByUsername(username);
-            if (!user) {
-                showToast(lang === 'en' ? 'User not found. Register first.' : '用户不存在，请先注册', 'error');
-                return;
-            }
-
-            // For simplicity, we'll use localStorage password check for now
-            // In production, you'd use proper Supabase Auth
-            const users = getUsers();
-            if (!users[username]) {
-                // User exists in Supabase but not in localStorage
-                // Create localStorage record with the password
+            if (user) {
+                // User exists in Supabase, save to localStorage and login
                 users[username] = {
                     username: username,
                     password: simpleHash(password)
                 };
                 saveUsers(users);
-            } else if (users[username].password !== simpleHash(password)) {
-                showToast(lang === 'en' ? 'Wrong password' : '密码错误', 'error');
+
+                state.user = user;
+                state.isLoggedIn = true;
+                localStorage.setItem('nespresso_current_user', username);
+                elements.loginModal.classList.add('hidden');
+                await loadInventory();
+                renderInventory();
+                showToast(lang === 'en' ? `Welcome, ${username}!` : `欢迎，${username}！`, 'success');
+                elements.loginPassword.value = '';
                 return;
             }
-
-            // Login successful
-            state.user = user;
-            state.isLoggedIn = true;
-            localStorage.setItem('nespresso_current_user', username);
-            elements.loginModal.classList.add('hidden');
-            await loadInventory();
-            renderInventory();
-            showToast(lang === 'en' ? `Welcome, ${username}!` : `欢迎，${username}！`, 'success');
-            elements.loginPassword.value = '';
-            return;
         }
     } catch (error) {
         console.log('Supabase login failed, trying localStorage');
     }
 
-    // Fallback to localStorage
-    const users = getUsers();
-    if (!users[username]) {
-        showToast(lang === 'en' ? 'User not found. Register first.' : '用户不存在，请先注册', 'error');
-        return;
-    }
-
-    const storedHash = users[username].password;
-    if (storedHash !== simpleHash(password)) {
-        showToast(lang === 'en' ? 'Wrong password' : '密码错误', 'error');
-        return;
-    }
-
-    state.user = { username: username };
-    state.isLoggedIn = true;
-    localStorage.setItem('nespresso_current_user', username);
-    elements.loginModal.classList.add('hidden');
-    loadInventory();
-    renderInventory();
-    showToast(lang === 'en' ? `Welcome, ${username}!` : `欢迎，${username}！`, 'success');
-    elements.loginPassword.value = '';
+    // No user found anywhere
+    showToast(lang === 'en' ? 'User not found. Register first.' : '用户不存在，请先注册', 'error');
 }
 
 async function register() {
@@ -385,14 +390,32 @@ async function register() {
         return;
     }
 
-    // Also check Supabase for existing user
+    // Check Supabase for existing user (only if localStorage doesn't have it)
+    let supabaseUser = null;
     try {
         if (typeof supabase !== 'undefined') {
-            const existingSupabaseUser = await supabase.getUserByUsername(username);
-            if (existingSupabaseUser) {
-                showToast(lang === 'en' ? 'Username already exists' : '用户名已存在', 'error');
+            supabaseUser = await supabase.getUserByUsername(username);
+            if (supabaseUser) {
+                // User exists in Supabase, save to localStorage and login
+                users[username] = {
+                    username: username,
+                    password: simpleHash(password)
+                };
+                saveUsers(users);
+
+                // Auto login
+                state.user = supabaseUser;
+                state.isLoggedIn = true;
+                localStorage.setItem('nespresso_current_user', username);
+                elements.loginModal.classList.add('hidden');
+                await loadInventory();
+                renderInventory();
+                showToast(lang === 'en' ? `Welcome back, ${username}!` : `欢迎回来，${username}！`, 'success');
+                elements.loginPassword.value = '';
                 return;
             }
+            // Create user in Supabase
+            await supabase.createUser(username);
         }
     } catch (error) {
         console.log('Supabase check skipped');
@@ -404,15 +427,6 @@ async function register() {
         password: simpleHash(password)
     };
     saveUsers(users);
-
-    // Try to create user in Supabase
-    try {
-        if (typeof supabase !== 'undefined') {
-            await supabase.createUser(username);
-        }
-    } catch (error) {
-        console.log('Supabase user creation skipped');
-    }
 
     // Auto login
     state.user = { username: username };

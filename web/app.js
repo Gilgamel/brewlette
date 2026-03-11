@@ -16,6 +16,7 @@ const state = {
 // ==================== DOM Elements ====================
 const elements = {
     langToggle: document.getElementById('langToggle'),
+    refreshBtn: document.getElementById('refreshBtn'),
     langLabel: document.getElementById('langLabel'),
     userBtn: document.getElementById('userBtn'),
     tabs: document.querySelectorAll('.tab'),
@@ -559,6 +560,26 @@ function getInventoryCapsules() {
 // ==================== Event Listeners ====================
 function setupEventListeners() {
     elements.langToggle.addEventListener('click', toggleLanguage);
+
+    // Refresh button - force reload on iOS
+    elements.refreshBtn.addEventListener('click', async () => {
+        // Try to unregister service worker first
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const reg of registrations) {
+                await reg.unregister();
+            }
+        }
+        // Clear caches
+        if ('caches' in window) {
+            const keys = await caches.keys();
+            for (const key of keys) {
+                await caches.delete(key);
+            }
+        }
+        // Reload
+        window.location.reload(true);
+    });
 
     elements.tabs.forEach(tab => {
         tab.addEventListener('click', () => switchTab(tab.dataset.tab));

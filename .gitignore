@@ -49,3 +49,7 @@ Thumbs.db
 # Environment
 .env
 .env.local
+
+# Local data (scraped HTML files)
+"capsules screenshots/"
+data/nespresso_ca_api.json

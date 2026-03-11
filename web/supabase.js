@@ -34,7 +34,8 @@ const supabase = {
         const options = {
             method,
             headers,
-            mode: 'cors'
+            mode: 'cors',
+            cache: 'no-store'
         };
         if (body) options.body = JSON.stringify(body);
 

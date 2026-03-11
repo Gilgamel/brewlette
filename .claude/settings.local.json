@@ -8,7 +8,9 @@
       "Bash(node:*)",
       "WebSearch",
       "Bash(firecrawl scrape:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebFetch(domain:www.nespresso.com)",
+      "Bash(python3:*)"
     ]
   }
 }

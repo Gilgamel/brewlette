@@ -111,7 +111,7 @@ async function loadCapsulesData() {
 
     // Fallback: try to load from local JSON
     try {
-        const response = await fetch('./data/capsules.json');
+        const response = await fetch('./data/capsules.json', { cache: 'no-store' });
         if (response.ok) {
             const data = await response.json();
             state.capsules = data.capsules || [];

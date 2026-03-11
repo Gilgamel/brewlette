@@ -1,5 +1,783 @@
 {
-  "last_updated": "2026-03-04T19:47:29.371531",
-  "source": "https://www.nespresso.com",
-  "capsules": []
+  "last_updated": "2026-03-09",
+  "source": "HTML extraction from Nespresso Canada",
+  "capsules": [
+    {
+      "name": "Active",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Vitamin B6 infused & almond and vanilla flavoured coffee"
+    },
+    {
+      "name": "Almond & Hibiscus Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Almond & hibiscus flavoured"
+    },
+    {
+      "name": "Altissio Coffee Capsules   Arabica Espresso",
+      "intensity": 9,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Cocoa and Intensely Roasted"
+    },
+    {
+      "name": "Altissio Decaffeinato Coffee Capsule",
+      "intensity": 9,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Cocoa and Intensely Roasted"
+    },
+    {
+      "name": "Alto Ambrato Coffee Capsules",
+      "intensity": 4,
+      "size_ml": 355,
+      "line": "Vertuo",
+      "tasting_note": "Toasted Cereal and Honeyed​"
+    },
+    {
+      "name": "Alto Onice Coffee Capsules",
+      "intensity": 7,
+      "size_ml": 355,
+      "line": "Vertuo",
+      "tasting_note": "Woody and spicy​"
+    },
+    {
+      "name": "Arondio Coffee Capsules",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Toasted Cereal and Caramel​"
+    },
+    {
+      "name": "Arpeggio Coffee Capsules",
+      "intensity": 9,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intensely roasted with cocoa notes"
+    },
+    {
+      "name": "Arpeggio Decaffeinato Coffee Capsules",
+      "intensity": 9,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intense & creamy"
+    },
+    {
+      "name": "Bianco Doppio Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 80,
+      "line": "Vertuo",
+      "tasting_note": "Smooth and Caramel"
+    },
+    {
+      "name": "Bianco Forte Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Dark Roasted and Cereal"
+    },
+    {
+      "name": "Bianco Piccolo Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Vertuo",
+      "tasting_note": "Intense and Smooth"
+    },
+    {
+      "name": "Blonde Espresso Roast   Starbucks Capsules",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Smooth & sweet notes"
+    },
+    {
+      "name": "Blue Bottle Blend No. 2",
+      "intensity": 7,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Fruity & Biscuity"
+    },
+    {
+      "name": "Buenos Aires Lungo Coffee Capsules",
+      "intensity": 4,
+      "size_ml": 110,
+      "line": "Original",
+      "tasting_note": "Sweet and Cereal"
+    },
+    {
+      "name": "Caffè Florian",
+      "intensity": 9,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Woody & Spicy"
+    },
+    {
+      "name": "Caffè Verona   Starbucks Capsules",
+      "intensity": 10,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Roasty Sweet & Dark Cocoa Notes"
+    },
+    {
+      "name": "Cape Town Lungo Coffee Capsules",
+      "intensity": 10,
+      "size_ml": 110,
+      "line": "Original",
+      "tasting_note": "Woody and Intensely Roasted"
+    },
+    {
+      "name": "Capriccio Coffee Capsules",
+      "intensity": 5,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Dry Cereal"
+    },
+    {
+      "name": "Capsules Amande & Hibiscus   Édition Limitée Original",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Almond & hibiscus flavoured"
+    },
+    {
+      "name": "Carafe Pour Over Style Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 535,
+      "line": "Original",
+      "tasting_note": "Intensely Roasted and Smoky"
+    },
+    {
+      "name": "Caramello Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Caramel Flavoured"
+    },
+    {
+      "name": "Chiaro Coffee Capsules  Barista Creations",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Notes of Caramel and Sweet Biscuits"
+    },
+    {
+      "name": "Chiaro Decaffeinato   Decaffeinated Vertuo Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Woody and Toasted Cereal"
+    },
+    {
+      "name": "Cinnamon & Tamarind Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Cinnamon and tamarind flavoured"
+    },
+    {
+      "name": "Cinnamon & Tamarind Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Cinnamon and tamarind flavoured"
+    },
+    {
+      "name": "Cioccolatino Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Chocolate Flavoured"
+    },
+    {
+      "name": "Cold Brew",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Sweet Caramel and Roasted Cereal"
+    },
+    {
+      "name": "Colombia Fair Trade Coffee Capsules   Colombian Coffee",
+      "intensity": 5,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Red Fruit Notes"
+    },
+    {
+      "name": "Colombia",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Fruity and vibrant"
+    },
+    {
+      "name": "Corto Coffee Capsules  Barista Creations",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Spicy and Smoked"
+    },
+    {
+      "name": "Cosi Coffee Capsules",
+      "intensity": 4,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Mild and delicately roasted"
+    },
+    {
+      "name": "Costa Rica Coffee Capsule",
+      "intensity": 7,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Malted and Sweet​ Cereals"
+    },
+    {
+      "name": "Creamy Vanilla   Starbucks Capsules",
+      "intensity": 5,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Flavored coffee featuring sweet vanilla and biscuit notes"
+    },
+    {
+      "name": "Diavolitto Coffee Capsules",
+      "intensity": 11,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Spicy and Oak Wood"
+    },
+    {
+      "name": "Double Espresso Chiaro Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Woody and Toasted Cereal"
+    },
+    {
+      "name": "Double Espresso Dolce Coffee Capsule",
+      "intensity": 5,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Caramel and Malted Cereal"
+    },
+    {
+      "name": "Double Espresso Scuro Coffee Capsules",
+      "intensity": 11,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intensely Roasted and Cocoa"
+    },
+    {
+      "name": "El Salvador Coffee Capsules",
+      "intensity": 5,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Sweet and Jam"
+    },
+    {
+      "name": "Espresso Roast   Starbucks Capsules",
+      "intensity": 11,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Rich & Caramelly Notes"
+    },
+    {
+      "name": "Ethiopian Coffee   Dry Processed Arabica",
+      "intensity": 4,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Flowery and fruity"
+    },
+    {
+      "name": "Fortado Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intensely Roasted and Woody​"
+    },
+    {
+      "name": "Fortado Decaffeinato Coffee Capsule",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intensely Roasted and Woody​"
+    },
+    {
+      "name": "Freddo Intenso",
+      "intensity": 8,
+      "size_ml": 50,
+      "line": "Original",
+      "tasting_note": "For intense recipes with ice"
+    },
+    {
+      "name": "French Lavender Vanilla Decaffeinato",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "French Lavender and Vanilla flavoured decaffeinated coffee"
+    },
+    {
+      "name": "Gingerbread Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Gingerbread & Spice"
+    },
+    {
+      "name": "Golden Caramel Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Caramel Flavoured"
+    },
+    {
+      "name": "Half Caffeinato Coffee Pods",
+      "intensity": 5,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Biscuity and Malted Cereal​"
+    },
+    {
+      "name": "Hawaii Kona",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Fruity & Exotic"
+    },
+    {
+      "name": "Hawaii Kona",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Fruity & Nutty"
+    },
+    {
+      "name": "Ice Forte",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Intense and Spicy"
+    },
+    {
+      "name": "Ice Leggero",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Light Cereal and Fruity"
+    },
+    {
+      "name": "Indian Monsoon Malabar   Robusta Coffee",
+      "intensity": 11,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intense and spicy"
+    },
+    {
+      "name": "Indonesia Coffee Pods   Arabica",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Rich and woody"
+    },
+    {
+      "name": "Inizio Coffee Capsule   Gran Lungo",
+      "intensity": 4,
+      "size_ml": 110,
+      "line": "Original",
+      "tasting_note": "Floral and Cereal"
+    },
+    {
+      "name": "Intenso Vertuo Coffee Pods   Robusta Coffee",
+      "intensity": 9,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Smooth & Strong"
+    },
+    {
+      "name": "Ispirazione Napoli Coffee Capsules   Italian Coffee",
+      "intensity": 13,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intensely roasted wtih cocoa notes"
+    },
+    {
+      "name": "Ispirazione Roma Coffee Capsules   Espresso Coffee",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Woody & dry cereal"
+    },
+    {
+      "name": "Ispirazione Venezia Coffee Capsule   Italian Coffee",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Toasted cereals & caramel"
+    },
+    {
+      "name": "Istanbul Espresso Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Roasted with Hint of Fruits and Almonds"
+    },
+    {
+      "name": "Kahawa ya Congo Coffee Capsules   Reviving Origin",
+      "intensity": 7,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Fruity & Biscuity"
+    },
+    {
+      "name": "Kahawa ya Congo",
+      "intensity": 6,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Fruity & Biscuity"
+    },
+    {
+      "name": "Kazaar Coffee Capsules",
+      "intensity": 12,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Spicy & woody"
+    },
+    {
+      "name": "Livanto Coffee Capsules   Italian Coffee",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Caramel & Toasted Cereal"
+    },
+    {
+      "name": "Maple Pecan Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Maple and Pecan Flavoured"
+    },
+    {
+      "name": "Maple Pecan Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Maple and Pecan Flavoured"
+    },
+    {
+      "name": "Melozio Coffee Capsules",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Toasted Cereal and Biscuity​"
+    },
+    {
+      "name": "Melozio Decaffeinato Coffee Capsule",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Toasted cereal and biscuity​"
+    },
+    {
+      "name": "Mexico Coffee Capsules",
+      "intensity": 7,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Woody and Spicy"
+    },
+    {
+      "name": "Miami Espresso Coffee Capsules",
+      "intensity": 9,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intensely Roasted and Spicy"
+    },
+    {
+      "name": "Nespresso",
+      "intensity": 11,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Intensely Roasted and Toasted Cereal"
+    },
+    {
+      "name": "Nicaragua Coffee Capsules",
+      "intensity": 5,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Sweet and harmonious"
+    },
+    {
+      "name": "Nocciola Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Hazelnut Flavoured"
+    },
+    {
+      "name": "Odacio Coffee Capsules",
+      "intensity": 7,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Toasted Cereal and Fruity​"
+    },
+    {
+      "name": "Orafio Coffee Capsule   Espresso",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Caramel and Malted Cereal"
+    },
+    {
+      "name": "Paris Espresso Coffee Capsules",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Toasted cereal and biscuity"
+    },
+    {
+      "name": "Peru Organic Coffee Capsules   Master Origin",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Fruity and Elegant"
+    },
+    {
+      "name": "Peru Organic Coffee Capsules",
+      "intensity": 6,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Fruity and Elegant"
+    },
+    {
+      "name": "Pike Place Roast   Starbucks Capsules",
+      "intensity": 7,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Smooth with Chocolate Notes"
+    },
+    {
+      "name": "Pistachio Coffee",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Pistachio & Vanilla Flavoured"
+    },
+    {
+      "name": "Pistachio Coffee",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Pistachio & Vanilla Flavoured"
+    },
+    {
+      "name": "Pumpkin Spice Cake coffee capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Pumpkin & Spices Flavoured"
+    },
+    {
+      "name": "Rich Chocolate Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Dark Chocolate Flavoured"
+    },
+    {
+      "name": "Rio de Janeiro Espresso Coffee Capsules",
+      "intensity": 9,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Herbal and Spicy"
+    },
+    {
+      "name": "Ristretto Classico Coffee Capsules",
+      "intensity": 9,
+      "size_ml": 25,
+      "line": "Vertuo",
+      "tasting_note": "Intensely roasted & berry"
+    },
+    {
+      "name": "Ristretto Coffee Capsules",
+      "intensity": 10,
+      "size_ml": 25,
+      "line": "Original",
+      "tasting_note": "Intensely roasted with berry notes"
+    },
+    {
+      "name": "Ristretto Decaffeinato capsule",
+      "intensity": 10,
+      "size_ml": 25,
+      "line": "Original",
+      "tasting_note": "Intensely roasted with berry notes"
+    },
+    {
+      "name": "Roasted Hazelnut Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Hazelnut Flavoured"
+    },
+    {
+      "name": "Scuro Coffee Capsules  Barista Creations",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Balanced biscuit notes"
+    },
+    {
+      "name": "Shanghai Lungo Coffee Capsules",
+      "intensity": 5,
+      "size_ml": 110,
+      "line": "Original",
+      "tasting_note": "Fruity & Citrus"
+    },
+    {
+      "name": "Single Origin Colombia   Starbucks Capsules",
+      "intensity": 7,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Balanced ​with Nutty Notes​"
+    },
+    {
+      "name": "Smooth Caramel   Starbucks Capsules",
+      "intensity": 5,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Flavoured coffee featuring creamy caramel and vanilla notes"
+    },
+    {
+      "name": "Solelio   Long Fruity & Light Roast Coffee",
+      "intensity": 2,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Fruity and lightly-bodied"
+    },
+    {
+      "name": "Stockholm Lungo Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 110,
+      "line": "Original",
+      "tasting_note": "Malted cereal & intensely roasted"
+    },
+    {
+      "name": "Stormio Coffee Capsules   Arabica",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Spicy and Woody​"
+    },
+    {
+      "name": "Sweet Vanilla Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Vanilla Flavoured"
+    },
+    {
+      "name": "Sweet Vanilla Decaffeinato",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": ""
+    },
+    {
+      "name": "Tanzania Original   SAMRA ORIGINS by the Weeknd",
+      "intensity": 5,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Exclusive coffee creation with dry cereals and fruity notes"
+    },
+    {
+      "name": "Tanzania Vertuo   SAMRA ORIGINS by the Weeknd",
+      "intensity": 5,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Exclusive coffee creation with dry cereals and citrus"
+    },
+    {
+      "name": "Togetherness Blend   Samra Origins by the Weeknd",
+      "intensity": 7,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Exclusive coffee creation with honey & woody notes"
+    },
+    {
+      "name": "Tokyo Lungo Coffee Capsules",
+      "intensity": 6,
+      "size_ml": 110,
+      "line": "Original",
+      "tasting_note": "Flowery and Toasted Cereal"
+    },
+    {
+      "name": "Vaniglia Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Vanilla Flavoured"
+    },
+    {
+      "name": "Vaniglia Decaffeinato   Decaffeinated Coffee Capsules",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Vanilla flavoured"
+    },
+    {
+      "name": "Veranda Blend   Starbucks Capsules",
+      "intensity": 6,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Mellow & Cocoa Notes"
+    },
+    {
+      "name": "Vienna Decaffeinato   Decaffeinated Coffee Capsules",
+      "intensity": 7,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Round & smooth"
+    },
+    {
+      "name": "Vienna Lungo Coffee Capsules",
+      "intensity": 6,
+      "size_ml": 110,
+      "line": "Original",
+      "tasting_note": "Malted Cereal"
+    },
+    {
+      "name": "Vivida",
+      "intensity": 8,
+      "size_ml": 230,
+      "line": "Vertuo",
+      "tasting_note": "Same smooth blend of our best-seller coffee Melozio, now enriched with vitamin B12*"
+    },
+    {
+      "name": "Volluto Coffee Capsules",
+      "intensity": 4,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Sweet and light"
+    },
+    {
+      "name": "Volluto Decaffeinato Coffee Capsules",
+      "intensity": 4,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "Sweet and Light"
+    },
+    {
+      "name": "Voltesso Espresso",
+      "intensity": 4,
+      "size_ml": 40,
+      "line": "Vertuo",
+      "tasting_note": "Light and Sweet"
+    },
+    {
+      "name": "White Chocolate Strawberry",
+      "intensity": 8,
+      "size_ml": 40,
+      "line": "Original",
+      "tasting_note": "White chocolate & strawberry"
+    }
+  ]
 }

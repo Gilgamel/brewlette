@@ -1,5 +1,5 @@
 // ==================== Service Worker for Offline Support ====================
-const CACHE_NAME = 'nespresso-picker-v2';
+const CACHE_NAME = 'nespresso-picker-v4';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -51,6 +51,12 @@ self.addEventListener('fetch', (event) => {
 
     // Skip chrome-extension and other non-http requests
     if (!event.request.url.startsWith('http')) {
+        return;
+    }
+
+    // Always fetch fresh data for Supabase and API requests
+    if (event.request.url.includes('supabase') || event.request.url.includes('api')) {
+        event.respondWith(fetch(event.request));
         return;
     }
 

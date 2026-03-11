@@ -654,6 +654,9 @@ main {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 12px;
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+    padding-bottom: 20px;
 }
 
 .capsule-card {

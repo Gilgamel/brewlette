@@ -10,7 +10,8 @@
       "Bash(firecrawl scrape:*)",
       "Bash(ls:*)",
       "WebFetch(domain:www.nespresso.com)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "WebFetch(domain:brewlette-ivory.vercel.app)"
     ]
   }
 }

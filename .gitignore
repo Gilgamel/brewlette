@@ -53,3 +53,4 @@ Thumbs.db
 # Local data (scraped HTML files)
 "capsules screenshots/"
 data/nespresso_ca_api.json
+src/extract_capsules.py

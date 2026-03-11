@@ -939,19 +939,40 @@ function registerServiceWorker() {
                     const newWorker = reg.installing;
                     newWorker.addEventListener('statechange', () => {
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // New version available
-                            showToast(
-                                state.language === 'en'
-                                    ? 'New version available! Refresh to update.'
-                                    : '有新版本可用！刷新以更新。',
-                                'success'
-                            );
+                            // New version available - force activate immediately
+                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                            // Reload the page to get fresh content
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 500);
                         }
                     });
                 });
             })
             .catch(err => console.log('SW registration failed:', err));
     }
+}
+
+// Check if iOS
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+// Force refresh for iOS
+if (isIOS()) {
+    window.addEventListener('load', () => {
+        // Clear caches on iOS by unregistering SW
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (let registration of registrations) {
+                    registration.unregister().then(() => {
+                        console.log('SW unregistered for iOS refresh');
+                        window.location.reload();
+                    });
+                }
+            });
+        }
+    });
 }
 
 // ==================== Install Prompt ====================

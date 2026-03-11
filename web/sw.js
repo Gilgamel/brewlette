@@ -1,5 +1,6 @@
 // ==================== Service Worker for Offline Support ====================
-const CACHE_NAME = 'nespresso-picker-v4';
+const CACHE_NAME = 'nespresso-picker-v5';
+const CACHE_VERSION = '5';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -23,6 +24,13 @@ self.addEventListener('install', (event) => {
             })
     );
     self.skipWaiting();
+});
+
+// ==================== Message Event ====================
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
 // ==================== Activate Event ====================

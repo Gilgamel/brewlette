@@ -1,0 +1,6 @@
+import { g as o } from "./config.es.min.js";
+const a = async (e) => {
+  e ? (await import("./index.es.min2.js"), console.log("%cExperimental Search feature ENABLED", "font-weight: 800; background: #33BB44; color: #fff")) : (await import("./search-bar.es.min.js"), console.log("%cExperimental Search feature DISABLED", "font-weight: 800; background: #BB3344; color: #fff"));
+};
+o().then(a);
+//# sourceMappingURL=index.es.min.js.map

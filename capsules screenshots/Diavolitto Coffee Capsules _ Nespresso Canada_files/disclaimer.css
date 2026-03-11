@@ -1,0 +1,1 @@
+.nb-disclaimer{display:flex;justify-content:center}.nb-disclaimer__text{padding-top:.25em}.nb-disclaimer .nb-tooltip{display:block;margin:0 .5rem}@media screen and (min-width:768px){.nb-disclaimer{align-items:center}}@media screen and (max-width:767px){.nb-disclaimer .nb-tooltip{margin-top:-.125rem}}

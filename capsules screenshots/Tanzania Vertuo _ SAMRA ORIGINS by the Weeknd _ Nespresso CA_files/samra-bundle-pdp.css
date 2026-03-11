@@ -1,0 +1,66 @@
+#ProductDetails nb-pdp-detailed-description section,
+#ProductDetails nb-content-composer section,
+#ProductDetails nb-recipes-variant section,
+#ProductDetails .content-composer__heading,
+#ProductDetails nb-machine-specifications nb-container.next-v1 li p,
+#ProductDetails nb-pdp-assortment-bundles nb-link>*,
+#ProductDetails .nb-usp p,
+#ProductDetails .pdp-assortments-listing__headline {
+	color: #fff;
+}
+
+#ProductDetails nb-pdp-assortment-bundles nb-link {
+	margin-top: 1em;
+}
+
+#ProductDetails nb-content-composer .cb-bg-color{
+	background-color: #fff !important;
+}
+
+#ProductDetails nb-pdp-assortment-bundles nb-link span:after{
+	background: #fff;
+}
+
+#ProductDetails nb-pdp-detailed-description .cb-bg-color,
+#ProductDetails nb-machine-specifications .cb-bg-color,
+#ProductDetails nb-machine-specifications section,
+#ProductDetails nb-pdp-assortment-bundles .pdp-assortments__list,
+#ProductDetails nb-usp .cb-bg-color,
+#ProductDetails nb-pdp-assortment-bundles section,
+#ProductDetails nb-usp section,
+#ProductDetails nb-image-text section {
+	color: #fff;
+	background-color: #222;
+}
+
+#ProductDetails [contrast=dark] nb-cta .button--tertiary {
+	border: 1px solid #fff;
+}
+
+#ProductDetails,
+#ProductDetails nb-recipes-variant .cb-bg-color,
+#ProductDetails nb-content-composer section,
+#ProductDetails nb-content-composer .cb-bg-color,
+#ProductDetails .cb-bg-color.black_1000 {
+	background-color: #222 !important;
+}
+
+#ProductDetails nb-content-composer .card-text{
+	background-color: #000 !important;
+}
+
+#ProductDetails nb-card-recipe{
+	color: #fff;
+    background: #000;
+}
+#ProductDetails nb-card-recipe .meta{
+	color:#ccc;
+}
+
+#ProductDetails nb-pdp-detailed-description nb-level .selected {
+	background: #fff;
+}
+
+#ProductDetails nb-media-text {
+    color: #fff;
+}

@@ -1,0 +1,52 @@
+(function() {
+'use strict';
+
+window.getFingerPrint = function (callback) {
+
+    var timeoutId = null;
+    var isCompleted = false;
+    var intervalId = null;
+
+    if (typeof callback !== 'function') {
+        window.console.error('IOVATION-FINGERPRINT-ERROR: Invalid callback function.');
+        return;
+    }
+
+    function complete(error, result) {
+        if (isCompleted) {
+            return;
+        }
+
+        isCompleted = true;
+
+        if (intervalId) {
+            clearInterval(intervalId);
+        }
+
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+
+        callback(error, result);
+
+    }
+
+    intervalId = setInterval(function () {
+        if (!window.IGLOO || typeof window.IGLOO.getBlackbox !== 'function') {
+            window.console.warn('IOVATION-FINGERPRINT-ERROR: SDK not yet loaded, retrying...');
+            return;
+        }
+
+        try {
+            var bbData = window.IGLOO.getBlackbox();
+            if (bbData && bbData.finished) {
+                complete(null, bbData.blackbox);
+            }
+        } catch (err) {
+            window.console.error('IOVATION-FINGERPRINT-ERROR: Failed to retrieve fingerprint.', err);
+            complete('IOVATION-FINGERPRINT-ERROR: SDK retrieval failure.', null);
+        }
+    }, 1000);
+
+    timeoutId = setTimeout(function () { complete('IOVATION-FINGERPRINT-ERROR: generation timed out.', null); }, 10000);
+};})();

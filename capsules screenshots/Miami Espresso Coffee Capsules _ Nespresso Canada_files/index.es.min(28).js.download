@@ -1,0 +1,2 @@
+// paragraph 1.1.0 2/8/2022 2:06:24 PM
+class e extends HTMLElement{render(){this.classList.add("c-Paragraph"),this.classList.add(this.level)}connectedCallback(){this.size=this.getAttribute("size"),this.sizeMobile=this.getAttribute("size_mobile");this.sizeMobile=this.sizeMobile?this.sizeMobile:this.size,this.currentSize=window.innerWidth<768?this.sizeMobile:this.size,this.level=`c-Paragraph__${["xl","l","m","s","xs"][this.currentSize-1]}`,this.render()}disconnectedCallback(){}}customElements.get("n-paragraph")||customElements.define("n-paragraph",e);export{e as default};

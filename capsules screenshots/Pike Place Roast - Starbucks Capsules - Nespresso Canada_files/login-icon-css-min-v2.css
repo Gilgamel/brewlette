@@ -1,0 +1,250 @@
+ #ta-login-dropdown--logged,
+ #ta-login-dropdown--not-logged {
+     position: relative;
+ }
+
+ #ta-login-dropdown--not-logged:after {
+     position: absolute;
+     left: 22px;
+     top: 2px;
+     width: 14px;
+     height: 14px;
+     content: '';
+     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDYuMC1jMDA2IDc5LmRhYmFjYmIsIDIwMjEvMDQvMTQtMDA6Mzk6NDQgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkI3QjhGOEYyNjEwQzExRUNBNjg1RDBBMTM5RkJFQTVDIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkI3QjhGOEYxNjEwQzExRUNBNjg1RDBBMTM5RkJFQTVDIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCAyMi40IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjI4N0M3OUUzMTA3MjExRUNBQ0I2OUU3RTExRkNGM0NBIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjI4N0M3OUU0MTA3MjExRUNBQ0I2OUU3RTExRkNGM0NBIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+biX5AAAAA8tJREFUeNp8VWtsVEUU/mbm3rvb7rJUKNRoiMQoIMb6j8QfaiU+YuqDNqXEtkgJPhK6EYIGY9T+MfGf+qM0RoNCkLZiVAINJhBjfACJGqPWH21tNMWqhbp93+7zzoxn5naXSmtPMruTOed8c875zpzLCg6HkZGb1+BUbTU4AiilHC7cZq11La1qUlchlCu0+rTGGc5ZF4cKJATu/6ofm/pGrQFHUbQCYwwarBlMDEmpjhLYdtJspFUxv8x+O9kZ3ZDSaGZ0EPODEgwnFJgVzyoorTs0+HE6WG+O/1+0+VlvbBV4B1eypGHfP3InGBf49tbEoUwg2gQzxqzotOyeoqSQHLjS76y5MJJknOLrOFADqVAn4X7KIcEJPChkUcj61skrT0AI10LIII98Zsbu3egKOG6E6i2hmQNPqHoGdZJr5nINcYRpSZlz5DI+gnwGt9XswS13NSIzPRZekEsjl57ChrufxMZ7Wi1wgeyMj/HNF9QRWtyRMmjSmq00NZNBzhJz+wN78XB9q43kY4pq4MujxBPH5q3PYlvLvrD4lMng+Q+g6N+UjPwIQzQ5lNYOxsLaKCnheNESmJGGp15Bd2YWTqQcdbueL53XNjyNoYs9NmVBgKaehNPI3tq/dZj0NxULnae04qvX4Zn2HohIZEmOLw32o/f9F5CZScErSywgCpdMH1YubIdofBUm/x7E2+0N+PyzTxaBnTvdg1Pv7oM/PoJorGIhmJFKvlQEBnTir36kp0YX6fzxPzB5+TdEYquWjN7UMEW3xGzCxJhhM+tPoPqhJB5rSi5yqN/9onma+PX8MZQl1kI4EaqfKqpTnPj4Rc9HbfrMFPmOB9uwbef+Esh333yBgZ9+uErUnpew6d7dkIUc2QcLrmN9HFqeYPPvTAYFuJEYHn1ib8lkmAj4+sOXcfbYQeR8/2qkrQdBA4Q6IwQMg9IfUVeKbgKctt0fKbMsH35tlzWaTaXQe/gAgtwc1fMK3nt9ZwnwnfYdtm+F49nuoFc3TZOqm73x3H2meHWMO/bpGcnMpnDdjZsppSxmxn5H+coqG0J6ZgwV12+ww2RqdBDlVMPi03O4rqdxdlK86mnccHlq4J+q6BrJvS3G0Y3GMTfxJz2vWZStWB06UUqeOSfmc3OTdF5pyaFnAq4LndDBm4YcVhywE2sTON645RBF2XZNby0jNHGY6Hy898fkuuHx/w5YP+ZRJtr0SYvhIhxVy4KRjW6hqJI0va01C/swlHS8tO2ie0+QtplMrv0EjNH6mUg8Q+ddVIbAoPhxt3TNvwIMAA1SpTtOA3IiAAAAAElFTkSuQmCC');
+     background-size: cover;
+     background-repeat: no-repeat;
+     background-position: center center;
+ }
+
+ #ta-login-dropdown--logged:after {
+     position: absolute;
+     left: 22px;
+     top: 2px;
+     width: 14px;
+     height: 14px;
+     content: '';
+     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAADqADAAQAAAABAAAADgAAAAC98Dn6AAABs0lEQVQoFZ1SSyiEURT+zv2HJMNMlDHKeG5EeZTYeDVDNA1ZyEZiIQs7k9eapCxtKPakFNkIC0UpOxFSDOWdxzAeY2aue/+ZH1PDwqnTfx7f9597HoQf4hhN0t9zt5MABzjPVlNERxxYMFL82ELf7ZMGF5iglI/EVHMEpgFu0WLhX3IRWMf6wNuajKtElUT+FfCgH0744RE4ccUqyaQ+L+De+b0SoGNRSNKbcfnokrVcRhafz2RPf5Fio/WYaNvATNchUhLSBZFbJIcJq0FoRJGVhpvmkJNcgLO7Q9x5rlScHB4jzrOkV2SpxHz3KRoKO79+MmifQnF6FW6fL+CctePd9xrMiYnrNBQjBYlxJvTUjoMRg9mQCWtuCzzvbvTOOkL9aWhAsdh0zcI1nT8c4+HlBmVZdarmpZbiw+9F/1wjds+3vhnCIqI9Jc2qmIVdITP7F9u491yjLLte7J9jaLEdm0dLMhUuRJMR11GSYUOAB7B9shpOUL3gOv59AHIdUC9BXIRcboQSoZA4udDVyICiAV2rvuOCGuPUG7wfonuDeEqcUK8chPAnxbW0Lve7DzT8JwO8pngGmx03AAAAAElFTkSuQmCC');
+     background-size: cover;
+     background-repeat: no-repeat;
+     background-position: center center;
+ }
+
+ .expChecks li:before {
+     content: '';
+     width: 16px;
+     height: 16px;
+     display: inline-block;
+     margin-right: 10px;
+     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDYuMC1jMDA2IDc5LmRhYmFjYmIsIDIwMjEvMDQvMTQtMDA6Mzk6NDQgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCAyMi40IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo0OUFFMzQ0OTEwN0ExMUVDOEY1NUFBODgzMDc4NERFRCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo0OUFFMzQ0QTEwN0ExMUVDOEY1NUFBODgzMDc4NERFRCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjQ5QUUzNDQ3MTA3QTExRUM4RjU1QUE4ODMwNzg0REVEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQ5QUUzNDQ4MTA3QTExRUM4RjU1QUE4ODMwNzg0REVEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+LOevlgAAARtJREFUeNpi/P//PwM1ARMDlQFLdL8upWawAnEbEC8C4sssVHDURiD2BOJwINal1MDtQOwBZcsC8U0mKhkGAz/JNXAnFsNuArEmzEB+IE4m0rBdQOyGJnYDiPWA+BvIQD4gvgjEc4D4EAHDdgOxK5rYdahhv2Dp8BYQy0MlbYH4CA7D9gCxCw6X/UZO2N/QFFkD8X40sW1A7IwmdheI9YH4D3pO0QTia2iKHYB4KxALAvFqaDpDBreRvYmSU0BRDZUEhaM2kpwXEL8AYjYchv3Al5f/QhVdQZPHZpgOLsPQC4d/QGwAxJdwqAWlM11s3sRX2oBcagj1PrbY/ElO8YXu0pvQ2PxFaXkIitkJ0Mj5RWyeZBz0JTZAgAEAPwg/veT6jZgAAAAASUVORK5CYII=');
+     background-size: cover;
+     background-repeat: no-repeat;
+     background-position: center center;
+     vertical-align: middle;
+     margin-bottom: 4px;
+ }
+
+ @media only screen and (max-width: 768px) {
+
+     #ta-login-dropdown--not-logged:after,
+     #ta-login-dropdown--logged:after {
+         left: 30px;
+         top: 4px;
+         width: 16px;
+         height: 16px;
+     }
+
+     #ta-login-dropdown--not-logged.LoginDropdownButton--open:after,
+     #ta-login-dropdown--logged.LoginDropdownButton--open:after {
+         display: none;
+     }
+
+     ul.AccountMenu__section-list {
+         text-align: left !important;
+     }
+
+     .LoggedInPanel__title {
+         font-size: 1rem !important;
+     }
+ }
+
+ .LoginDropdown__register-description,
+ .LoginDropdown__dropdown hr,
+ .LoginDropdown__description {
+     display: none !important;
+ }
+
+ #ta-login-form__submit {
+     background-color: black !important;
+     color: white !important;
+     margin-top: 15px;
+ }
+
+ #ta-login-dropdown-register {
+     margin-top: 10px !important;
+ }
+
+ #ta-login-form__submit,
+ #ta-login-dropdown-register {
+     height: 50px;
+     font-size: 1.01rem;
+     line-height: 17px;
+     padding-left: 10px;
+     padding-right: 10px;
+ }
+
+ #ta-login-form__submit i,
+ #ta-login-dropdown-register i {
+     transform: translateY(-2px);
+ }
+
+ .LoginDropdown__title {
+     font-size: 1.5rem !important;
+     text-transform: none !important;
+ }
+
+ .LoginDropdown__dropdown form {
+     margin-top: -10px !important;
+ }
+
+ .LoginForm__forgotten-password {
+     margin-top: -3px !important;
+ }
+
+ .LoginDropdown__dropdown {
+     display: flex !important;
+     flex-flow: row-reverse wrap;
+ }
+
+ .LoginDropdown__dropdown>div {
+     width: 100%;
+ }
+
+ .LoginDropdown__dropdown>div:not(.LoginDropdown__usps) {
+     order: 1;
+ }
+
+ .LoginDropdown__dropdown>div.LoginDropdown__usps {
+     order: 2;
+ }
+
+ .LoginDropdown__usps {
+     margin-top: 25px;
+     width: 100vw !important;
+     background: #f0efee;
+     padding-bottom: 20px;
+     padding-top: 20px;
+     margin-left: 0;
+     margin-right: -28px;
+     transform: translateX(-14px);
+     padding-left: 14px;
+     padding-right: 14px;
+     margin-bottom: -14px;
+ }
+
+ .LoginDropdown__usps h3 {
+     text-transform: none !important;
+     font-weight: bold;
+     margin-bottom: 5px;
+ }
+
+ .LoginDropdown__usps li {
+     margin-bottom: 3px;
+ }
+
+ .LoginDropdown__usps li:before {
+     content: '';
+     width: 16px;
+     height: 16px;
+     display: inline-block;
+     vertical-align: middle;
+     margin-right: 7px;
+     background-size: cover;
+     background-repeat: no-repeat;
+     background-position: center center;
+ }
+
+ @media only screen and (max-width: 995px) {
+     .LoggedInPanel #ta-logout {
+         margin-bottom: 20px;
+     }
+
+     .LoginDropdown__dropdown {
+         width: 100vw !important;
+         max-width: unset !important;
+         padding: 30px 40px 0px 40px !important;
+     }
+
+     .LoginDropdown__usps {
+         margin-left: 0;
+         margin-right: -80px;
+         transform: translateX(-40px);
+         padding-left: 40px;
+         padding-right: 40px;
+         margin-bottom: 0;
+     }
+
+     .LoginDropdown__reorder {
+         margin-bottom: 20px;
+     }
+ }
+
+ #ta-login-dropdown-register {
+     position: relative;
+ }
+
+ #ta-login-dropdown-register:before {
+     /* content: 'Create account'; */
+     display: block;
+     left: 0;
+     right: 0;
+     top: 0;
+     bottom: 0;
+     background-color: white;
+     position: absolute;
+     padding-right: 20px;
+     line-height: 45px;
+ }
+
+ #ta-login-dropdown-register i {
+     color: black !important;
+ }
+
+ #ta-login-dropdown-register:hover i {
+     color: white !important;
+     transition: all .3s;
+ }
+
+ #ta-login-dropdown-register:hover:before {
+     color: white !important;
+     background-color: black !important;
+     transition: all .3s;
+ }
+
+ #ta-login-form__submit:hover i {
+     color: black !important;
+     transition: all .3s;
+ }
+
+ #ta-login-form__submit:hover {
+     color: black !important;
+     background-color: white !important;
+     transition: all .3s;
+     border-color: black;
+ }
+
+ .LoginDropdown__usps li.repeat:before {
+     background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='14px' height='14px' viewBox='0 0 14 14' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3Eicon/16/refresh%3C/title%3E%3Cdefs%3E%3Cpath d='M11.935,2.05625 C10.66625,0.7875 8.925,0 6.99125,0 C3.12375,0 -9.55902024e-14,3.1325 -9.55902024e-14,7 C-9.55902024e-14,10.8675 3.12375,14 6.99125,14 C10.255,14 12.97625,11.76875 13.755,8.75 L11.935,8.75 C11.2175,10.78875 9.275,12.25 6.99125,12.25 C4.095,12.25 1.74125,9.89625 1.74125,7 C1.74125,4.10375 4.095,1.75 6.99125,1.75 C8.44375,1.75 9.73875,2.35375 10.68375,3.3075 L7.86625,6.125 L13.99125,6.125 L13.99125,0 L11.935,2.05625 Z' id='path-1'%3E%3C/path%3E%3C/defs%3E%3Cg id='inlog-stimulatie' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E%3Cg id='2.0-inlog-stimulatie' transform='translate(-40.000000, -575.000000)'%3E%3Cg id='icon/16/refresh' transform='translate(40.000000, 575.000000)'%3E%3Cmask id='mask-2' fill='white'%3E%3Cuse xlink:href='%23path-1'%3E%3C/use%3E%3C/mask%3E%3Cuse id='Path' fill='%238f7247' fill-rule='nonzero' xlink:href='%23path-1'%3E%3C/use%3E%3Cg id='Group' mask='url(%23mask-2)' fill='%238f7247'%3E%3Cg id='color'%3E%3Crect id='Rectangle' x='0' y='0' width='14.875' height='14.875'%3E%3C/rect%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+ }
+
+ .LoginDropdown__usps li.offer:before {
+     background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='14px' height='15px' viewBox='0 0 14 15' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3EGroup 2%3C/title%3E%3Cg id='inlog-stimulatie' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E%3Cg id='2.0-inlog-stimulatie' transform='translate(-40.000000, -604.000000)' stroke='%238f7247' stroke-width='1.2'%3E%3Cg id='Group-2' transform='translate(40.000000, 605.000000)'%3E%3Crect id='Rectangle' x='1.8173913' y='7.49390654' width='4.88695652' height='5.90609346'%3E%3C/rect%3E%3Crect id='Rectangle-Copy-2' x='0.6' y='4.26386406' width='6.10434783' height='2.67605098'%3E%3C/rect%3E%3Crect id='Rectangle-Copy-3' x='7.29565217' y='4.26386406' width='6.10434783' height='2.67605098'%3E%3C/rect%3E%3Crect id='Rectangle-Copy' x='7.29565217' y='7.49390654' width='4.88695652' height='5.90609346'%3E%3C/rect%3E%3Cpath d='M6.93136337,4.05482968 C3.76893668,3.09842384 2.87877207,1.93281678 4.26086957,0.5580085 C5.64296706,-0.816799778 6.53313166,0.348807281 6.93136337,4.05482968 Z' id='Path-2'%3E%3C/path%3E%3Cpath d='M10.5835373,4.05482968 C7.42111059,3.09842384 6.53094599,1.93281678 7.91304348,0.5580085 C9.29514097,-0.816799778 10.1853056,0.348807281 10.5835373,4.05482968 Z' id='Path-2-Copy' transform='translate(8.933044, 2.027415) scale(-1, 1) translate(-8.933044, -2.027415) '%3E%3C/path%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+ }
+
+ .LoginDropdown__usps li.checkout:before {
+     background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='14px' height='14px' viewBox='0 0 14 14' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3Eicon/24/check/circled%3C/title%3E%3Cdefs%3E%3Cpath d='M7,0 C3.136,0 0,3.136 0,7 C0,10.864 3.136,14 7,14 C10.864,14 14,10.864 14,7 C14,3.136 10.864,0 7,0 Z M7,12.6 C3.913,12.6 1.4,10.087 1.4,7 C1.4,3.913 3.913,1.4 7,1.4 C10.087,1.4 12.6,3.913 12.6,7 C12.6,10.087 10.087,12.6 7,12.6 Z M10.213,3.906 L5.6,8.519 L3.787,6.713 L2.8,7.7 L5.6,10.5 L11.2,4.9 L10.213,3.906 Z' id='path-1'%3E%3C/path%3E%3C/defs%3E%3Cg id='inlog-stimulatie' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E%3Cg id='2.0-inlog-stimulatie' transform='translate(-40.000000, -631.000000)'%3E%3Cg id='icon/24/check/circled' transform='translate(40.000000, 631.000000)'%3E%3Cmask id='mask-2' fill='white'%3E%3Cuse xlink:href='%23path-1'%3E%3C/use%3E%3C/mask%3E%3Cuse id='Shape' fill='%238f7247' fill-rule='nonzero' xlink:href='%23path-1'%3E%3C/use%3E%3Cg id='Group' mask='url(%23mask-2)' fill='%238f7247'%3E%3Cg id='color'%3E%3Crect id='Rectangle' x='0' y='0' width='14' height='14'%3E%3C/rect%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+ }
+
+ .LoginDropdown__usps h3,
+ ul.expChecks {
+     text-align: left !important;
+ }

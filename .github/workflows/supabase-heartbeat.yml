@@ -1,0 +1,22 @@
+name: Supabase Heartbeat
+
+on:
+  schedule:
+    # 每天早上8点自动执行 (UTC时间)
+    - cron: '0 0 * * *'
+  # 手动触发
+  workflow_dispatch:
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send heartbeat to Supabase
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/capsules?select=id&limit=1"
+        env:
+          SUPABASE_URL: https://qwqjfsgemtxihpzrcrnv.supabase.co
+          SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3cWpmc2dlbXR4aWhwenJjcm52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzUyMTQsImV4cCI6MjA4NzcxMTIxNH0.HOWKRx21UJKiRWZ_vXpUkUXg9NSf4EtV6ZbSalQeMys

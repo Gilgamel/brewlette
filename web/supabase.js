@@ -165,6 +165,46 @@ const supabase = {
     async getCapsuleCount() {
         const result = await this.request('capsules?select=count');
         return result.length;
+    },
+
+    // ==================== Daily Consumption Operations ====================
+    async recordConsumption(userId, podId) {
+        // Try to get existing record for today
+        const today = new Date().toISOString().split('T')[0];
+        const existing = await this.request(
+            `daily_consumption?user_id=eq.${userId}&pod_id=eq.${podId}&consumption_date=eq.${today}&select=id,quantity`
+        );
+
+        if (existing.length > 0) {
+            // Update quantity
+            const newQty = existing[0].quantity + 1;
+            return this.request(`daily_consumption?id=eq.${existing[0].id}`, 'PATCH', { quantity: newQty });
+        } else {
+            // Insert new
+            return this.request('daily_consumption', 'POST', {
+                user_id: userId,
+                pod_id: podId,
+                quantity: 1,
+                consumption_date: today
+            });
+        }
+    },
+
+    async getTodayConsumption(userId) {
+        const today = new Date().toISOString().split('T')[0];
+        return this.request(
+            `daily_consumption?user_id=eq.${userId}&consumption_date=eq.${today}&select=*,capsules(*)&order=capsules(name)`
+        );
+    },
+
+    async getConsumptionHistory(userId, days = 7) {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - days);
+        const startDateStr = startDate.toISOString().split('T')[0];
+
+        return this.request(
+            `daily_consumption?user_id=eq.${userId}&consumption_date=gte.${startDateStr}&select=*,capsules(*)&order=consumption_date desc, capsules(name)`
+        );
     }
 };
 

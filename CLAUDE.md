@@ -88,6 +88,29 @@ CREATE POLICY "Authenticated insert users" ON users FOR INSERT WITH CHECK (true)
 CREATE POLICY "Authenticated insert inventory" ON inventory FOR INSERT WITH CHECK (true);
 CREATE POLICY "Authenticated update inventory" ON inventory FOR UPDATE USING (true);
 CREATE POLICY "Authenticated delete inventory" ON inventory FOR DELETE USING (true);
+
+-- Daily consumption tracking table (prevents Supabase pause)
+CREATE TABLE daily_consumption (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    pod_id INTEGER REFERENCES capsules(id),
+    consumption_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    quantity INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, pod_id, consumption_date)
+);
+
+-- Enable RLS
+ALTER TABLE daily_consumption ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access
+CREATE POLICY "Public read daily_consumption" ON daily_consumption FOR SELECT USING (true);
+
+-- Allow authenticated insert
+CREATE POLICY "Authenticated insert daily_consumption" ON daily_consumption FOR INSERT WITH CHECK (true);
+
+-- Allow public insert (for guest users)
+CREATE POLICY "Public insert daily_consumption" ON daily_consumption FOR INSERT WITH CHECK (true);
 ```
 
 3. Copy the Supabase URL and anon key

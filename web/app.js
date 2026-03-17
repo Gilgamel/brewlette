@@ -69,6 +69,7 @@ const elements = {
 
 // ==================== Initialization ====================
 async function init() {
+    await sendHeartbeat(); // Keep Supabase active
     await loadCapsulesData();
     await checkLoginStatus();
     setupEventListeners();
@@ -77,6 +78,19 @@ async function init() {
     renderInventory();
     renderCapsulesGrid();
     applyLanguage(state.language);
+}
+
+// Send heartbeat to keep Supabase active (prevents pause after 7 days inactivity)
+async function sendHeartbeat() {
+    try {
+        if (typeof supabase !== 'undefined') {
+            // Lightweight request to keep database active
+            await supabase.getCapsuleCount();
+            console.log('Heartbeat sent to Supabase');
+        }
+    } catch (err) {
+        console.log('Heartbeat failed:', err);
+    }
 }
 
 // ==================== Data Loading ====================
@@ -787,6 +801,14 @@ function confirmPick() {
             saveInventory();
             renderInventory();
         }
+
+        // Record consumption to Supabase (prevents database pause)
+        if (state.isLoggedIn && state.user && state.user.id) {
+            supabase.recordConsumption(state.user.id, capsuleId).catch(err => {
+                console.log('Failed to record consumption:', err);
+            });
+        }
+
         showToast(state.language === 'en' ? 'Enjoy your coffee! ☕' : '享受你的咖啡！☕', 'success');
         elements.result.classList.add('hidden');
         state.currentResult = null;
@@ -848,6 +870,14 @@ function adjustManageQty(delta) {
     if (!state.managingCapsuleId) return;
     const current = state.inventory[state.managingCapsuleId].quantity;
     const newQty = Math.max(0, current + delta);
+
+    // Record consumption when decreasing inventory
+    if (delta < 0 && state.isLoggedIn && state.user && state.user.id) {
+        supabase.recordConsumption(state.user.id, state.managingCapsuleId).catch(err => {
+            console.log('Failed to record consumption:', err);
+        });
+    }
+
     if (newQty <= 0) {
         delete state.inventory[state.managingCapsuleId];
     } else {

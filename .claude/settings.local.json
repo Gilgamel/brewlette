@@ -11,7 +11,8 @@
       "Bash(ls:*)",
       "WebFetch(domain:www.nespresso.com)",
       "Bash(python3:*)",
-      "WebFetch(domain:brewlette-ivory.vercel.app)"
+      "WebFetch(domain:brewlette-ivory.vercel.app)",
+      "Bash(git:*)"
     ]
   }
 }

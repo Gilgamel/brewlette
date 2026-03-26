@@ -111,6 +111,46 @@ CREATE POLICY "Authenticated insert daily_consumption" ON daily_consumption FOR 
 
 -- Allow public insert (for guest users)
 CREATE POLICY "Public insert daily_consumption" ON daily_consumption FOR INSERT WITH CHECK (true);
+
+-- Brands table
+CREATE TABLE brands (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Admin config table
+CREATE TABLE admin_config (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(100) UNIQUE NOT NULL,
+    value TEXT NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add brand_id to capsules table
+ALTER TABLE capsules ADD COLUMN brand_id INTEGER REFERENCES brands(id);
+
+-- Enable RLS for brands and admin_config
+ALTER TABLE brands ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_config ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access to brands
+CREATE POLICY "Public read brands" ON brands FOR SELECT USING (true);
+
+-- Allow public read access to admin_config
+CREATE POLICY "Public read admin_config" ON admin_config FOR SELECT USING (true);
+
+-- Allow authenticated insert/update/delete on brands
+CREATE POLICY "Authenticated insert brands" ON brands FOR INSERT WITH CHECK (true);
+CREATE POLICY "Authenticated update brands" ON brands FOR UPDATE USING (true);
+CREATE POLICY "Authenticated delete brands" ON brands FOR DELETE USING (true);
+
+-- Allow authenticated insert/update on admin_config
+CREATE POLICY "Authenticated insert admin_config" ON admin_config FOR INSERT WITH CHECK (true);
+CREATE POLICY "Authenticated update admin_config" ON admin_config FOR UPDATE USING (true);
+
+-- Initial admin password (change this!)
+INSERT INTO admin_config (key, value) VALUES ('admin_password', 'brewlette2024');
 ```
 
 3. Copy the Supabase URL and anon key

@@ -47,6 +47,10 @@
                 <span class="tab-icon">☕</span>
                 <span class="tab-text" data-en="Capsules" data-zh="胶囊">Capsules</span>
             </button>
+            <button class="tab" data-tab="admin" id="adminTab">
+                <span class="tab-icon">🔧</span>
+                <span class="tab-text" data-en="Admin" data-zh="管理">Admin</span>
+            </button>
         </nav>
 
         <main>
@@ -173,6 +177,56 @@
                     <p data-en="No capsules found." data-zh="未找到胶囊。">No capsules found.</p>
                 </div>
             </section>
+
+            <!-- Admin Tab -->
+            <section id="admin-tab" class="tab-content">
+                <div class="admin-section">
+                    <h3 data-en="Brand Management" data-zh="品牌管理">Brand Management</h3>
+                    <div class="brand-management">
+                        <div class="brand-input-row">
+                            <input type="text" id="newBrandName" class="search-input" placeholder="New brand name" data-placeholder-en="New brand name..." data-placeholder-zh="新品牌名称..." style="flex: 1;">
+                            <button id="addBrandBtn" class="primary-btn small" data-en="Add" data-zh="添加">Add</button>
+                        </div>
+                        <div id="brandsList" class="brands-list"></div>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <h3 data-en="Capsule Management" data-zh="胶囊管理">Capsule Management</h3>
+                    <div class="capsule-admin-filters">
+                        <select id="adminFilterBrand" class="filter-select">
+                            <option value="all" data-en="All Brands" data-zh="所有品牌">All Brands</option>
+                        </select>
+                        <select id="adminFilterLine" class="filter-select">
+                            <option value="all" data-en="All Lines" data-zh="所有系列">All Lines</option>
+                            <option value="Original">Original</option>
+                            <option value="Vertuo">Vertuo</option>
+                        </select>
+                        <button id="clearAllCapsulesBtn" class="danger-btn small" data-en="Clear All" data-zh="清空全部">Clear All</button>
+                    </div>
+                    <button id="addCapsuleBtn" class="primary-btn" style="margin-bottom: 16px;" data-en="+ Add New Capsule" data-zh="+ 添加新胶囊">+ Add New Capsule</button>
+                    <div id="adminCapsulesTable" class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th data-en="Brand" data-zh="品牌">Brand</th>
+                                    <th data-en="Name" data-zh="名称">Name</th>
+                                    <th data-en="Line" data-zh="系列">Line</th>
+                                    <th data-en="Best Serve" data-zh="最佳饮用">Best Serve</th>
+                                    <th data-en="Size" data-zh="容量">Size</th>
+                                    <th data-en="Intensity" data-zh="浓度">Intensity</th>
+                                    <th data-en="Tasting Note" data-zh="口感">Tasting Note</th>
+                                    <th data-en="Actions" data-zh="操作">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCapsulesBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="emptyAdminCapsules" class="empty-state hidden">
+                        <p data-en="No capsules yet. Add your first capsule!" data-zh="暂无胶囊。添加第一个胶囊！">No capsules yet. Add your first capsule!</p>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Login Modal -->
@@ -219,6 +273,72 @@
 
         <!-- Toast Notification -->
         <div id="toast" class="toast hidden"></div>
+
+        <!-- Admin Password Modal -->
+        <div id="adminPasswordModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 360px;">
+                <div class="modal-header">
+                    <h3 data-en="Admin Access" data-zh="管理员入口">Admin Access</h3>
+                    <button class="close-btn" id="closeAdminPasswordModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="adminPasswordInput" data-en="Admin Password" data-zh="管理员密码">Admin Password</label>
+                        <input type="password" id="adminPasswordInput" placeholder="Enter admin password">
+                    </div>
+                    <button id="verifyAdminPasswordBtn" class="primary-btn" data-en="Verify" data-zh="验证">Verify</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Capsule Edit Modal -->
+        <div id="capsuleEditModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 480px;">
+                <div class="modal-header">
+                    <h3 id="capsuleEditTitle" data-en="Add Capsule" data-zh="添加胶囊">Add Capsule</h3>
+                    <button class="close-btn" id="closeCapsuleEditModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="capsuleEditForm">
+                        <input type="hidden" id="capsuleEditId">
+                        <div class="form-group">
+                            <label for="capsuleEditBrand" data-en="Brand" data-zh="品牌">Brand</label>
+                            <select id="capsuleEditBrand" class="filter-select" style="width: 100%;">
+                                <option value="">Select brand...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="capsuleEditName" data-en="Name" data-zh="名称">Name</label>
+                            <input type="text" id="capsuleEditName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="capsuleEditLine" data-en="Line" data-zh="系列">Line</label>
+                            <select id="capsuleEditLine" class="filter-select" style="width: 100%;">
+                                <option value="Original">Original</option>
+                                <option value="Vertuo">Vertuo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="capsuleEditBestServe" data-en="Best Serve" data-zh="最佳饮用">Best Serve</label>
+                            <input type="text" id="capsuleEditBestServe" placeholder="e.g., Espresso, Lungo, Milk">
+                        </div>
+                        <div class="form-group">
+                            <label for="capsuleEditSize" data-en="Size (ml)" data-zh="容量 (ml)">Size (ml)</label>
+                            <input type="number" id="capsuleEditSize" min="40" max="500" value="40" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="capsuleEditIntensity" data-en="Intensity (1-13)" data-zh="浓度 (1-13)">Intensity (1-13)</label>
+                            <input type="number" id="capsuleEditIntensity" min="1" max="13">
+                        </div>
+                        <div class="form-group">
+                            <label for="capsuleEditTastingNote" data-en="Tasting Note" data-zh="口感">Tasting Note</label>
+                            <input type="text" id="capsuleEditTastingNote">
+                        </div>
+                        <button type="submit" class="primary-btn" data-en="Save Capsule" data-zh="保存胶囊">Save Capsule</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
         <!-- Install Prompt -->
         <div id="installPrompt" class="install-prompt hidden">

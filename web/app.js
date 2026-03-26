@@ -10,7 +10,12 @@ const state = {
     selectedSize: null,
     selectedLines: { Original: true, Vertuo: true },
     currentResult: null,
-    managingCapsuleId: null
+    managingCapsuleId: null,
+    // Admin state
+    isAdmin: false,
+    adminBrands: [],
+    adminCapsules: [],
+    editingCapsuleId: null
 };
 
 // ==================== DOM Elements ====================
@@ -64,7 +69,34 @@ const elements = {
     toast: document.getElementById('toast'),
     installPrompt: document.getElementById('installPrompt'),
     installBtn: document.getElementById('installBtn'),
-    dismissInstall: document.getElementById('dismissInstall')
+    dismissInstall: document.getElementById('dismissInstall'),
+    // Admin elements
+    adminTab: document.getElementById('adminTab'),
+    adminPasswordModal: document.getElementById('adminPasswordModal'),
+    adminPasswordInput: document.getElementById('adminPasswordInput'),
+    verifyAdminPasswordBtn: document.getElementById('verifyAdminPasswordBtn'),
+    closeAdminPasswordModal: document.getElementById('closeAdminPasswordModal'),
+    brandsList: document.getElementById('brandsList'),
+    newBrandName: document.getElementById('newBrandName'),
+    addBrandBtn: document.getElementById('addBrandBtn'),
+    adminFilterBrand: document.getElementById('adminFilterBrand'),
+    adminFilterLine: document.getElementById('adminFilterLine'),
+    clearAllCapsulesBtn: document.getElementById('clearAllCapsulesBtn'),
+    addCapsuleBtn: document.getElementById('addCapsuleBtn'),
+    adminCapsulesBody: document.getElementById('adminCapsulesBody'),
+    emptyAdminCapsules: document.getElementById('emptyAdminCapsules'),
+    capsuleEditModal: document.getElementById('capsuleEditModal'),
+    capsuleEditTitle: document.getElementById('capsuleEditTitle'),
+    capsuleEditForm: document.getElementById('capsuleEditForm'),
+    capsuleEditId: document.getElementById('capsuleEditId'),
+    capsuleEditBrand: document.getElementById('capsuleEditBrand'),
+    capsuleEditName: document.getElementById('capsuleEditName'),
+    capsuleEditLine: document.getElementById('capsuleEditLine'),
+    capsuleEditBestServe: document.getElementById('capsuleEditBestServe'),
+    capsuleEditSize: document.getElementById('capsuleEditSize'),
+    capsuleEditIntensity: document.getElementById('capsuleEditIntensity'),
+    capsuleEditTastingNote: document.getElementById('capsuleEditTastingNote'),
+    closeCapsuleEditModal: document.getElementById('closeCapsuleEditModal')
 };
 
 // ==================== Initialization ====================
@@ -571,6 +603,248 @@ function getInventoryCapsules() {
     return Object.values(state.inventory).filter(item => item.quantity > 0);
 }
 
+// ==================== Admin Authentication ====================
+function checkAdminAccess() {
+    if (state.isAdmin) {
+        switchTab('admin');
+    } else {
+        elements.adminPasswordModal.classList.remove('hidden');
+        elements.adminPasswordInput.focus();
+    }
+}
+
+async function verifyAdminPassword() {
+    const password = elements.adminPasswordInput.value.trim();
+    if (!password) {
+        showToast(state.language === 'en' ? 'Please enter password' : '请输入密码', 'error');
+        return;
+    }
+
+    try {
+        const isValid = await supabase.verifyAdminPassword(password);
+        if (isValid) {
+            state.isAdmin = true;
+            elements.adminPasswordModal.classList.add('hidden');
+            elements.adminPasswordInput.value = '';
+            switchTab('admin');
+            await loadAdminData();
+            showToast(state.language === 'en' ? 'Admin access granted' : '已获得管理员权限', 'success');
+        } else {
+            showToast(state.language === 'en' ? 'Wrong password' : '密码错误', 'error');
+        }
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Verification failed' : '验证失败', 'error');
+    }
+}
+
+function closeAdminPasswordModal() {
+    elements.adminPasswordModal.classList.add('hidden');
+    elements.adminPasswordInput.value = '';
+}
+
+// ==================== Admin Data Loading ====================
+async function loadAdminData() {
+    await loadAdminBrands();
+    await loadAdminCapsules();
+}
+
+async function loadAdminBrands() {
+    try {
+        state.adminBrands = await supabase.getAllBrands();
+        renderAdminBrands();
+        populateBrandDropdowns();
+    } catch (error) {
+        console.error('Failed to load brands:', error);
+    }
+}
+
+async function loadAdminCapsules() {
+    try {
+        state.adminCapsules = await supabase.getCapsulesWithBrands();
+        renderAdminCapsules();
+    } catch (error) {
+        console.error('Failed to load capsules:', error);
+    }
+}
+
+// ==================== Brand Management ====================
+async function addBrand() {
+    const name = elements.newBrandName.value.trim();
+    if (!name) {
+        showToast(state.language === 'en' ? 'Please enter brand name' : '请输入品牌名称', 'error');
+        return;
+    }
+
+    try {
+        await supabase.createBrand({ name });
+        elements.newBrandName.value = '';
+        await loadAdminBrands();
+        showToast(state.language === 'en' ? 'Brand added' : '品牌已添加', 'success');
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Failed to add brand' : '添加品牌失败', 'error');
+    }
+}
+
+async function deleteBrand(id) {
+    if (!confirm(state.language === 'en' ? 'Delete this brand?' : '删除此品牌？')) return;
+
+    try {
+        await supabase.deleteBrand(id);
+        await loadAdminBrands();
+        showToast(state.language === 'en' ? 'Brand deleted' : '品牌已删除', 'success');
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Failed to delete brand' : '删除品牌失败', 'error');
+    }
+}
+
+function renderAdminBrands() {
+    if (state.adminBrands.length === 0) {
+        elements.brandsList.innerHTML = '<p class="empty-state" style="padding: 12px; font-size: 0.9rem;">No brands yet</p>';
+        return;
+    }
+
+    elements.brandsList.innerHTML = state.adminBrands.map(brand => `
+        <div class="brand-item">
+            <span>${brand.name}</span>
+            <button class="danger-btn small" onclick="deleteBrand(${brand.id})">Delete</button>
+        </div>
+    `).join('');
+}
+
+function populateBrandDropdowns() {
+    const lang = state.language;
+    const allOption = `<option value="all">${lang === 'en' ? 'All Brands' : '所有品牌'}</option>`;
+    const selectOption = `<option value="">${lang === 'en' ? 'Select brand...' : '选择品牌...'}</option>`;
+
+    const brandOptions = state.adminBrands.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+
+    elements.adminFilterBrand.innerHTML = allOption + brandOptions;
+    elements.capsuleEditBrand.innerHTML = selectOption + brandOptions;
+}
+
+// ==================== Capsule Management ====================
+function openAddCapsuleModal() {
+    state.editingCapsuleId = null;
+    elements.capsuleEditTitle.textContent = state.language === 'en' ? 'Add Capsule' : '添加胶囊';
+    elements.capsuleEditForm.reset();
+    elements.capsuleEditId.value = '';
+    elements.capsuleEditModal.classList.remove('hidden');
+}
+
+function openEditCapsuleModal(capsule) {
+    state.editingCapsuleId = capsule.id;
+    elements.capsuleEditTitle.textContent = state.language === 'en' ? 'Edit Capsule' : '编辑胶囊';
+    elements.capsuleEditId.value = capsule.id;
+    elements.capsuleEditBrand.value = capsule.brand_id || '';
+    elements.capsuleEditName.value = capsule.name || '';
+    elements.capsuleEditLine.value = capsule.line || 'Original';
+    elements.capsuleEditBestServe.value = capsule.best_serve || '';
+    elements.capsuleEditSize.value = capsule.size_ml || 40;
+    elements.capsuleEditIntensity.value = capsule.intensity || '';
+    elements.capsuleEditTastingNote.value = capsule.tasting_note || '';
+    elements.capsuleEditModal.classList.remove('hidden');
+}
+
+function closeCapsuleEditModal() {
+    elements.capsuleEditModal.classList.add('hidden');
+    state.editingCapsuleId = null;
+}
+
+async function saveCapsule(e) {
+    e.preventDefault();
+
+    const capsule = {
+        brand_id: elements.capsuleEditBrand.value ? parseInt(elements.capsuleEditBrand.value) : null,
+        name: elements.capsuleEditName.value.trim(),
+        line: elements.capsuleEditLine.value,
+        best_serve: elements.capsuleEditBestServe.value.trim(),
+        size_ml: parseInt(elements.capsuleEditSize.value),
+        intensity: elements.capsuleEditIntensity.value ? parseInt(elements.capsuleEditIntensity.value) : null,
+        tasting_note: elements.capsuleEditTastingNote.value.trim(),
+        last_updated: new Date().toISOString()
+    };
+
+    try {
+        if (state.editingCapsuleId) {
+            await supabase.updateCapsule(state.editingCapsuleId, capsule);
+            showToast(state.language === 'en' ? 'Capsule updated' : '胶囊已更新', 'success');
+        } else {
+            await supabase.createCapsule(capsule);
+            showToast(state.language === 'en' ? 'Capsule added' : '胶囊已添加', 'success');
+        }
+        closeCapsuleEditModal();
+        await loadAdminCapsules();
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Failed to save capsule' : '保存胶囊失败', 'error');
+    }
+}
+
+async function deleteCapsule(id) {
+    if (!confirm(state.language === 'en' ? 'Delete this capsule?' : '删除此胶囊？')) return;
+
+    try {
+        await supabase.deleteCapsule(id);
+        await loadAdminCapsules();
+        showToast(state.language === 'en' ? 'Capsule deleted' : '胶囊已删除', 'success');
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Failed to delete capsule' : '删除胶囊失败', 'error');
+    }
+}
+
+async function clearAllCapsules() {
+    if (!confirm(state.language === 'en' ? 'Delete ALL capsules? This cannot be undone!' : '删除所有胶囊？此操作无法撤销！')) return;
+
+    try {
+        await supabase.deleteAllCapsules();
+        state.adminCapsules = [];
+        renderAdminCapsules();
+        showToast(state.language === 'en' ? 'All capsules deleted' : '所有胶囊已删除', 'success');
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Failed to delete capsules' : '删除胶囊失败', 'error');
+    }
+}
+
+function getFilteredAdminCapsules() {
+    const brandFilter = elements.adminFilterBrand.value;
+    const lineFilter = elements.adminFilterLine.value;
+
+    return state.adminCapsules.filter(capsule => {
+        if (brandFilter !== 'all' && capsule.brand_id !== parseInt(brandFilter)) return false;
+        if (lineFilter !== 'all' && capsule.line !== lineFilter) return false;
+        return true;
+    });
+}
+
+function renderAdminCapsules() {
+    const capsules = getFilteredAdminCapsules();
+
+    if (capsules.length === 0) {
+        elements.adminCapsulesBody.innerHTML = '';
+        elements.emptyAdminCapsules.classList.remove('hidden');
+        return;
+    }
+
+    elements.emptyAdminCapsules.classList.add('hidden');
+
+    elements.adminCapsulesBody.innerHTML = capsules.map(capsule => `
+        <tr>
+            <td>${capsule.brands?.name || '-'}</td>
+            <td>${capsule.name || '-'}</td>
+            <td>${capsule.line || '-'}</td>
+            <td>${capsule.best_serve || '-'}</td>
+            <td>${capsule.size_ml ? capsule.size_ml + 'ml' : '-'}</td>
+            <td>${capsule.intensity || '-'}</td>
+            <td>${capsule.tasting_note || '-'}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="edit-btn" onclick='openEditCapsuleModal(${JSON.stringify(capsule).replace(/'/g, "\\'")})'>Edit</button>
+                    <button class="danger-btn small" onclick="deleteCapsule(${capsule.id})">Delete</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
 // ==================== Event Listeners ====================
 function setupEventListeners() {
     elements.langToggle.addEventListener('click', toggleLanguage);
@@ -654,10 +928,48 @@ function setupEventListeners() {
 
     elements.installBtn.addEventListener('click', installApp);
     elements.dismissInstall.addEventListener('click', dismissInstallPrompt);
+
+    // Admin tab
+    elements.adminTab.addEventListener('click', checkAdminAccess);
+
+    // Admin password modal
+    elements.verifyAdminPasswordBtn.addEventListener('click', verifyAdminPassword);
+    elements.closeAdminPasswordModal.addEventListener('click', closeAdminPasswordModal);
+    elements.adminPasswordModal.addEventListener('click', (e) => {
+        if (e.target === elements.adminPasswordModal) closeAdminPasswordModal();
+    });
+    elements.adminPasswordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') verifyAdminPassword();
+    });
+
+    // Brand management
+    elements.addBrandBtn.addEventListener('click', addBrand);
+    elements.newBrandName.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addBrand();
+    });
+
+    // Capsule management
+    elements.addCapsuleBtn.addEventListener('click', openAddCapsuleModal);
+    elements.clearAllCapsulesBtn.addEventListener('click', clearAllCapsules);
+    elements.adminFilterBrand.addEventListener('change', renderAdminCapsules);
+    elements.adminFilterLine.addEventListener('change', renderAdminCapsules);
+
+    // Capsule edit modal
+    elements.capsuleEditForm.addEventListener('submit', saveCapsule);
+    elements.closeCapsuleEditModal.addEventListener('click', closeCapsuleEditModal);
+    elements.capsuleEditModal.addEventListener('click', (e) => {
+        if (e.target === elements.capsuleEditModal) closeCapsuleEditModal();
+    });
 }
 
 // ==================== Tab Switching ====================
 function switchTab(tabName) {
+    // Check admin access
+    if (tabName === 'admin' && !state.isAdmin) {
+        checkAdminAccess();
+        return;
+    }
+
     state.currentTab = tabName;
     elements.tabs.forEach(tab => {
         tab.classList.toggle('active', tab.dataset.tab === tabName);

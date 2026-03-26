@@ -159,7 +159,10 @@ const supabase = {
     },
 
     async clearCapsules() {
-        return this.request('inventory', 'DELETE', 'id=gt.0');
+        // First delete all inventory entries
+        await this.request('inventory?id=gt.0', 'DELETE');
+        // Then delete all capsules
+        return this.request('capsules?id=gt.0', 'DELETE');
     },
 
     async getCapsuleCount() {
@@ -205,6 +208,74 @@ const supabase = {
         return this.request(
             `daily_consumption?user_id=eq.${userId}&consumption_date=gte.${startDateStr}&select=*,capsules(*)&order=consumption_date desc, capsules(name)`
         );
+    },
+
+    // ==================== Brand Operations ====================
+    async getAllBrands() {
+        return this.request('brands?select=*&order=name');
+    },
+
+    async createBrand(name) {
+        return this.request('brands', 'POST', { name });
+    },
+
+    async deleteBrand(id) {
+        return this.request(`brands?id=eq.${id}`, 'DELETE');
+    },
+
+    async updateBrand(id, name) {
+        return this.request(`brands?id=eq.${id}`, 'PATCH', { name });
+    },
+
+    // ==================== Capsule Admin Operations ====================
+    async createCapsule(capsule) {
+        return this.request('capsules', 'POST', capsule);
+    },
+
+    async updateCapsule(id, capsule) {
+        return this.request(`capsules?id=eq.${id}`, 'PATCH', capsule);
+    },
+
+    async deleteCapsule(id) {
+        return this.request(`capsules?id=eq.${id}`, 'DELETE');
+    },
+
+    async clearAllCapsules() {
+        // First delete all inventory entries for these capsules
+        await this.request('inventory?pod_id=gt.0', 'DELETE');
+        // Then delete all capsules
+        return this.request('capsules?id=gt.0', 'DELETE');
+    },
+
+    // ==================== Admin Config Operations ====================
+    async getAdminConfig(key) {
+        const result = await this.request(`admin_config?key=eq.${key}&select=value`);
+        return result.length > 0 ? result[0].value : null;
+    },
+
+    async setAdminConfig(key, value) {
+        const existing = await this.request(`admin_config?key=eq.${key}&select=id`);
+        if (existing.length > 0) {
+            return this.request(`admin_config?key=eq.${key}`, 'PATCH', { value, updated_at: new Date().toISOString() });
+        } else {
+            return this.request('admin_config', 'POST', { key, value });
+        }
+    },
+
+    // ==================== Capsule Join Operations ====================
+    async getCapsulesWithBrands() {
+        return this.request('capsules?select=*,brands(name)&order=brands.name,line,name');
+    },
+
+    // ==================== Admin Operations ====================
+    async verifyAdminPassword(password) {
+        const stored = await this.getAdminConfig('admin_password');
+        return stored === password;
+    },
+
+    async deleteAllCapsules() {
+        await this.request('inventory?pod_id=gt.0', 'DELETE');
+        return this.request('capsules?id=gt.0', 'DELETE');
     }
 };
 

@@ -1309,6 +1309,9 @@ function addBatchImportRow(data = {}) {
         </select>
         <input type="number" class="import-intensity" placeholder="1-13" min="1" max="13" value="${data.intensity || ''}">
         <input type="text" class="import-note" placeholder="Tasting note" value="${data.tasting_note || ''}">
+        <label style="display: flex; align-items: center; justify-content: center;">
+            <input type="checkbox" class="import-decaffeinato" ${data.decaffeinato ? 'checked' : ''}>
+        </label>
         <button class="delete-row-btn" onclick="this.closest('.batch-import-row').remove()">&times;</button>
     `;
     elements.batchImportRows.appendChild(row);
@@ -1339,7 +1342,8 @@ function previewBatchImport() {
             line: row.querySelector('.import-line').value,
             size_ml: parseInt(row.querySelector('.import-size').value) || 40,
             intensity: row.querySelector('.import-intensity').value ? parseInt(row.querySelector('.import-intensity').value) : null,
-            tasting_note: row.querySelector('.import-note').value.trim() || null
+            tasting_note: row.querySelector('.import-note').value.trim() || null,
+            decaffeinato: row.querySelector('.import-decaffeinato').checked
         };
 
         capsules.push(capsule);
@@ -1369,7 +1373,8 @@ async function confirmBatchImport() {
             line: row.querySelector('.import-line').value,
             size_ml: parseInt(row.querySelector('.import-size').value) || 40,
             intensity: row.querySelector('.import-intensity').value ? parseInt(row.querySelector('.import-intensity').value) : null,
-            tasting_note: row.querySelector('.import-note').value.trim() || null
+            tasting_note: row.querySelector('.import-note').value.trim() || null,
+            decaffeinato: row.querySelector('.import-decaffeinato').checked
         };
 
         capsules.push(capsule);

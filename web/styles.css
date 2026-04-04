@@ -1298,7 +1298,7 @@ header h1 {
 
 .batch-import-row {
     display: grid;
-    grid-template-columns: 1fr 120px 100px 80px 60px 1fr 40px;
+    grid-template-columns: 1fr 120px 100px 80px 60px 1fr 40px 40px;
     gap: 8px;
     margin-bottom: 10px;
     align-items: center;

@@ -205,10 +205,22 @@
                         <button id="clearAllCapsulesBtn" class="danger-btn small" data-en="Clear All" data-zh="清空全部">Clear All</button>
                     </div>
                     <button id="addCapsuleBtn" class="primary-btn" style="margin-bottom: 16px;" data-en="+ Add New Capsule" data-zh="+ 添加新胶囊">+ Add New Capsule</button>
+                    <button id="importCapsulesBtn" class="secondary-btn" style="margin-bottom: 16px; margin-left: 12px;" data-en="Import JSON" data-zh="导入 JSON">Import JSON</button>
+                    <button id="batchImportBtn" class="secondary-btn" style="margin-bottom: 16px; margin-left: 12px;" data-en="Visual Import" data-zh="可视化导入">Visual Import</button>
+                    <div id="batchActionBar" class="batch-action-bar hidden">
+                        <span class="selected-count"><span id="batchSelectedCount">0</span> <span data-en="selected" data-zh="已选择">selected</span></span>
+                        <button id="batchEditBtn" class="batch-btn edit" data-en="Edit" data-zh="编辑">Edit</button>
+                        <button id="batchInventoryBtn" class="batch-btn inventory" data-en="Inventory" data-zh="库存">Inventory</button>
+                        <button id="batchDeleteBtn" class="batch-btn delete" data-en="Delete" data-zh="删除">Delete</button>
+                        <button id="batchCancelBtn" class="batch-btn cancel" data-en="Cancel" data-zh="取消">Cancel</button>
+                    </div>
                     <div id="adminCapsulesTable" class="admin-table-container">
                         <table class="admin-table">
                             <thead>
                                 <tr>
+                                    <th class="batch-col">
+                                        <input type="checkbox" id="selectAllCapsules" class="batch-checkbox">
+                                    </th>
                                     <th data-en="Brand" data-zh="品牌">Brand</th>
                                     <th data-en="Name" data-zh="名称">Name</th>
                                     <th data-en="Line" data-zh="系列">Line</th>
@@ -324,11 +336,21 @@
                         </div>
                         <div class="form-group">
                             <label for="capsuleEditSize" data-en="Size (ml)" data-zh="容量 (ml)">Size (ml)</label>
-                            <input type="number" id="capsuleEditSize" min="40" max="500" value="40" required>
+                            <select id="capsuleEditSize" class="filter-select" style="width: 100%;">
+                                <option value="40">40ml - Espresso</option>
+                                <option value="80">80ml - Double</option>
+                                <option value="150">150ml - Lungo</option>
+                                <option value="230">230ml - Coffee</option>
+                                <option value="50">50ml</option>
+                                <option value="100">100ml</option>
+                                <option value="200">200ml</option>
+                                <option value="300">300ml</option>
+                                <option value="400">400ml</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="capsuleEditIntensity" data-en="Intensity (1-13)" data-zh="浓度 (1-13)">Intensity (1-13)</label>
-                            <input type="number" id="capsuleEditIntensity" min="1" max="13">
+                            <input type="number" id="capsuleEditIntensity" min="1" max="13" placeholder="1-13">
                         </div>
                         <div class="form-group">
                             <label for="capsuleEditTastingNote" data-en="Tasting Note" data-zh="口感">Tasting Note</label>
@@ -336,6 +358,185 @@
                         </div>
                         <button type="submit" class="primary-btn" data-en="Save Capsule" data-zh="保存胶囊">Save Capsule</button>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import JSON Modal -->
+        <div id="importModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3 data-en="Import Capsules from JSON" data-zh="从 JSON 导入胶囊">Import Capsules from JSON</h3>
+                    <button class="close-btn" id="closeImportModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 12px; color: var(--text-light); font-size: 0.9rem;" data-en="Paste JSON array of capsules:" data-zh="粘贴胶囊的 JSON 数组：">Paste JSON array of capsules:</p>
+                    <textarea id="importJsonText" class="search-input" rows="10" placeholder='[{"name": "Capsule Name", "line": "Original", "size_ml": 40, "intensity": 8}]' style="resize: vertical; font-family: monospace;"></textarea>
+                    <button id="importJsonBtn" class="primary-btn" style="margin-top: 16px;" data-en="Import" data-zh="导入">Import</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Import Modal (Visual) -->
+        <div id="batchImportModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3 data-en="Visual Import Capsules" data-zh="可视化导入胶囊">Visual Import Capsules</h3>
+                    <button class="close-btn" id="closeBatchImportModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="batch-import-actions">
+                        <button id="addImportRowBtn" class="add-row-btn" data-en="+ Add Row" data-zh="+ 添加一行">+ Add Row</button>
+                        <button id="loadExampleBtn" class="example-btn" data-en="Load Example Data" data-zh="导入示例数据">Load Example Data</button>
+                    </div>
+                    <div class="batch-import-container" id="batchImportContainer">
+                        <div class="batch-import-row" style="font-weight: 600; font-size: 0.8rem; color: var(--text-light); margin-bottom: 12px;">
+                            <span>Name *</span>
+                            <span>Brand</span>
+                            <span>Line</span>
+                            <span>Size</span>
+                            <span>Intensity</span>
+                            <span>Tasting Note</span>
+                            <span></span>
+                        </div>
+                        <div id="batchImportRows"></div>
+                    </div>
+                    <button id="previewImportBtn" class="secondary-btn" data-en="Preview JSON" data-zh="预览 JSON">Preview JSON</button>
+                    <div id="batchImportPreview" class="batch-import-preview hidden"></div>
+                    <button id="confirmImportBtn" class="primary-btn hidden" style="margin-top: 16px;" data-en="Confirm Import" data-zh="确认导入">Confirm Import</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Edit Modal -->
+        <div id="batchEditModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 480px;">
+                <div class="modal-header">
+                    <h3 data-en="Batch Edit Capsules" data-zh="批量编辑胶囊">Batch Edit Capsules</h3>
+                    <button class="close-btn" id="closeBatchEditModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 16px; color: var(--text-light); font-size: 0.9rem;" data-en="Select fields to update:" data-zh="选择要更新的字段：">Select fields to update:</p>
+                    <div class="batch-edit-fields" id="batchEditFields">
+                        <div class="batch-edit-field" data-field="brand_id">
+                            <input type="checkbox" id="batchEditBrand">
+                            <label for="batchEditBrand" data-en="Brand" data-zh="品牌">Brand</label>
+                        </div>
+                        <div class="batch-edit-field" data-field="line">
+                            <input type="checkbox" id="batchEditLine">
+                            <label for="batchEditLine" data-en="Line" data-zh="系列">Line</label>
+                        </div>
+                        <div class="batch-edit-field" data-field="best_serve">
+                            <input type="checkbox" id="batchEditBestServe">
+                            <label for="batchEditBestServe" data-en="Best Serve" data-zh="最佳饮用">Best Serve</label>
+                        </div>
+                        <div class="batch-edit-field" data-field="size_ml">
+                            <input type="checkbox" id="batchEditSize">
+                            <label for="batchEditSize" data-en="Size" data-zh="容量">Size</label>
+                        </div>
+                        <div class="batch-edit-field" data-field="intensity">
+                            <input type="checkbox" id="batchEditIntensity">
+                            <label for="batchEditIntensity" data-en="Intensity" data-zh="浓度">Intensity</label>
+                        </div>
+                        <div class="batch-edit-field" data-field="tasting_note">
+                            <input type="checkbox" id="batchEditTastingNote">
+                            <label for="batchEditTastingNote" data-en="Tasting Note" data-zh="口感">Tasting Note</label>
+                        </div>
+                    </div>
+                    <div class="batch-edit-values" id="batchEditValues">
+                        <div class="form-group" id="batchValueBrand" style="display:none;">
+                            <label data-en="New Brand" data-zh="新品牌">New Brand</label>
+                            <select id="batchNewBrand" class="filter-select" style="width: 100%;">
+                                <option value="">Select brand...</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="batchValueLine" style="display:none;">
+                            <label data-en="New Line" data-zh="新系列">New Line</label>
+                            <select id="batchNewLine" class="filter-select" style="width: 100%;">
+                                <option value="Original">Original</option>
+                                <option value="Vertuo">Vertuo</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="batchValueBestServe" style="display:none;">
+                            <label data-en="New Best Serve" data-zh="新最佳饮用">New Best Serve</label>
+                            <input type="text" id="batchNewBestServe" class="search-input">
+                        </div>
+                        <div class="form-group" id="batchValueSize" style="display:none;">
+                            <label data-en="New Size (ml)" data-zh="新容量 (ml)">New Size (ml)</label>
+                            <select id="batchNewSize" class="filter-select" style="width: 100%;">
+                                <option value="40">40ml - Espresso</option>
+                                <option value="80">80ml - Double</option>
+                                <option value="150">150ml - Lungo</option>
+                                <option value="230">230ml - Coffee</option>
+                                <option value="50">50ml</option>
+                                <option value="100">100ml</option>
+                                <option value="200">200ml</option>
+                                <option value="300">300ml</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="batchValueIntensity" style="display:none;">
+                            <label data-en="New Intensity (1-13)" data-zh="新浓度 (1-13)">New Intensity (1-13)</label>
+                            <input type="number" id="batchNewIntensity" class="search-input" min="1" max="13">
+                        </div>
+                        <div class="form-group" id="batchValueTastingNote" style="display:none;">
+                            <label data-en="New Tasting Note" data-zh="新口感">New Tasting Note</label>
+                            <input type="text" id="batchNewTastingNote" class="search-input">
+                        </div>
+                    </div>
+                    <button id="confirmBatchEditBtn" class="primary-btn" data-en="Apply Changes" data-zh="应用更改">Apply Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Inventory Modal -->
+        <div id="batchInventoryModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h3 data-en="Batch Update Inventory" data-zh="批量更新库存">Batch Update Inventory</h3>
+                    <button class="close-btn" id="closeBatchInventoryModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 16px; color: var(--text-light); font-size: 0.9rem; text-align: center;" data-en="Choose operation:" data-zh="选择操作：">Choose operation:</p>
+                    <div class="batch-inv-radios" id="batchInvRadios">
+                        <div class="batch-inv-radio selected" data-action="add">
+                            <input type="radio" name="batchInvAction" value="add" checked>
+                            <label data-en="Add" data-zh="添加">Add</label>
+                        </div>
+                        <div class="batch-inv-radio" data-action="remove">
+                            <input type="radio" name="batchInvAction" value="remove">
+                            <label data-en="Remove" data-zh="减少">Remove</label>
+                        </div>
+                        <div class="batch-inv-radio" data-action="set">
+                            <input type="radio" name="batchInvAction" value="set">
+                            <label data-en="Set To" data-zh="设为">Set To</label>
+                        </div>
+                    </div>
+                    <div class="batch-inv-qty">
+                        <div class="form-group">
+                            <label data-en="Quantity" data-zh="数量">Quantity</label>
+                            <input type="number" id="batchInvQuantity" class="search-input" value="1" min="1" style="text-align: center;">
+                        </div>
+                    </div>
+                    <button id="confirmBatchInvBtn" class="primary-btn" data-en="Apply to All Selected" data-zh="应用到所有选中">Apply to All Selected</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Delete Modal -->
+        <div id="batchDeleteModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h3 data-en="Confirm Batch Delete" data-zh="确认批量删除">Confirm Batch Delete</h3>
+                    <button class="close-btn" id="closeBatchDeleteModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="batch-delete-confirm">
+                        <div class="warning-icon">⚠️</div>
+                        <p data-en="You are about to delete" data-zh="您即将删除">You are about to delete</p>
+                        <div class="delete-count"><span id="batchDeleteCount">0</span> <span data-en="capsules" data-zh="个胶囊">capsules</span></div>
+                        <p data-en="This action cannot be undone." data-zh="此操作无法撤销。">This action cannot be undone.</p>
+                    </div>
+                    <button id="confirmBatchDeleteBtn" class="danger-btn" style="width: 100%; padding: 16px; background: var(--error); color: white; border: none; border-radius: 16px; font-size: 1rem; font-weight: 600; cursor: pointer;" data-en="Delete All" data-zh="全部删除">Delete All</button>
                 </div>
             </div>
         </div>

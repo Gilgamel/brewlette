@@ -15,7 +15,9 @@ const state = {
     isAdmin: false,
     adminBrands: [],
     adminCapsules: [],
-    editingCapsuleId: null
+    editingCapsuleId: null,
+    // Batch operations state
+    selectedCapsules: new Set()
 };
 
 // ==================== DOM Elements ====================
@@ -96,7 +98,47 @@ const elements = {
     capsuleEditSize: document.getElementById('capsuleEditSize'),
     capsuleEditIntensity: document.getElementById('capsuleEditIntensity'),
     capsuleEditTastingNote: document.getElementById('capsuleEditTastingNote'),
-    closeCapsuleEditModal: document.getElementById('closeCapsuleEditModal')
+    closeCapsuleEditModal: document.getElementById('closeCapsuleEditModal'),
+    // Import modal elements
+    importModal: document.getElementById('importModal'),
+    importJsonText: document.getElementById('importJsonText'),
+    importCapsulesBtn: document.getElementById('importCapsulesBtn'),
+    closeImportModal: document.getElementById('closeImportModal'),
+    importJsonBtn: document.getElementById('importJsonBtn'),
+    // Batch action bar
+    batchActionBar: document.getElementById('batchActionBar'),
+    batchSelectedCount: document.getElementById('batchSelectedCount'),
+    batchEditBtn: document.getElementById('batchEditBtn'),
+    batchInventoryBtn: document.getElementById('batchInventoryBtn'),
+    batchDeleteBtn: document.getElementById('batchDeleteBtn'),
+    batchCancelBtn: document.getElementById('batchCancelBtn'),
+    // Batch Import Modal
+    batchImportBtn: document.getElementById('batchImportBtn'),
+    batchImportModal: document.getElementById('batchImportModal'),
+    closeBatchImportModal: document.getElementById('closeBatchImportModal'),
+    batchImportRows: document.getElementById('batchImportRows'),
+    addImportRowBtn: document.getElementById('addImportRowBtn'),
+    loadExampleBtn: document.getElementById('loadExampleBtn'),
+    previewImportBtn: document.getElementById('previewImportBtn'),
+    batchImportPreview: document.getElementById('batchImportPreview'),
+    confirmImportBtn: document.getElementById('confirmImportBtn'),
+    // Batch Edit Modal
+    batchEditModal: document.getElementById('batchEditModal'),
+    closeBatchEditModal: document.getElementById('closeBatchEditModal'),
+    batchEditFields: document.getElementById('batchEditFields'),
+    batchEditValues: document.getElementById('batchEditValues'),
+    confirmBatchEditBtn: document.getElementById('confirmBatchEditBtn'),
+    // Batch Inventory Modal
+    batchInventoryModal: document.getElementById('batchInventoryModal'),
+    closeBatchInventoryModal: document.getElementById('closeBatchInventoryModal'),
+    batchInvRadios: document.getElementById('batchInvRadios'),
+    batchInvQuantity: document.getElementById('batchInvQuantity'),
+    confirmBatchInvBtn: document.getElementById('confirmBatchInvBtn'),
+    // Batch Delete Modal
+    batchDeleteModal: document.getElementById('batchDeleteModal'),
+    closeBatchDeleteModal: document.getElementById('closeBatchDeleteModal'),
+    batchDeleteCount: document.getElementById('batchDeleteCount'),
+    confirmBatchDeleteBtn: document.getElementById('confirmBatchDeleteBtn')
 };
 
 // ==================== Initialization ====================
@@ -703,12 +745,62 @@ function renderAdminBrands() {
         return;
     }
 
-    elements.brandsList.innerHTML = state.adminBrands.map(brand => `
-        <div class="brand-item">
-            <span>${brand.name}</span>
-            <button class="danger-btn small" onclick="deleteBrand(${brand.id})">Delete</button>
-        </div>
-    `).join('');
+    elements.brandsList.innerHTML = state.adminBrands.map(brand => {
+        let brandName = '-';
+        let brandId = null;
+
+        if (typeof brand === 'object' && brand !== null) {
+            brandName = brand.name || '-';
+            brandId = brand.id;
+        } else if (typeof brand === 'string') {
+            try {
+                const parsed = JSON.parse(brand);
+                brandName = parsed.name || '-';
+                brandId = parsed.id;
+            } catch {
+                brandName = brand; // Use as-is if not valid JSON
+            }
+        }
+
+        return `
+            <div class="brand-item">
+                <span>${brandName}</span>
+                <button class="danger-btn small" onclick="deleteBrand(${brandId})">Delete</button>
+            </div>
+        `;
+    }).join('');
+}
+
+// Helper to parse brands from capsules response
+function getBrandName(brandsData) {
+    if (!brandsData) return '-';
+
+    // If it's already an object with name property, return it directly
+    if (typeof brandsData === 'object' && brandsData.name) {
+        return brandsData.name;
+    }
+
+    // If it's a string, try to parse it
+    if (typeof brandsData === 'string') {
+        try {
+            const parsed = JSON.parse(brandsData);
+            // Handle array format like [{"name":"Nespresso"}]
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed[0].name || '-';
+            }
+            // Handle object format like {"name":"Nespresso"}
+            if (parsed.name) {
+                return parsed.name;
+            }
+        } catch {
+            // If it's not valid JSON, maybe it's just a plain string name
+            if (brandsData.trim()) {
+                return brandsData;
+            }
+        }
+    }
+
+    return '-';
 }
 
 function populateBrandDropdowns() {
@@ -716,7 +808,26 @@ function populateBrandDropdowns() {
     const allOption = `<option value="all">${lang === 'en' ? 'All Brands' : '所有品牌'}</option>`;
     const selectOption = `<option value="">${lang === 'en' ? 'Select brand...' : '选择品牌...'}</option>`;
 
-    const brandOptions = state.adminBrands.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+    const brandOptions = state.adminBrands.map(b => {
+        let brandId = null;
+        let brandName = '-';
+
+        if (typeof b === 'object' && b !== null) {
+            brandId = b.id;
+            brandName = b.name || '-';
+        } else if (typeof b === 'string') {
+            try {
+                const parsed = JSON.parse(b);
+                brandId = parsed.id;
+                brandName = parsed.name || '-';
+            } catch {
+                brandId = b;
+                brandName = b;
+            }
+        }
+
+        return `<option value="${brandId}">${brandName}</option>`;
+    }).join('');
 
     elements.adminFilterBrand.innerHTML = allOption + brandOptions;
     elements.capsuleEditBrand.innerHTML = selectOption + brandOptions;
@@ -728,6 +839,25 @@ function openAddCapsuleModal() {
     elements.capsuleEditTitle.textContent = state.language === 'en' ? 'Add Capsule' : '添加胶囊';
     elements.capsuleEditForm.reset();
     elements.capsuleEditId.value = '';
+    // Smart defaults
+    elements.capsuleEditLine.value = 'Original';
+    elements.capsuleEditSize.value = 40;
+    elements.capsuleEditModal.classList.remove('hidden');
+}
+
+function copyCapsule(capsule) {
+    // Open edit modal but clear the id so it becomes a new capsule
+    state.editingCapsuleId = null;
+    elements.capsuleEditTitle.textContent = state.language === 'en' ? 'Copy Capsule' : '复制胶囊';
+    elements.capsuleEditForm.reset();
+    elements.capsuleEditId.value = '';
+    elements.capsuleEditBrand.value = capsule.brand_id || '';
+    elements.capsuleEditName.value = (capsule.name || '') + ' (copy)';
+    elements.capsuleEditLine.value = capsule.line || 'Original';
+    elements.capsuleEditBestServe.value = capsule.best_serve || '';
+    elements.capsuleEditSize.value = capsule.size_ml || 40;
+    elements.capsuleEditIntensity.value = capsule.intensity || '';
+    elements.capsuleEditTastingNote.value = capsule.tasting_note || '';
     elements.capsuleEditModal.classList.remove('hidden');
 }
 
@@ -774,6 +904,8 @@ async function saveCapsule(e) {
         }
         closeCapsuleEditModal();
         await loadAdminCapsules();
+        // Also reload main capsules so Capsules tab shows the new/updated capsule
+        await loadCapsulesData();
     } catch (error) {
         showToast(state.language === 'en' ? 'Failed to save capsule' : '保存胶囊失败', 'error');
     }
@@ -784,7 +916,15 @@ async function deleteCapsule(id) {
 
     try {
         await supabase.deleteCapsule(id);
-        await loadAdminCapsules();
+        // Use string comparison for reliable matching (id might be string or number)
+        const targetId = String(id);
+        // Remove from admin state
+        state.adminCapsules = state.adminCapsules.filter(c => String(c.id) !== targetId);
+        renderAdminCapsules();
+        // Also remove from main capsules state
+        state.capsules = state.capsules.filter(c => String(c.id) !== targetId);
+        state.filteredCapsules = state.filteredCapsules.filter(c => String(c.id) !== targetId);
+        renderCapsulesGrid();
         showToast(state.language === 'en' ? 'Capsule deleted' : '胶囊已删除', 'success');
     } catch (error) {
         showToast(state.language === 'en' ? 'Failed to delete capsule' : '删除胶囊失败', 'error');
@@ -798,10 +938,95 @@ async function clearAllCapsules() {
         await supabase.deleteAllCapsules();
         state.adminCapsules = [];
         renderAdminCapsules();
+        // Also clear main capsules state
+        state.capsules = [];
+        state.filteredCapsules = [];
+        renderCapsulesGrid();
         showToast(state.language === 'en' ? 'All capsules deleted' : '所有胶囊已删除', 'success');
     } catch (error) {
         showToast(state.language === 'en' ? 'Failed to delete capsules' : '删除胶囊失败', 'error');
     }
+}
+
+// ==================== Import JSON ====================
+function openImportModal() {
+    elements.importModal.classList.remove('hidden');
+    elements.importJsonText.value = '';
+}
+
+function closeImportModal() {
+    elements.importModal.classList.add('hidden');
+}
+
+async function importCapsulesFromJSON() {
+    const jsonText = elements.importJsonText.value.trim();
+    if (!jsonText) {
+        showToast(state.language === 'en' ? 'Please enter JSON data' : '请输入 JSON 数据', 'error');
+        return;
+    }
+
+    let capsules;
+    try {
+        capsules = JSON.parse(jsonText);
+    } catch (e) {
+        showToast(state.language === 'en' ? 'Invalid JSON format' : 'JSON 格式错误', 'error');
+        return;
+    }
+
+    if (!Array.isArray(capsules)) {
+        showToast(state.language === 'en' ? 'JSON must be an array' : 'JSON 必须是数组', 'error');
+        return;
+    }
+
+    if (capsules.length === 0) {
+        showToast(state.language === 'en' ? 'Array is empty' : '数组为空', 'error');
+        return;
+    }
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const item of capsules) {
+        if (!item.name) {
+            errorCount++;
+            continue;
+        }
+
+        const capsule = {
+            brand_id: item.brand_id || null,
+            name: item.name,
+            line: item.line || 'Original',
+            best_serve: item.best_serve || item.size_ml ? getSizeName(item.size_ml) : '',
+            size_ml: item.size_ml || (item.line === 'Vertuo' ? 80 : 40),
+            intensity: item.intensity || null,
+            tasting_note: item.tasting_note || '',
+            last_updated: new Date().toISOString()
+        };
+
+        try {
+            await supabase.createCapsule(capsule);
+            successCount++;
+        } catch (e) {
+            errorCount++;
+        }
+    }
+
+    closeImportModal();
+    await loadAdminCapsules();
+    await loadCapsulesData();
+
+    if (errorCount === 0) {
+        showToast(state.language === 'en' ? `Imported ${successCount} capsules` : `已导入 ${successCount} 个胶囊`, 'success');
+    } else {
+        showToast(state.language === 'en' ? `Imported ${successCount}, failed ${errorCount}` : `成功 ${successCount}，失败 ${errorCount}`, 'error');
+    }
+}
+
+function getSizeName(sizeMl) {
+    if (sizeMl <= 50) return 'Espresso';
+    if (sizeMl <= 100) return 'Double';
+    if (sizeMl <= 180) return 'Lungo';
+    return 'Coffee';
 }
 
 function getFilteredAdminCapsules() {
@@ -827,8 +1052,13 @@ function renderAdminCapsules() {
     elements.emptyAdminCapsules.classList.add('hidden');
 
     elements.adminCapsulesBody.innerHTML = capsules.map(capsule => `
-        <tr>
-            <td>${capsule.brands?.name || '-'}</td>
+        <tr class="${state.selectedCapsules.has(capsule.id) ? 'selected-row' : ''}">
+            <td class="batch-col">
+                <input type="checkbox" class="batch-checkbox"
+                    data-id="${capsule.id}"
+                    ${state.selectedCapsules.has(capsule.id) ? 'checked' : ''}>
+            </td>
+            <td>${getBrandName(capsule.brands)}</td>
             <td>${capsule.name || '-'}</td>
             <td>${capsule.line || '-'}</td>
             <td>${capsule.best_serve || '-'}</td>
@@ -837,12 +1067,328 @@ function renderAdminCapsules() {
             <td>${capsule.tasting_note || '-'}</td>
             <td>
                 <div class="action-buttons">
+                    <button class="edit-btn" onclick='copyCapsule(${JSON.stringify(capsule).replace(/'/g, "\\'")})'>Copy</button>
                     <button class="edit-btn" onclick='openEditCapsuleModal(${JSON.stringify(capsule).replace(/'/g, "\\'")})'>Edit</button>
                     <button class="danger-btn small" onclick="deleteCapsule(${capsule.id})">Delete</button>
                 </div>
             </td>
         </tr>
     `).join('');
+}
+
+// ==================== Batch Operations ====================
+function updateBatchActionBar() {
+    const count = state.selectedCapsules.size;
+    elements.batchSelectedCount.textContent = count;
+    if (count > 0) {
+        elements.batchActionBar.classList.remove('hidden');
+    } else {
+        elements.batchActionBar.classList.add('hidden');
+    }
+}
+
+function toggleCapsuleSelection(id) {
+    if (state.selectedCapsules.has(id)) {
+        state.selectedCapsules.delete(id);
+    } else {
+        state.selectedCapsules.add(id);
+    }
+    updateBatchActionBar();
+    // Update checkbox visual state
+    const checkbox = document.querySelector(`.batch-checkbox[data-id="${id}"]`);
+    if (checkbox) {
+        checkbox.checked = state.selectedCapsules.has(id);
+    }
+    // Update row styling
+    const row = checkbox ? checkbox.closest('tr') : null;
+    if (row) {
+        row.classList.toggle('selected-row', state.selectedCapsules.has(id));
+    }
+}
+
+function toggleSelectAllCapsules() {
+    const capsules = getFilteredAdminCapsules();
+    const allSelected = capsules.every(c => state.selectedCapsules.has(c.id));
+
+    if (allSelected) {
+        capsules.forEach(c => state.selectedCapsules.delete(c.id));
+    } else {
+        capsules.forEach(c => state.selectedCapsules.add(c.id));
+    }
+
+    document.querySelectorAll('.batch-checkbox').forEach(cb => {
+        cb.checked = !allSelected;
+    });
+    document.querySelectorAll('#adminCapsulesBody tr').forEach(row => {
+        row.classList.toggle('selected-row', !allSelected);
+    });
+
+    updateBatchActionBar();
+}
+
+function clearBatchSelection() {
+    state.selectedCapsules.clear();
+    document.querySelectorAll('.batch-checkbox').forEach(cb => cb.checked = false);
+    document.querySelectorAll('#adminCapsulesBody tr').forEach(row => {
+        row.classList.remove('selected-row');
+    });
+    updateBatchActionBar();
+}
+
+function getSelectedCapsuleIds() {
+    return Array.from(state.selectedCapsules);
+}
+
+// Batch Edit Functions
+function openBatchEditModal() {
+    if (state.selectedCapsules.size === 0) return;
+
+    // Populate brand dropdown
+    const brandSelect = document.getElementById('batchNewBrand');
+    brandSelect.innerHTML = '<option value="">Select brand...</option>' +
+        state.adminBrands.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+
+    // Reset checkboxes
+    document.querySelectorAll('#batchEditFields .batch-edit-field').forEach(f => {
+        f.classList.remove('selected');
+        f.querySelector('input').checked = false;
+    });
+    document.querySelectorAll('#batchEditValues .form-group').forEach(g => {
+        g.style.display = 'none';
+    });
+
+    elements.batchEditModal.classList.remove('hidden');
+}
+
+function closeBatchEditModal() {
+    elements.batchEditModal.classList.add('hidden');
+}
+
+async function applyBatchEdit() {
+    const selectedIds = getSelectedCapsuleIds();
+    if (selectedIds.length === 0) return;
+
+    const updates = {};
+    let hasUpdates = false;
+
+    if (document.getElementById('batchEditBrand').checked) {
+        const val = document.getElementById('batchNewBrand').value;
+        if (val) { updates.brand_id = parseInt(val); hasUpdates = true; }
+    }
+    if (document.getElementById('batchEditLine').checked) {
+        updates.line = document.getElementById('batchNewLine').value;
+        hasUpdates = true;
+    }
+    if (document.getElementById('batchEditBestServe').checked) {
+        updates.best_serve = document.getElementById('batchNewBestServe').value;
+        hasUpdates = true;
+    }
+    if (document.getElementById('batchEditSize').checked) {
+        updates.size_ml = parseInt(document.getElementById('batchNewSize').value);
+        hasUpdates = true;
+    }
+    if (document.getElementById('batchEditIntensity').checked) {
+        updates.intensity = parseInt(document.getElementById('batchNewIntensity').value);
+        hasUpdates = true;
+    }
+    if (document.getElementById('batchEditTastingNote').checked) {
+        updates.tasting_note = document.getElementById('batchNewTastingNote').value;
+        hasUpdates = true;
+    }
+
+    if (!hasUpdates) {
+        showToast(state.language === 'en' ? 'No fields selected' : '未选择任何字段', 'error');
+        return;
+    }
+
+    try {
+        await supabase.batchUpdateCapsules(selectedIds, updates);
+        showToast(state.language === 'en' ? `Updated ${selectedIds.length} capsules` : `已更新 ${selectedIds.length} 个胶囊`, 'success');
+        closeBatchEditModal();
+        clearBatchSelection();
+        await loadAdminData();
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Update failed' : '更新失败', 'error');
+    }
+}
+
+// Batch Inventory Functions
+function openBatchInventoryModal() {
+    if (state.selectedCapsules.size === 0) return;
+    elements.batchInvQuantity.value = 1;
+    elements.batchInventoryModal.classList.remove('hidden');
+}
+
+function closeBatchInventoryModal() {
+    elements.batchInventoryModal.classList.add('hidden');
+}
+
+async function applyBatchInventory() {
+    const selectedIds = getSelectedCapsuleIds();
+    if (selectedIds.length === 0) return;
+
+    const action = document.querySelector('input[name="batchInvAction"]:checked').value;
+    const quantity = parseInt(elements.batchInvQuantity.value) || 1;
+
+    if (!state.user) {
+        showToast(state.language === 'en' ? 'Please login first' : '请先登录', 'error');
+        return;
+    }
+
+    const updates = selectedIds.map(pod_id => ({ pod_id, action, quantity }));
+
+    try {
+        await supabase.batchUpdateInventory(state.user.id, updates);
+        showToast(state.language === 'en' ? `Updated inventory for ${selectedIds.length} capsules` : `已更新 ${selectedIds.length} 个胶囊的库存`, 'success');
+        closeBatchInventoryModal();
+        clearBatchSelection();
+        await loadInventory();
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Inventory update failed' : '库存更新失败', 'error');
+    }
+}
+
+// Batch Delete Functions
+function openBatchDeleteModal() {
+    if (state.selectedCapsules.size === 0) return;
+    elements.batchDeleteCount.textContent = state.selectedCapsules.size;
+    elements.batchDeleteModal.classList.remove('hidden');
+}
+
+function closeBatchDeleteModal() {
+    elements.batchDeleteModal.classList.add('hidden');
+}
+
+async function applyBatchDelete() {
+    const selectedIds = getSelectedCapsuleIds();
+    if (selectedIds.length === 0) return;
+
+    try {
+        await supabase.batchDeleteCapsules(selectedIds);
+        showToast(state.language === 'en' ? `Deleted ${selectedIds.length} capsules` : `已删除 ${selectedIds.length} 个胶囊`, 'success');
+        closeBatchDeleteModal();
+        clearBatchSelection();
+        await loadAdminData();
+        await loadCapsulesData();
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Delete failed' : '删除失败', 'error');
+    }
+}
+
+// Batch Import Visual Functions
+function openBatchImportModal() {
+    elements.batchImportRows.innerHTML = '';
+    elements.batchImportPreview.classList.add('hidden');
+    elements.confirmImportBtn.classList.add('hidden');
+    addBatchImportRow();
+    elements.batchImportModal.classList.remove('hidden');
+}
+
+function closeBatchImportModal() {
+    elements.batchImportModal.classList.add('hidden');
+}
+
+function addBatchImportRow(data = {}) {
+    const row = document.createElement('div');
+    row.className = 'batch-import-row';
+    row.innerHTML = `
+        <input type="text" class="import-name" placeholder="Name *" value="${data.name || ''}" required>
+        <select class="import-brand">
+            <option value="">Brand...</option>
+            ${state.adminBrands.map(b => `<option value="${b.id}" ${data.brand_id == b.id ? 'selected' : ''}>${b.name}</option>`).join('')}
+        </select>
+        <select class="import-line">
+            <option value="Original" ${data.line === 'Original' ? 'selected' : ''}>Original</option>
+            <option value="Vertuo" ${data.line === 'Vertuo' ? 'selected' : ''}>Vertuo</option>
+        </select>
+        <select class="import-size">
+            <option value="40" ${data.size_ml == 40 ? 'selected' : ''}>40ml</option>
+            <option value="80" ${data.size_ml == 80 ? 'selected' : ''}>80ml</option>
+            <option value="150" ${data.size_ml == 150 ? 'selected' : ''}>150ml</option>
+            <option value="230" ${data.size_ml == 230 ? 'selected' : ''}>230ml</option>
+        </select>
+        <input type="number" class="import-intensity" placeholder="1-13" min="1" max="13" value="${data.intensity || ''}">
+        <input type="text" class="import-note" placeholder="Tasting note" value="${data.tasting_note || ''}">
+        <button class="delete-row-btn" onclick="this.closest('.batch-import-row').remove()">&times;</button>
+    `;
+    elements.batchImportRows.appendChild(row);
+}
+
+function loadExampleImportData() {
+    const examples = [
+        { name: 'Ristretto', line: 'Original', size_ml: 40, intensity: 10, tasting_note: 'Intense and bold' },
+        { name: 'Livanto', line: 'Original', size_ml: 40, intensity: 6, tasting_note: 'Round and balanced' },
+        { name: 'Vanilio', line: 'Original', size_ml: 40, intensity: 6, tasting_note: 'Vanilla and sweetness' }
+    ];
+
+    elements.batchImportRows.innerHTML = '';
+    examples.forEach(ex => addBatchImportRow(ex));
+}
+
+function previewBatchImport() {
+    const rows = document.querySelectorAll('#batchImportRows .batch-import-row');
+    const capsules = [];
+
+    rows.forEach(row => {
+        const name = row.querySelector('.import-name').value.trim();
+        if (!name) return;
+
+        const capsule = {
+            name: name,
+            brand_id: row.querySelector('.import-brand').value ? parseInt(row.querySelector('.import-brand').value) : null,
+            line: row.querySelector('.import-line').value,
+            size_ml: parseInt(row.querySelector('.import-size').value) || 40,
+            intensity: row.querySelector('.import-intensity').value ? parseInt(row.querySelector('.import-intensity').value) : null,
+            tasting_note: row.querySelector('.import-note').value.trim() || null
+        };
+
+        capsules.push(capsule);
+    });
+
+    if (capsules.length === 0) {
+        showToast(state.language === 'en' ? 'No valid capsules to import' : '没有有效的胶囊可导入', 'error');
+        return;
+    }
+
+    elements.batchImportPreview.textContent = JSON.stringify(capsules, null, 2);
+    elements.batchImportPreview.classList.remove('hidden');
+    elements.confirmImportBtn.classList.remove('hidden');
+}
+
+async function confirmBatchImport() {
+    const rows = document.querySelectorAll('#batchImportRows .batch-import-row');
+    const capsules = [];
+
+    rows.forEach(row => {
+        const name = row.querySelector('.import-name').value.trim();
+        if (!name) return;
+
+        const capsule = {
+            name: name,
+            brand_id: row.querySelector('.import-brand').value ? parseInt(row.querySelector('.import-brand').value) : null,
+            line: row.querySelector('.import-line').value,
+            size_ml: parseInt(row.querySelector('.import-size').value) || 40,
+            intensity: row.querySelector('.import-intensity').value ? parseInt(row.querySelector('.import-intensity').value) : null,
+            tasting_note: row.querySelector('.import-note').value.trim() || null
+        };
+
+        capsules.push(capsule);
+    });
+
+    if (capsules.length === 0) {
+        showToast(state.language === 'en' ? 'No valid capsules to import' : '没有有效的胶囊可导入', 'error');
+        return;
+    }
+
+    try {
+        await supabase.batchUpsertCapsules(capsules);
+        showToast(state.language === 'en' ? `Imported ${capsules.length} capsules` : `已导入 ${capsules.length} 个胶囊`, 'success');
+        closeBatchImportModal();
+        await loadAdminData();
+        await loadCapsulesData();
+    } catch (error) {
+        showToast(state.language === 'en' ? 'Import failed' : '导入失败', 'error');
+    }
 }
 
 // ==================== Event Listeners ====================
@@ -960,6 +1506,95 @@ function setupEventListeners() {
     elements.capsuleEditModal.addEventListener('click', (e) => {
         if (e.target === elements.capsuleEditModal) closeCapsuleEditModal();
     });
+
+    // Auto-update size when line changes
+    elements.capsuleEditLine.addEventListener('change', () => {
+        if (!state.editingCapsuleId) {
+            // Only auto-update for new capsules, not edits
+            elements.capsuleEditSize.value = elements.capsuleEditLine.value === 'Vertuo' ? 80 : 40;
+        }
+    });
+
+    // Import modal
+    elements.importCapsulesBtn.addEventListener('click', openImportModal);
+    elements.closeImportModal.addEventListener('click', closeImportModal);
+    elements.importModal.addEventListener('click', (e) => {
+        if (e.target === elements.importModal) closeImportModal();
+    });
+    elements.importJsonBtn.addEventListener('click', importCapsulesFromJSON);
+
+    // Batch action bar
+    elements.batchCancelBtn.addEventListener('click', clearBatchSelection);
+    elements.batchEditBtn.addEventListener('click', openBatchEditModal);
+    elements.batchInventoryBtn.addEventListener('click', openBatchInventoryModal);
+    elements.batchDeleteBtn.addEventListener('click', openBatchDeleteModal);
+
+    // Batch table checkboxes (delegated)
+    elements.adminCapsulesBody.addEventListener('change', (e) => {
+        if (e.target.classList.contains('batch-checkbox')) {
+            const id = parseInt(e.target.dataset.id);
+            toggleCapsuleSelection(id);
+        }
+    });
+
+    // Select all checkbox
+    document.getElementById('selectAllCapsules').addEventListener('change', toggleSelectAllCapsules);
+
+    // Batch Import Modal
+    elements.batchImportBtn.addEventListener('click', openBatchImportModal);
+    elements.closeBatchImportModal.addEventListener('click', closeBatchImportModal);
+    elements.batchImportModal.addEventListener('click', (e) => {
+        if (e.target === elements.batchImportModal) closeBatchImportModal();
+    });
+    elements.addImportRowBtn.addEventListener('click', () => addBatchImportRow());
+    elements.loadExampleBtn.addEventListener('click', loadExampleImportData);
+    elements.previewImportBtn.addEventListener('click', previewBatchImport);
+    elements.confirmImportBtn.addEventListener('click', confirmBatchImport);
+
+    // Batch Edit Modal
+    elements.closeBatchEditModal.addEventListener('click', closeBatchEditModal);
+    elements.batchEditModal.addEventListener('click', (e) => {
+        if (e.target === elements.batchEditModal) closeBatchEditModal();
+    });
+    elements.confirmBatchEditBtn.addEventListener('click', applyBatchEdit);
+
+    // Batch Edit field selection
+    document.querySelectorAll('#batchEditFields .batch-edit-field').forEach(field => {
+        field.addEventListener('click', () => {
+            const checkbox = field.querySelector('input');
+            checkbox.checked = !checkbox.checked;
+            field.classList.toggle('selected', checkbox.checked);
+
+            const fieldName = field.dataset.field;
+            const valueGroup = document.getElementById(`batchValue${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`);
+            if (valueGroup) {
+                valueGroup.style.display = checkbox.checked ? 'block' : 'none';
+            }
+        });
+    });
+
+    // Batch Inventory Modal
+    elements.closeBatchInventoryModal.addEventListener('click', closeBatchInventoryModal);
+    elements.batchInventoryModal.addEventListener('click', (e) => {
+        if (e.target === elements.batchInventoryModal) closeBatchInventoryModal();
+    });
+    elements.confirmBatchInvBtn.addEventListener('click', applyBatchInventory);
+
+    // Batch Inventory radio selection
+    document.querySelectorAll('#batchInvRadios .batch-inv-radio').forEach(radio => {
+        radio.addEventListener('click', () => {
+            document.querySelectorAll('#batchInvRadios .batch-inv-radio').forEach(r => r.classList.remove('selected'));
+            radio.classList.add('selected');
+            radio.querySelector('input').checked = true;
+        });
+    });
+
+    // Batch Delete Modal
+    elements.closeBatchDeleteModal.addEventListener('click', closeBatchDeleteModal);
+    elements.batchDeleteModal.addEventListener('click', (e) => {
+        if (e.target === elements.batchDeleteModal) closeBatchDeleteModal();
+    });
+    elements.confirmBatchDeleteBtn.addEventListener('click', applyBatchDelete);
 }
 
 // ==================== Tab Switching ====================
@@ -980,9 +1615,9 @@ function switchTab(tabName) {
     if (tabName !== 'pick') {
         elements.result.classList.add('hidden');
     }
-    // Render capsules when switching to capsules tab
+    // Reload capsules when switching to capsules tab
     if (tabName === 'capsules') {
-        renderCapsulesGrid();
+        loadCapsulesData();
     }
 }
 
@@ -1219,13 +1854,14 @@ function renderCapsulesGrid() {
     const html = capsules.map(capsule => {
         const inInventory = state.inventory[capsule.id];
         const invQty = inInventory ? inInventory.quantity : 0;
+        const capsuleName = lang === 'zh' ? (capsule.name_zh || capsule.name_en) : (capsule.name_en || capsule.name || '-');
         return `
             <div class="capsule-card ${invQty > 0 ? 'in-stock' : 'out-of-stock'}" data-id="${capsule.id}">
                 <div class="capsule-color-bar" style="background: ${capsule.color || '#6B5344'}"></div>
-                <div class="capsule-name">${lang === 'zh' ? (capsule.name_zh || capsule.name_en) : capsule.name_en}</div>
+                <div class="capsule-name">${capsuleName}</div>
                 <div class="capsule-meta">
-                    <span class="capsule-line">${capsule.line}</span>
-                    <span>${capsule.size_ml}ml | ${capsule.pod_type}</span>
+                    <span class="capsule-line">${capsule.line || '-'}</span>
+                    <span>${capsule.size_ml || '-'}ml | ${capsule.pod_type || '-'}</span>
                     ${capsule.intensity ? `<span>Intensity: ${capsule.intensity}</span>` : ''}
                     <span class="stock-badge ${invQty > 0 ? 'stock-ok' : 'stock-empty'}">
                         ${invQty > 0 ? `${invQty} ${lang === 'en' ? 'in stock' : '库存'}` : (lang === 'en' ? 'Out of stock' : '无库存')}

@@ -1153,6 +1153,18 @@ header h1 {
     font-size: 0.85rem;
 }
 
+.danger-btn {
+    background: var(--error);
+    color: var(--white);
+    border: none;
+    padding: 14px 24px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
 /* Capsule Edit Form */
 #capsuleEditForm .form-group {
     margin-bottom: 14px;
@@ -1182,4 +1194,326 @@ header h1 {
     outline: none;
     border-color: var(--primary);
     background: var(--white);
+}
+
+/* ==================== Import Modal ==================== */
+#importJsonText {
+    resize: vertical;
+    font-family: monospace;
+    min-height: 150px;
+}
+
+#importJsonText:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ==================== Batch Operations ==================== */
+.batch-action-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--white);
+    border-radius: 50px;
+    padding: 12px 20px;
+    box-shadow: 0 8px 32px rgba(124, 92, 219, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 500;
+    animation: slideUp 0.3s ease;
+}
+
+.batch-action-bar.hidden {
+    display: none;
+}
+
+.batch-action-bar .selected-count {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.9rem;
+    padding-right: 8px;
+    border-right: 1px solid var(--border);
+}
+
+.batch-action-bar .batch-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.batch-action-bar .batch-btn.edit {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.batch-action-bar .batch-btn.inventory {
+    background: var(--accent);
+    color: var(--text);
+}
+
+.batch-action-bar .batch-btn.delete {
+    background: var(--error);
+    color: var(--white);
+}
+
+.batch-action-bar .batch-btn.cancel {
+    background: var(--text-muted);
+    color: var(--white);
+}
+
+.batch-action-bar .batch-btn:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+/* Batch Checkbox */
+.batch-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.admin-table th.batch-col,
+.admin-table td.batch-col {
+    width: 40px;
+    text-align: center;
+}
+
+.selected-row td {
+    background: rgba(124, 92, 219, 0.08) !important;
+}
+
+/* Batch Import Modal */
+.batch-import-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.batch-import-row {
+    display: grid;
+    grid-template-columns: 1fr 120px 100px 80px 60px 1fr 40px;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.batch-import-row input,
+.batch-import-row select {
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    background: #F8F9FA;
+}
+
+.batch-import-row input:focus,
+.batch-import-row select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--white);
+}
+
+.batch-import-row .delete-row-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #F0F2F5;
+    border-radius: 8px;
+    color: var(--error);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.batch-import-row .delete-row-btn:hover {
+    background: var(--error);
+    color: var(--white);
+}
+
+.batch-import-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.batch-import-actions button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.batch-import-actions .add-row-btn {
+    background: var(--secondary);
+    color: var(--primary);
+    border: 1.5px dashed var(--primary);
+}
+
+.batch-import-actions .example-btn {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.batch-import-preview {
+    background: #1A1A2E;
+    color: #5CDB95;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 16px;
+    white-space: pre-wrap;
+}
+
+.batch-import-preview.hidden {
+    display: none;
+}
+
+/* Batch Edit Modal */
+.batch-edit-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.batch-edit-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--secondary);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.batch-edit-field:hover {
+    background: rgba(124, 92, 219, 0.1);
+}
+
+.batch-edit-field.selected {
+    background: rgba(124, 92, 219, 0.15);
+    border: 2px solid var(--primary);
+}
+
+.batch-edit-field input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.batch-edit-field label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.batch-edit-values {
+    display: none;
+}
+
+.batch-edit-values.visible {
+    display: block;
+}
+
+.batch-edit-values .form-group {
+    margin-bottom: 12px;
+}
+
+/* Batch Inventory Modal */
+.batch-inv-radios {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    justify-content: center;
+}
+
+.batch-inv-radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--secondary);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.batch-inv-radio:hover {
+    background: rgba(124, 92, 219, 0.1);
+}
+
+.batch-inv-radio input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.batch-inv-radio label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.batch-inv-radio.selected {
+    background: rgba(124, 92, 219, 0.15);
+    border: 2px solid var(--primary);
+}
+
+.batch-inv-qty {
+    text-align: center;
+}
+
+.batch-inv-qty input {
+    width: 100px;
+    padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.batch-inv-qty input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Batch Delete Modal */
+.batch-delete-confirm {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.batch-delete-confirm .warning-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.batch-delete-confirm p {
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.batch-delete-confirm .delete-count {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--error);
 }

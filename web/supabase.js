@@ -51,7 +51,9 @@ const supabase = {
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
 
-            const data = await response.json();
+            // Handle empty responses (e.g., DELETE returns 204 No Content)
+            const text = await response.text();
+            const data = text ? JSON.parse(text) : null;
             return data;
         } catch (error) {
             console.error('Supabase request failed:', error);
@@ -264,7 +266,7 @@ const supabase = {
 
     // ==================== Capsule Join Operations ====================
     async getCapsulesWithBrands() {
-        return this.request('capsules?select=*,brands(name)&order=brands.name,line,name');
+        return this.request('capsules?select=*,brands(name)&order=brand_id.asc,line.asc,name.asc');
     },
 
     // ==================== Admin Operations ====================
@@ -274,8 +276,90 @@ const supabase = {
     },
 
     async deleteAllCapsules() {
+        await this.request('daily_consumption?pod_id=gt.0', 'DELETE');
         await this.request('inventory?pod_id=gt.0', 'DELETE');
         return this.request('capsules?id=gt.0', 'DELETE');
+    },
+
+    // ==================== Batch Operations ====================
+    async batchUpsertCapsules(capsules) {
+        const results = [];
+        for (const capsule of capsules) {
+            if (!capsule.name) continue;
+            const existing = await this.request(`capsules?name=eq.${encodeURIComponent(capsule.name)}&select=id`);
+            if (existing.length > 0) {
+                await this.request(`capsules?id=eq.${existing[0].id}`, 'PATCH', capsule);
+            } else {
+                await this.request('capsules', 'POST', capsule);
+            }
+            results.push(capsule);
+        }
+        return results;
+    },
+
+    async batchUpdateCapsules(ids, updates) {
+        const results = [];
+        for (const id of ids) {
+            await this.request(`capsules?id=eq.${id}`, 'PATCH', updates);
+            results.push(id);
+        }
+        return results;
+    },
+
+    async batchDeleteCapsules(ids) {
+        // Delete related daily_consumption first
+        for (const id of ids) {
+            await this.request(`daily_consumption?pod_id=eq.${id}`, 'DELETE');
+            await this.request(`inventory?pod_id=eq.${id}`, 'DELETE');
+            await this.request(`capsules?id=eq.${id}`, 'DELETE');
+        }
+        return ids;
+    },
+
+    async batchUpdateInventory(userId, updates) {
+        const results = [];
+        for (const update of updates) {
+            const { pod_id, action, quantity = 1 } = update;
+            const existing = await this.request(
+                `inventory?user_id=eq.${userId}&pod_id=eq.${pod_id}&select=id,quantity`
+            );
+
+            if (existing.length > 0) {
+                const currentQty = existing[0].quantity;
+                let newQty;
+
+                switch (action) {
+                    case 'add':
+                        newQty = currentQty + quantity;
+                        break;
+                    case 'remove':
+                        newQty = currentQty - quantity;
+                        break;
+                    case 'set':
+                        newQty = quantity;
+                        break;
+                    default:
+                        newQty = currentQty;
+                }
+
+                if (newQty <= 0) {
+                    await this.request(`inventory?id=eq.${existing[0].id}`, 'DELETE');
+                } else {
+                    await this.request(`inventory?id=eq.${existing[0].id}`, 'PATCH', { quantity: newQty });
+                }
+            } else if (action === 'add' || action === 'set') {
+                const qty = action === 'set' ? quantity : quantity;
+                if (qty > 0) {
+                    await this.request('inventory', 'POST', {
+                        user_id: userId,
+                        pod_id: pod_id,
+                        quantity: qty
+                    });
+                }
+            }
+            results.push({ pod_id, action, quantity });
+        }
+        return results;
     }
 };
 

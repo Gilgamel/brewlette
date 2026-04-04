@@ -286,13 +286,11 @@ const supabase = {
         const results = [];
         for (const capsule of capsules) {
             if (!capsule.name) continue;
-            // Remove decaffeinato if database doesn't support it
-            const { decaffeinato, ...capsuleData } = capsule;
             const existing = await this.request(`capsules?name=eq.${encodeURIComponent(capsule.name)}&select=id`);
             if (existing.length > 0) {
-                await this.request(`capsules?id=eq.${existing[0].id}`, 'PATCH', capsuleData);
+                await this.request(`capsules?id=eq.${existing[0].id}`, 'PATCH', capsule);
             } else {
-                await this.request('capsules', 'POST', capsuleData);
+                await this.request('capsules', 'POST', capsule);
             }
             results.push(capsule);
         }

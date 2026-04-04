@@ -1625,6 +1625,10 @@ function switchTab(tabName) {
     if (tabName !== 'pick') {
         elements.result.classList.add('hidden');
     }
+    // Load admin data when switching to admin tab
+    if (tabName === 'admin' && state.isAdmin) {
+        loadAdminData();
+    }
     // Reload capsules when switching to capsules tab
     if (tabName === 'capsules') {
         loadCapsulesData();

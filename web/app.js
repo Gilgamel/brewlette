@@ -718,7 +718,7 @@ async function addBrand() {
     }
 
     try {
-        await supabase.createBrand({ name });
+        await supabase.createBrand(name);
         elements.newBrandName.value = '';
         await loadAdminBrands();
         showToast(state.language === 'en' ? 'Brand added' : '品牌已添加', 'success');

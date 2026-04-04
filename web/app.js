@@ -1869,6 +1869,10 @@ function renderCapsulesGrid() {
         const inInventory = state.inventory[capsule.id];
         const invQty = inInventory ? inInventory.quantity : 0;
         const capsuleName = lang === 'zh' ? (capsule.name_zh || capsule.name_en) : (capsule.name_en || capsule.name || '-');
+        const tastingNote = capsule.tasting_note_en || capsule.tasting_note || '';
+        const tastingBadges = tastingNote ? tastingNote.split(',').map(note =>
+            `<span class="tasting-badge">${note.trim()}</span>`
+        ).join('') : '';
         return `
             <div class="capsule-card ${invQty > 0 ? 'in-stock' : 'out-of-stock'}" data-id="${capsule.id}">
                 <div class="capsule-color-bar" style="background: ${capsule.color || '#6B5344'}"></div>
@@ -1877,6 +1881,7 @@ function renderCapsulesGrid() {
                     <span class="capsule-line">${capsule.line || '-'}</span>
                     <span>${capsule.size_ml || '-'}ml | ${capsule.pod_type || '-'}</span>
                     ${capsule.intensity ? `<span>Intensity: ${capsule.intensity}</span>` : ''}
+                    ${tastingBadges ? `<div class="tasting-notes">${tastingBadges}</div>` : ''}
                     <span class="stock-badge ${invQty > 0 ? 'stock-ok' : 'stock-empty'}">
                         ${invQty > 0 ? `${invQty} ${lang === 'en' ? 'in stock' : '库存'}` : (lang === 'en' ? 'Out of stock' : '无库存')}
                     </span>

@@ -1026,6 +1026,24 @@ header h1 {
     border: 2px solid var(--border);
 }
 
+/* Tasting Notes Display */
+.tasting-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.tasting-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(124, 92, 219, 0.1);
+    color: var(--primary);
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
 /* ==================== Admin Styles ==================== */
 .admin-section {
     margin-bottom: 24px;

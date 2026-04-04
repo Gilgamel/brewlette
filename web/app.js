@@ -152,6 +152,10 @@ async function init() {
     renderInventory();
     renderCapsulesGrid();
     applyLanguage(state.language);
+    // Restore admin session
+    if (localStorage.getItem('brewlette_admin') === 'true') {
+        state.isAdmin = true;
+    }
 }
 
 // Send heartbeat to keep Supabase active (prevents pause after 7 days inactivity)
@@ -666,6 +670,7 @@ async function verifyAdminPassword() {
         const isValid = await supabase.verifyAdminPassword(password);
         if (isValid) {
             state.isAdmin = true;
+            localStorage.setItem('brewlette_admin', 'true');
             elements.adminPasswordModal.classList.add('hidden');
             elements.adminPasswordInput.value = '';
             switchTab('admin');

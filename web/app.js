@@ -96,6 +96,7 @@ const elements = {
     capsuleEditLine: document.getElementById('capsuleEditLine'),
     capsuleEditBestServe: document.getElementById('capsuleEditBestServe'),
     capsuleEditSize: document.getElementById('capsuleEditSize'),
+    capsuleEditSize2: document.getElementById('capsuleEditSize2'),
     capsuleEditIntensity: document.getElementById('capsuleEditIntensity'),
     capsuleEditTastingNote: document.getElementById('capsuleEditTastingNote'),
     closeCapsuleEditModal: document.getElementById('closeCapsuleEditModal'),
@@ -847,6 +848,8 @@ function openAddCapsuleModal() {
     // Smart defaults
     elements.capsuleEditLine.value = 'Original';
     elements.capsuleEditSize.value = 40;
+    elements.capsuleEditSize2.value = '';
+    elements.capsuleEditBestServe.dataset.auto = 'false';
     elements.capsuleEditModal.classList.remove('hidden');
 }
 
@@ -861,8 +864,10 @@ function copyCapsule(capsule) {
     elements.capsuleEditLine.value = capsule.line || 'Original';
     elements.capsuleEditBestServe.value = capsule.best_serve || '';
     elements.capsuleEditSize.value = capsule.size_ml || 40;
+    elements.capsuleEditSize2.value = capsule.size_ml2 || '';
     elements.capsuleEditIntensity.value = capsule.intensity || '';
     elements.capsuleEditTastingNote.value = capsule.tasting_note || '';
+    elements.capsuleEditBestServe.dataset.auto = 'false';
     elements.capsuleEditModal.classList.remove('hidden');
 }
 
@@ -875,8 +880,10 @@ function openEditCapsuleModal(capsule) {
     elements.capsuleEditLine.value = capsule.line || 'Original';
     elements.capsuleEditBestServe.value = capsule.best_serve || '';
     elements.capsuleEditSize.value = capsule.size_ml || 40;
+    elements.capsuleEditSize2.value = capsule.size_ml2 || '';
     elements.capsuleEditIntensity.value = capsule.intensity || '';
     elements.capsuleEditTastingNote.value = capsule.tasting_note || '';
+    elements.capsuleEditBestServe.dataset.auto = 'false';
     elements.capsuleEditModal.classList.remove('hidden');
 }
 
@@ -894,6 +901,7 @@ async function saveCapsule(e) {
         line: elements.capsuleEditLine.value,
         best_serve: elements.capsuleEditBestServe.value.trim(),
         size_ml: parseInt(elements.capsuleEditSize.value),
+        size_ml2: elements.capsuleEditSize2.value ? parseInt(elements.capsuleEditSize2.value) : null,
         intensity: elements.capsuleEditIntensity.value ? parseInt(elements.capsuleEditIntensity.value) : null,
         tasting_note: elements.capsuleEditTastingNote.value.trim(),
         last_updated: new Date().toISOString()
@@ -1030,8 +1038,19 @@ async function importCapsulesFromJSON() {
 function getSizeName(sizeMl) {
     if (sizeMl <= 50) return 'Espresso';
     if (sizeMl <= 100) return 'Double';
-    if (sizeMl <= 180) return 'Lungo';
-    return 'Coffee';
+    if (sizeMl <= 180) return 'Gran Lungo';
+    if (sizeMl <= 250) return 'Coffee';
+    if (sizeMl <= 400) return 'Alto';
+    return 'Carafe';
+}
+
+function mapSizeToCategory(sizeMl) {
+    if (sizeMl <= 50) return 'espresso';
+    if (sizeMl <= 100) return 'double';
+    if (sizeMl <= 180) return 'lungo';
+    if (sizeMl <= 250) return 'coffee';
+    if (sizeMl <= 400) return 'alto';
+    return 'carafe';
 }
 
 function getFilteredAdminCapsules() {
@@ -1067,7 +1086,7 @@ function renderAdminCapsules() {
             <td>${capsule.name || '-'}</td>
             <td>${capsule.line || '-'}</td>
             <td>${capsule.best_serve || '-'}</td>
-            <td>${capsule.size_ml ? capsule.size_ml + 'ml' : '-'}</td>
+            <td>${capsule.size_ml ? capsule.size_ml + 'ml' + (capsule.size_ml2 ? '/' + capsule.size_ml2 + 'ml' : '') : '-'}</td>
             <td>${capsule.intensity || '-'}</td>
             <td>${capsule.tasting_note || '-'}</td>
             <td>
@@ -1525,6 +1544,27 @@ function setupEventListeners() {
         }
     });
 
+    // Auto-fill Best Serve based on size selection
+    elements.capsuleEditSize.addEventListener('change', function() {
+        if (!elements.capsuleEditBestServe.value ||
+            elements.capsuleEditBestServe.dataset.auto === 'true') {
+            elements.capsuleEditBestServe.value = getSizeName(parseInt(this.value));
+            elements.capsuleEditBestServe.dataset.auto = 'true';
+        }
+    });
+    elements.capsuleEditSize2.addEventListener('change', function() {
+        if (this.value && (!elements.capsuleEditBestServe.value ||
+            elements.capsuleEditBestServe.dataset.auto === 'true')) {
+            const primary = parseInt(elements.capsuleEditSize.value) || 0;
+            const secondary = parseInt(this.value);
+            const bestServe = (secondary > primary)
+                ? getSizeName(secondary)
+                : getSizeName(primary);
+            elements.capsuleEditBestServe.value = bestServe;
+            elements.capsuleEditBestServe.dataset.auto = 'true';
+        }
+    });
+
     // Import modal
     elements.importCapsulesBtn.addEventListener('click', openImportModal);
     elements.closeImportModal.addEventListener('click', closeImportModal);
@@ -1711,7 +1751,11 @@ function filterCapsules() {
 
 function getFilteredCapsules() {
     return getInventoryCapsules().filter(capsule => {
-        if (state.selectedSize && capsule.pod_type !== state.selectedSize) return false;
+        if (state.selectedSize) {
+            const primaryCategory = mapSizeToCategory(capsule.size_ml);
+            const secondaryCategory = capsule.size_ml2 ? mapSizeToCategory(capsule.size_ml2) : null;
+            if (primaryCategory !== state.selectedSize && secondaryCategory !== state.selectedSize) return false;
+        }
         if (!state.selectedLines[capsule.line]) return false;
         return true;
     });
@@ -1744,7 +1788,9 @@ function displayResult(capsule) {
     const lang = state.language;
     elements.resultName.textContent = lang === 'zh' ? (capsule.name_zh || capsule.name_en) : capsule.name_en;
     elements.resultLine.textContent = capsule.line;
-    elements.resultSize.textContent = `${capsule.size_ml}ml`;
+    const sizes = capsule.size_ml ? [capsule.size_ml] : [];
+    if (capsule.size_ml2) sizes.push(capsule.size_ml2);
+    elements.resultSize.textContent = sizes.length ? sizes.join('/') + 'ml' : '-';
     elements.resultIntensity.textContent = capsule.intensity ? `Intensity ${capsule.intensity}` : '';
     elements.resultNote.textContent = lang === 'zh' ? capsule.tasting_note_zh : capsule.tasting_note_en || '';
     elements.result.classList.remove('hidden');

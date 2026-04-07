@@ -849,7 +849,8 @@ function openAddCapsuleModal() {
     elements.capsuleEditLine.value = 'Original';
     elements.capsuleEditSize.value = 40;
     elements.capsuleEditSize2.value = '';
-    elements.capsuleEditBestServe.dataset.auto = 'false';
+    elements.capsuleEditBestServe.value = getSizeName(40);
+    elements.capsuleEditBestServe.dataset.auto = 'true';
     elements.capsuleEditModal.classList.remove('hidden');
 }
 
@@ -1541,6 +1542,12 @@ function setupEventListeners() {
         if (!state.editingCapsuleId) {
             // Only auto-update for new capsules, not edits
             elements.capsuleEditSize.value = elements.capsuleEditLine.value === 'Vertuo' ? 80 : 40;
+            // Auto-fill Best Serve when size auto-updates
+            if (!elements.capsuleEditBestServe.value ||
+                elements.capsuleEditBestServe.dataset.auto === 'true') {
+                elements.capsuleEditBestServe.value = getSizeName(parseInt(elements.capsuleEditSize.value));
+                elements.capsuleEditBestServe.dataset.auto = 'true';
+            }
         }
     });
 

@@ -1331,6 +1331,17 @@ function addBatchImportRow(data = {}) {
             <option value="80" ${data.size_ml == 80 ? 'selected' : ''}>80ml</option>
             <option value="150" ${data.size_ml == 150 ? 'selected' : ''}>150ml</option>
             <option value="230" ${data.size_ml == 230 ? 'selected' : ''}>230ml</option>
+            <option value="355" ${data.size_ml == 355 ? 'selected' : ''}>355ml</option>
+            <option value="535" ${data.size_ml == 535 ? 'selected' : ''}>535ml</option>
+        </select>
+        <select class="import-size2">
+            <option value="">--</option>
+            <option value="40" ${data.size_ml2 == 40 ? 'selected' : ''}>40ml</option>
+            <option value="80" ${data.size_ml2 == 80 ? 'selected' : ''}>80ml</option>
+            <option value="150" ${data.size_ml2 == 150 ? 'selected' : ''}>150ml</option>
+            <option value="230" ${data.size_ml2 == 230 ? 'selected' : ''}>230ml</option>
+            <option value="355" ${data.size_ml2 == 355 ? 'selected' : ''}>355ml</option>
+            <option value="535" ${data.size_ml2 == 535 ? 'selected' : ''}>535ml</option>
         </select>
         <input type="number" class="import-intensity" placeholder="1-13" min="1" max="13" value="${data.intensity || ''}">
         <input type="text" class="import-note" placeholder="Tasting note" value="${data.tasting_note || ''}">
@@ -1392,11 +1403,19 @@ async function confirmBatchImport() {
         const name = row.querySelector('.import-name').value.trim();
         if (!name) return;
 
+        const sizeMl = parseInt(row.querySelector('.import-size').value) || 40;
+        const sizeMl2 = row.querySelector('.import-size2').value ? parseInt(row.querySelector('.import-size2').value) : null;
+        const bestServe = sizeMl2
+            ? (sizeMl2 > sizeMl ? getSizeName(sizeMl2) : getSizeName(sizeMl))
+            : getSizeName(sizeMl);
+
         const capsule = {
             name: name,
             brand_id: row.querySelector('.import-brand').value ? parseInt(row.querySelector('.import-brand').value) : null,
             line: row.querySelector('.import-line').value,
-            size_ml: parseInt(row.querySelector('.import-size').value) || 40,
+            size_ml: sizeMl,
+            size_ml2: sizeMl2,
+            best_serve: bestServe,
             intensity: row.querySelector('.import-intensity').value ? parseInt(row.querySelector('.import-intensity').value) : null,
             tasting_note: row.querySelector('.import-note').value.trim() || null,
             decaffeinato: row.querySelector('.import-decaffeinato').checked

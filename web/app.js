@@ -1038,7 +1038,7 @@ async function importCapsulesFromJSON() {
 
 function getSizeName(sizeMl) {
     if (sizeMl <= 50) return 'Espresso';
-    if (sizeMl <= 100) return 'Double';
+    if (sizeMl <= 100) return 'Double Espresso';
     if (sizeMl <= 180) return 'Gran Lungo';
     if (sizeMl <= 250) return 'Coffee';
     if (sizeMl <= 400) return 'Alto';

@@ -1344,6 +1344,7 @@ function addBatchImportRow(data = {}) {
             <option value="535" ${data.size_ml2 == 535 ? 'selected' : ''}>535ml</option>
         </select>
         <input type="number" class="import-intensity" placeholder="1-13" min="1" max="13" value="${data.intensity || ''}">
+        <span class="import-bestserveshow">${data.best_serve || 'Espresso'}</span>
         <input type="text" class="import-note" placeholder="Tasting note" value="${data.tasting_note || ''}">
         <label style="display: flex; align-items: center; justify-content: center;">
             <input type="checkbox" class="import-decaffeinato" ${data.decaffeinato ? 'checked' : ''}>
@@ -1351,6 +1352,22 @@ function addBatchImportRow(data = {}) {
         <button class="delete-row-btn" onclick="this.closest('.batch-import-row').remove()">&times;</button>
     `;
     elements.batchImportRows.appendChild(row);
+
+    // Add event listeners to update Best Serve when size changes
+    const sizeSelect = row.querySelector('.import-size');
+    const size2Select = row.querySelector('.import-size2');
+    const bestServeShow = row.querySelector('.import-bestserveshow');
+
+    function updateBestServe() {
+        const sizeMl = parseInt(sizeSelect.value) || 40;
+        const sizeMl2 = size2Select.value ? parseInt(size2Select.value) : null;
+        bestServeShow.textContent = sizeMl2
+            ? (sizeMl2 > sizeMl ? getSizeName(sizeMl2) : getSizeName(sizeMl))
+            : getSizeName(sizeMl);
+    }
+
+    sizeSelect.addEventListener('change', updateBestServe);
+    size2Select.addEventListener('change', updateBestServe);
 }
 
 function loadExampleImportData() {
